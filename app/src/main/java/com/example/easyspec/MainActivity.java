@@ -19,4 +19,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
     }
 
+    public void IDontknow() {}
+
 }
