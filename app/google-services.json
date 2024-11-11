@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "815075916673",
+    "project_id": "easyspec",
+    "storage_bucket": "easyspec.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:815075916673:android:d9e89de08e0e1861f28680",
+        "android_client_info": {
+          "package_name": "com.example.easyspec"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD2ALzxvr7J28YsBFl8JCNBYQYxAzinfWQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

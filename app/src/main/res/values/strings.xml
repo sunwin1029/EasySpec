@@ -1,3 +1,25 @@
 <resources>
     <string name="app_name">EasySpec</string>
+        <!-- Laptop 옵션 배열 -->
+        <string-array name="laptop_options">
+            <item>MacBook Pro</item>
+            <item>Windows Laptop</item>
+            <item>Chromebook</item>
+            <item>None</item>
+        </string-array>
+
+        <!-- Tablet 옵션 배열 -->
+        <string-array name="tablet_options">
+            <item>iPad</item>
+            <item>Android Tablet</item>
+            <item>Surface Tablet</item>
+            <item>None</item>
+        </string-array>
+
+        <!-- Phone 옵션 배열 -->
+        <string-array name="phone_options">
+            <item>iPhone</item>
+            <item>Android Phone</item>
+            <item>None</item>
+        </string-array>
 </resources>
