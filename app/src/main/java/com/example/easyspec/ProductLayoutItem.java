@@ -1,2 +1,6 @@
-package com.example.easyspec;public class ProductLayoutItem {
+package com.example.easyspec;
+
+public class ProductLayoutItem {
+
+
 }
