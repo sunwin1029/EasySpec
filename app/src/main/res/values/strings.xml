@@ -1,3 +1,13 @@
 <resources>
-    <string name="app_name">EasySpec</string>
+<string name="app_name">EasySpec</string>
+<string-array name="university_list">
+    <item>인문대학</item>
+    <item>자연과학대학</item>
+    <item>법과대학</item>
+    <item>사회과학대학</item>
+    <item>경제통상대학</item>
+    <item>경영대학</item>
+    <item>공과대학</item>
+    <item>IT대학</item>
+</string-array>
 </resources>
