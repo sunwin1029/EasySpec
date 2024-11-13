@@ -29,12 +29,15 @@ public class InventoryProductPage extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         List<ProductLayoutItem> list = new ArrayList<>();
+        list.add(new ProductLayoutItem("Iphone 15 pro", 1500000, R.drawable.iphone15, 4.4f, false));
+
+
         binding.productRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        binding.productRecyclerView.setAdapter(new ProductAdapter(list)); // 아직 구현 더해야함
+        binding.productRecyclerView.setAdapter(new ProductAdapter(list));
     }
 
 
-    public class ProductViewHolder extends RecyclerView.ViewHolder {
+    public static class ProductViewHolder extends RecyclerView.ViewHolder {
         EachProductLayoutBinding binding;
 
         public ProductViewHolder(EachProductLayoutBinding binding) {
@@ -43,9 +46,10 @@ public class InventoryProductPage extends AppCompatActivity {
         }
     }
 
-    public class ProductAdapter extends RecyclerView.Adapter<ProductViewHolder> {
+    public static class ProductAdapter extends RecyclerView.Adapter<ProductViewHolder> {
 
         private List<ProductLayoutItem> list;
+
         public ProductAdapter(List<ProductLayoutItem> list) {
             this.list = list;
         }
@@ -62,21 +66,26 @@ public class InventoryProductPage extends AppCompatActivity {
         public void onBindViewHolder(@NonNull ProductViewHolder holder, int position) {
 
 
-            // 뷰홀더에 담을 내용들
-            /*
-            holder.binding.productImage.setImageResource(리소스);
-            holder.binding.productPrice.setText(가격);
-            holder.binding.productName.setText(상품 이름);
-            holder.binding.ratingText.setText(평점);
-            holder.binding.heartIcon.
+            ProductLayoutItem item = list.get(position);
 
-             */
+            // 뷰홀더에 담을 내용들
+
+            holder.binding.productImage.setImageResource(item.getImageResource());
+            holder.binding.productPrice.setText(String.valueOf(item.getPrice()));
+            holder.binding.productName.setText(String.valueOf(item.getName()));
+            holder.binding.ratingText.setText(String.valueOf(item.getRating()));
+            if(item.heart()) {
+                holder.binding.heartIcon.setImageResource(R.drawable.heart);
+            } else {
+                holder.binding.heartIcon.setImageResource(R.drawable.heart_empty);
+            }
+
         }
 
 
         @Override
         public int getItemCount() {
-            return 0;
+            return list.size();
         }
     }
 }
