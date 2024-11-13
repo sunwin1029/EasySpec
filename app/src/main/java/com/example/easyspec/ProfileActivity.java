@@ -3,7 +3,6 @@ package com.example.easyspec;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -18,12 +17,11 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 
 public class ProfileActivity extends AppCompatActivity {
-    private Spinner spinnerLaptop, spinnerTablet, spinnerPhone;
+    private Spinner spinnerLaptop, spinnerTablet, spinnerPhone, spinnerUniversity;
     private FirebaseAuth mAuth;
     private DatabaseReference mDatabase;
     private Button buttonUpdate;
     private TextView textViewUserEmail;
-    private EditText editTextUniversity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,9 +34,9 @@ public class ProfileActivity extends AppCompatActivity {
         spinnerLaptop = findViewById(R.id.spinnerLaptop);
         spinnerTablet = findViewById(R.id.spinnerTablet);
         spinnerPhone = findViewById(R.id.spinnerPhone);
-        buttonUpdate = findViewById(R.id.buttonUpdate);
-        textViewUserEmail = findViewById(R.id.textViewUserEmail);
-        editTextUniversity = findViewById(R.id.editTextUniversity);
+        spinnerUniversity = findViewById(R.id.universitySpinner);
+        buttonUpdate = findViewById(R.id.saveButton);
+        textViewUserEmail = findViewById(R.id.newTextBelowUserId);
 
         // 스피너 초기화
         setUpSpinners();
@@ -51,18 +49,22 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void setUpSpinners() {
-        String[] laptops = {"Dell", "HP", "Apple", "Lenovo"};
-        String[] tablets = {"iPad", "Samsung Galaxy Tab", "Surface"};
-        String[] phones = {"iPhone", "Samsung Galaxy", "Pixel"};
-
-        ArrayAdapter<String> laptopAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, laptops);
+        // 스피너 설정을 위한 어댑터 초기화
+        ArrayAdapter<CharSequence> laptopAdapter = ArrayAdapter.createFromResource(this, R.array.laptop_options, android.R.layout.simple_spinner_item);
+        laptopAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerLaptop.setAdapter(laptopAdapter);
 
-        ArrayAdapter<String> tabletAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, tablets);
+        ArrayAdapter<CharSequence> tabletAdapter = ArrayAdapter.createFromResource(this, R.array.tablet_options, android.R.layout.simple_spinner_item);
+        tabletAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerTablet.setAdapter(tabletAdapter);
 
-        ArrayAdapter<String> phoneAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, phones);
+        ArrayAdapter<CharSequence> phoneAdapter = ArrayAdapter.createFromResource(this, R.array.phone_options, android.R.layout.simple_spinner_item);
+        phoneAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerPhone.setAdapter(phoneAdapter);
+
+        ArrayAdapter<CharSequence> universityAdapter = ArrayAdapter.createFromResource(this, R.array.university_list, android.R.layout.simple_spinner_item);
+        universityAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerUniversity.setAdapter(universityAdapter);
     }
 
     private void loadUserProfile() {
@@ -78,10 +80,8 @@ public class ProfileActivity extends AppCompatActivity {
                         // 이메일 정보 표시
                         textViewUserEmail.setText(user.getEmail());
 
-                        // 대학교 정보 표시
-                        editTextUniversity.setText(user.getUniversity());
-
-                        // 스피너 값 설정
+                        // 대학교, 노트북, 태블릿, 핸드폰 정보 설정
+                        setSpinnerValue(spinnerUniversity, user.getUniversity());
                         setSpinnerValue(spinnerLaptop, user.getLaptop());
                         setSpinnerValue(spinnerTablet, user.getTablet());
                         setSpinnerValue(spinnerPhone, user.getPhone());
@@ -105,17 +105,17 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void updateUserInfo() {
+        String university = spinnerUniversity.getSelectedItem().toString();
         String laptop = spinnerLaptop.getSelectedItem().toString();
         String tablet = spinnerTablet.getSelectedItem().toString();
         String phone = spinnerPhone.getSelectedItem().toString();
-        String university = editTextUniversity.getText().toString();
         String userId = mAuth.getCurrentUser().getUid();
 
         // Firebase에서 해당 사용자 정보 수정
+        mDatabase.child(userId).child("university").setValue(university);
         mDatabase.child(userId).child("laptop").setValue(laptop);
         mDatabase.child(userId).child("tablet").setValue(tablet);
-        mDatabase.child(userId).child("phone").setValue(phone);
-        mDatabase.child(userId).child("university").setValue(university).addOnCompleteListener(task -> {
+        mDatabase.child(userId).child("phone").setValue(phone).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 Toast.makeText(ProfileActivity.this, "회원정보가 성공적으로 수정되었습니다.", Toast.LENGTH_SHORT).show();
             } else {
@@ -124,4 +124,3 @@ public class ProfileActivity extends AppCompatActivity {
         });
     }
 }
-

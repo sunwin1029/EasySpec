@@ -35,18 +35,19 @@ public class SignUpStep2Activity extends AppCompatActivity {
     }
 
     private void setUpSpinners() {
-        String[] laptops = {"Dell", "HP", "Apple", "Lenovo"};
-        String[] tablets = {"iPad", "Samsung Galaxy Tab", "Surface"};
-        String[] phones = {"iPhone", "Samsung Galaxy", "Pixel"};
 
-        ArrayAdapter<String> laptopAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, laptops);
+        ArrayAdapter<CharSequence> laptopAdapter = ArrayAdapter.createFromResource(this, R.array.laptop_options, android.R.layout.simple_spinner_item);
+        laptopAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerLaptop.setAdapter(laptopAdapter);
 
-        ArrayAdapter<String> tabletAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, tablets);
+        ArrayAdapter<CharSequence> tabletAdapter = ArrayAdapter.createFromResource(this, R.array.tablet_options, android.R.layout.simple_spinner_item);
+        tabletAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerTablet.setAdapter(tabletAdapter);
 
-        ArrayAdapter<String> phoneAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, phones);
+        ArrayAdapter<CharSequence> phoneAdapter = ArrayAdapter.createFromResource(this, R.array.phone_options, android.R.layout.simple_spinner_item);
+        phoneAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerPhone.setAdapter(phoneAdapter);
+
     }
 
     private void saveUserInfo() {

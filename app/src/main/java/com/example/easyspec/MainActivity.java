@@ -32,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
 
         // 각 버튼 클릭 시 이벤트 설정
         binding.button1.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this,UserProfile.class);
+            Intent intent = new Intent(MainActivity.this,ProfileActivity.class);
             startActivity(intent);
         });
 

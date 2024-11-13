@@ -19,12 +19,11 @@
         android:hint="Password"
         android:inputType="textPassword" />
 
-    <EditText
-        android:id="@+id/editTextUniversity"
+    <!-- EditText에서 Spinner로 변경하고 android:entries 속성 추가 -->
+    <Spinner
+        android:id="@+id/spinnerUniversity"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="University"
-        android:inputType="text" />
+        android:layout_height="wrap_content" />
 
     <Button
         android:id="@+id/buttonNext"
