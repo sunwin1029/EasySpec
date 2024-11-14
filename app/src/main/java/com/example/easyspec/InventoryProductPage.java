@@ -2,15 +2,10 @@ package com.example.easyspec;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -29,7 +24,8 @@ public class InventoryProductPage extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         List<ProductLayoutItem> list = new ArrayList<>();
-        list.add(new ProductLayoutItem("Iphone 15 pro", 1500000, R.drawable.iphone15, 4.4f, false));
+        // 여기서부터 상품 목록에 넣을 목록 추가하면 됨!
+        list.add(new ProductLayoutItem("Iphone 15 pro", 1500000, R.drawable.iphone15_promax, 4.4f, false));
 
 
         binding.productRecyclerView.setLayoutManager(new LinearLayoutManager(this));
