@@ -23,10 +23,9 @@ public class InventoryProductPage extends AppCompatActivity {
         ActivityInventoryProductPageBinding binding = ActivityInventoryProductPageBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        List<ProductLayoutItem> list = new ArrayList<>();
+        List<ProductItem> list = new ArrayList<>();
         // 여기서부터 상품 목록에 넣을 목록 추가하면 됨!
-        list.add(new ProductLayoutItem("Iphone 15 pro", 1500000, R.drawable.iphone15_promax, 4.4f, false));
-
+        list.add(new ProductItem());
 
         binding.productRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         binding.productRecyclerView.setAdapter(new ProductAdapter(list));
@@ -44,9 +43,9 @@ public class InventoryProductPage extends AppCompatActivity {
 
     public static class ProductAdapter extends RecyclerView.Adapter<ProductViewHolder> {
 
-        private List<ProductLayoutItem> list;
+        private List<ProductItem> list;
 
-        public ProductAdapter(List<ProductLayoutItem> list) {
+        public ProductAdapter(List<ProductItem> list) {
             this.list = list;
         }
 
@@ -62,7 +61,7 @@ public class InventoryProductPage extends AppCompatActivity {
         public void onBindViewHolder(@NonNull ProductViewHolder holder, int position) {
 
 
-            ProductLayoutItem item = list.get(position);
+            ProductItem item = list.get(position);
 
             // 뷰홀더에 담을 내용들
 
