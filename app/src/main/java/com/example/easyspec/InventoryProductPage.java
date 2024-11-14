@@ -24,6 +24,7 @@ public class InventoryProductPage extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         List<ProductItem> list = new ArrayList<>();
+
         // 여기서부터 상품 목록에 넣을 목록 추가하면 됨!
         list.add(new ProductItem());
 
