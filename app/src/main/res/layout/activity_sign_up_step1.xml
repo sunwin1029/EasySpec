@@ -5,30 +5,46 @@
     android:orientation="vertical"
     android:padding="16dp">
 
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="회원가입"
+        android:textAlignment="center"
+        android:textSize="30dp"
+        android:textStyle="bold" />
+
     <EditText
+        android:layout_marginTop="10dp"
         android:id="@+id/editTextEmail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Email"
-        android:inputType="textEmailAddress" />
+        android:inputType="textEmailAddress"
+        android:background="@drawable/rectangle_edittext"/>
 
     <EditText
+        android:layout_marginTop="10dp"
         android:id="@+id/editTextPassword"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Password"
-        android:inputType="textPassword" />
+        android:inputType="textPassword"
+        android:background="@drawable/rectangle_edittext"/>
 
     <!-- EditText에서 Spinner로 변경하고 android:entries 속성 추가 -->
     <Spinner
+        android:layout_marginTop="10dp"
         android:id="@+id/spinnerUniversity"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
     <Button
+        android:layout_marginTop="10dp"
         android:id="@+id/buttonNext"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Next" />
+        android:text="다음"
+        android:backgroundTint="#87CEEB"/>
 
 </LinearLayout>

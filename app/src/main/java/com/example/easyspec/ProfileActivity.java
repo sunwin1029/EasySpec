@@ -31,12 +31,22 @@ public class ProfileActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance().getReference("Users");
 
-        spinnerLaptop = findViewById(R.id.spinnerLaptop);
-        spinnerTablet = findViewById(R.id.spinnerTablet);
-        spinnerPhone = findViewById(R.id.spinnerPhone);
         spinnerUniversity = findViewById(R.id.universitySpinner);
         buttonUpdate = findViewById(R.id.saveButton);
         textViewUserEmail = findViewById(R.id.newTextBelowUserId);
+
+        Button buttonChangePassword = findViewById(R.id.changePasswordButton);
+        buttonChangePassword.setOnClickListener(v -> {
+            ChangePasswordFragment fragment = new ChangePasswordFragment();
+            fragment.show(getSupportFragmentManager(), "ChangePasswordFragment");
+        });
+
+        Button buttonChangeDevice = findViewById(R.id.changeDeviceButton);
+        buttonChangeDevice.setOnClickListener(v -> {
+            DeviceChangeFragment deviceChangeFragment = new DeviceChangeFragment();
+            deviceChangeFragment.show(getSupportFragmentManager(), "DeviceChangeFragment");
+        });
+
 
         // 스피너 초기화
         setUpSpinners();
@@ -50,18 +60,6 @@ public class ProfileActivity extends AppCompatActivity {
 
     private void setUpSpinners() {
         // 스피너 설정을 위한 어댑터 초기화
-        ArrayAdapter<CharSequence> laptopAdapter = ArrayAdapter.createFromResource(this, R.array.laptop_options, android.R.layout.simple_spinner_item);
-        laptopAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerLaptop.setAdapter(laptopAdapter);
-
-        ArrayAdapter<CharSequence> tabletAdapter = ArrayAdapter.createFromResource(this, R.array.tablet_options, android.R.layout.simple_spinner_item);
-        tabletAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerTablet.setAdapter(tabletAdapter);
-
-        ArrayAdapter<CharSequence> phoneAdapter = ArrayAdapter.createFromResource(this, R.array.phone_options, android.R.layout.simple_spinner_item);
-        phoneAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerPhone.setAdapter(phoneAdapter);
-
         ArrayAdapter<CharSequence> universityAdapter = ArrayAdapter.createFromResource(this, R.array.university_list, android.R.layout.simple_spinner_item);
         universityAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerUniversity.setAdapter(universityAdapter);
@@ -82,9 +80,6 @@ public class ProfileActivity extends AppCompatActivity {
 
                         // 대학교, 노트북, 태블릿, 핸드폰 정보 설정
                         setSpinnerValue(spinnerUniversity, user.getUniversity());
-                        setSpinnerValue(spinnerLaptop, user.getLaptop());
-                        setSpinnerValue(spinnerTablet, user.getTablet());
-                        setSpinnerValue(spinnerPhone, user.getPhone());
                     }
                 }
             }

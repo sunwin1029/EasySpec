@@ -6,9 +6,18 @@
     android:padding="16dp">
 
     <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="회원가입"
+        android:textAlignment="center"
+        android:textSize="30dp"
+        android:textStyle="bold" />
+
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Select Your Laptop" />
+        android:text="사용하고 있는 기기를 선택해주세요(노트북)"
+        android:layout_marginTop="10dp"/>
 
     <Spinner
         android:id="@+id/spinnerLaptop"
@@ -18,7 +27,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Select Your Tablet" />
+        android:text="사용하고 있는 기기를 선택해주세요(핸드폰)" />
 
     <Spinner
         android:id="@+id/spinnerTablet"
@@ -28,7 +37,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Select Your Phone" />
+        android:text="사용하고 있는 기기를 선택해주세요(태블릿)" />
 
     <Spinner
         android:id="@+id/spinnerPhone"
@@ -39,6 +48,7 @@
         android:id="@+id/buttonFinish"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Finish" />
+        android:text="회원가입"
+        android:backgroundTint="#87CEEB"/>
 
 </LinearLayout>

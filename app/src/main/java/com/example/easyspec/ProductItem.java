@@ -8,6 +8,7 @@ public class ProductItem {
         private boolean heart; // 즐겨찾기
         private int productType; // 1 -> 노트북 2 -> 태블릿 3 -> 핸드폰
 
+        private String key; //firebase의 productID저장
 
         // 생성자 - 신경 안써도 괜찮음
         public ProductItem() {
@@ -45,5 +46,20 @@ public class ProductItem {
         }
         public boolean heart() {
             return heart;
+        }
+
+        public String getKey(){
+            return key;
+        }
+        public void setKey(String key){
+            this.key = key;
+        }
+
+        public int getProductType(){
+            return productType;
+        }
+
+        public void setProductType(int productType){
+            this.productType = productType;
         }
 }

@@ -1,35 +1,35 @@
 <resources>
     <string name="app_name">EasySpec</string>
-        <!-- Laptop 옵션 배열 -->
-        <string-array name="laptop_options">
-            <item>MacBook Pro</item>
-            <item>Windows Laptop</item>
-            <item>Chromebook</item>
-            <item>None</item>
-        </string-array>
+    <!-- Laptop 옵션 배열 -->
+    <string-array name="laptop_options">
+        <item>MacBook Pro</item>
+        <item>Windows Laptop</item>
+        <item>Chromebook</item>
+        <item>None</item>
+    </string-array>
 
-        <!-- Tablet 옵션 배열 -->
-        <string-array name="tablet_options">
-            <item>iPad</item>
-            <item>Android Tablet</item>
-            <item>Surface Tablet</item>
-            <item>None</item>
-        </string-array>
+    <!-- Tablet 옵션 배열 -->
+    <string-array name="tablet_options">
+        <item>iPad</item>
+        <item>Android Tablet</item>
+        <item>Surface Tablet</item>
+        <item>None</item>
+    </string-array>
 
-        <!-- Phone 옵션 배열 -->
-        <string-array name="phone_options">
-            <item>iPhone</item>
-            <item>Android Phone</item>
-            <item>None</item>
-        </string-array>
-<string-array name="university_list">
-    <item>인문대학</item>
-    <item>자연과학대학</item>
-    <item>법과대학</item>
-    <item>사회과학대학</item>
-    <item>경제통상대학</item>
-    <item>경영대학</item>
-    <item>공과대학</item>
-    <item>IT대학</item>
-</string-array>
+    <!-- Phone 옵션 배열 -->
+    <string-array name="phone_options">
+        <item>iPhone</item>
+        <item>Android Phone</item>
+        <item>None</item>
+    </string-array>
+    <string-array name="university_list">
+        <item>인문대학</item>
+        <item>자연과학대학</item>
+        <item>법과대학</item>
+        <item>사회과학대학</item>
+        <item>경제통상대학</item>
+        <item>경영대학</item>
+        <item>공과대학</item>
+        <item>IT대학</item>
+    </string-array>
 </resources>
