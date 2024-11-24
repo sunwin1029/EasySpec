@@ -12,39 +12,22 @@ public class ProductItem{
     private int productType; // 1 -> 노트북 2 -> 태블릿 3 -> 핸드폰
     //private UsersOfTheProduct usersOfTheProduct;
 
-    public String getName() {
-        return name;
-    }
+        public String getName() {
+            return name;
+        }
 
-    public int getProductType() {return productType;}
+        public int getPrice() {
+            return price;
+        }
 
-    public int getPrice() {
-        return price;
-    }
+        public int getImageResource() {
+            return imageResource;
+        }
 
-    public int getImageResource() {
-        return imageResource;
-    }
-
-    public boolean heart() {
-        return heart;
-    }
-
-    public double getRating() { return rating; }
-
-
-
-    ProductItem(String name, int price, int imageResource, double rating, boolean heart, int productType, UsersOfTheProduct user) {
-        this.name = name;
-        this.price = price;
-        this.imageResource = imageResource;
-        this.rating = rating;
-        this.heart = heart;
-        this.productType = productType;
-        this.usersOfTheProduct = user;
-    }
-
-    //public void addRating(String userID, int
+        public double getRating() {
+            return rating;
+        }
+        public boolean heart() {
+            return heart;
+        }
 }
-
-
