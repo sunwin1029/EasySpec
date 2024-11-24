@@ -1,4 +1,4 @@
-package com.example.easyspec;
+package com.example.easyspec.Data;
 
 public class Users {
     private String email;

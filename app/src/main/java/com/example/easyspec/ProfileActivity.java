@@ -9,6 +9,9 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.easyspec.Data.Users;
+import com.example.easyspec.LogIn.ChangePasswordFragment;
+import com.example.easyspec.LogIn.DeviceChangeFragment;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;

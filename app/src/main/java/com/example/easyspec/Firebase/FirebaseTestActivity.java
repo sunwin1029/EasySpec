@@ -1,11 +1,16 @@
-package com.example.easyspec;
+package com.example.easyspec.Firebase;
 
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
+import com.example.easyspec.Data.ProductItem;
 import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.easyspec.Data.ProductItem;
+import com.example.easyspec.R;
+
 import java.util.List;
 
 public class FirebaseTestActivity extends AppCompatActivity {

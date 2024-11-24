@@ -1,4 +1,4 @@
-package com.example.easyspec;
+package com.example.easyspec.LogIn;
 
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
+import com.example.easyspec.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 

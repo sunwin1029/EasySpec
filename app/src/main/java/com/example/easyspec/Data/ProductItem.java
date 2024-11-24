@@ -1,7 +1,4 @@
-package com.example.easyspec;
-
-import java.util.ArrayList;
-import java.util.List;
+package com.example.easyspec.Data;
 
 public class ProductItem{
     private String name; // 이름, 불변함
@@ -10,7 +7,7 @@ public class ProductItem{
     private double rating; // 평점
     private boolean heart; // 즐겨찾기
     private int productType; // 1 -> 노트북 2 -> 태블릿 3 -> 핸드폰
-    //private UsersOfTheProduct usersOfTheProduct;
+    private UserOfTheProduct usersOfTheProduct;
 
     public String getName() {
         return name;
@@ -34,7 +31,7 @@ public class ProductItem{
 
 
 
-    ProductItem(String name, int price, int imageResource, double rating, boolean heart, int productType, UsersOfTheProduct user) {
+    public ProductItem(String name, int price, int imageResource, double rating, boolean heart, int productType, UserOfTheProduct user) {
         this.name = name;
         this.price = price;
         this.imageResource = imageResource;
@@ -46,5 +43,7 @@ public class ProductItem{
 
     //public void addRating(String userID, int
 }
+
+
 
 
