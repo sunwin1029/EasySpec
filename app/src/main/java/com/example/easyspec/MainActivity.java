@@ -45,6 +45,12 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(MainActivity.this,MyReview.class);
             startActivity(intent);
         });
+
+        // "리스트 보기" 버튼 클릭 시 RecyclerViewActivity로 이동
+        binding.goToRecyclerviewButton.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, RecyclerViewActivity.class);
+            startActivity(intent);
+        });
     }
 
     private void initSearchView() {
