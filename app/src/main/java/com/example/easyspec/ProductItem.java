@@ -9,7 +9,7 @@ public class ProductItem {
         private double rating; // 평점
         private boolean heart; // 즐겨찾기
         private int productType; // 1 -> 노트북 2 -> 태블릿 3 -> 핸드폰
-        private UserOfTheProduct user;
+        //private UserOfTheProduct user;
 
 
         // 생성자 - 신경 안써도 괜찮음
