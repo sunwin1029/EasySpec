@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         binding.button3.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this,MyReview.class);
+            Intent intent = new Intent(MainActivity.this,MyReviewActivity.class);
             startActivity(intent);
         });
     }

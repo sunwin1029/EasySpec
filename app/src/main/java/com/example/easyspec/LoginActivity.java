@@ -49,7 +49,7 @@ public class LoginActivity extends AppCompatActivity {
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
                         Toast.makeText(LoginActivity.this, "로그인 성공", Toast.LENGTH_SHORT).show();
-                        startActivity(new Intent(LoginActivity.this, ProfileActivity.class));  // 로그인 후 프로필 화면으로 이동
+                        startActivity(new Intent(LoginActivity.this, MainActivity.class));  // 로그인 후 프로필 화면으로 이동
                         finish();
                     } else {
                         Toast.makeText(LoginActivity.this, "로그인 실패: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
