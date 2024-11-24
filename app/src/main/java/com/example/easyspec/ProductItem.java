@@ -10,7 +10,7 @@ public class ProductItem{
     private double rating; // 평점
     private boolean heart; // 즐겨찾기
     private int productType; // 1 -> 노트북 2 -> 태블릿 3 -> 핸드폰
-    private UsersOfTheProduct usersOfTheProduct;
+    //private UsersOfTheProduct usersOfTheProduct;
 
     public String getName() {
         return name;
