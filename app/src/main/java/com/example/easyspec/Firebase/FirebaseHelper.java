@@ -19,7 +19,7 @@ public class FirebaseHelper {
     private DatabaseReference databaseReference; // Firebase Realtime Database의 참조
 
     // 생성자: Firebase Realtime Database의 "ProductItems" 경로 참조 생성
-    private FirebaseHelper() {
+    public FirebaseHelper() {
         databaseReference = FirebaseDatabase.getInstance()
                 .getReference("ProductItems");
     }
