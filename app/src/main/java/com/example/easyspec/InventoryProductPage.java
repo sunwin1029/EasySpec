@@ -1,5 +1,6 @@
 package com.example.easyspec;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -9,15 +10,18 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.easyspec.Data.Users;
 import com.example.easyspec.EachProductPage.EachProductPage;
 import com.example.easyspec.databinding.ActivityInventoryProductPageBinding;
 import com.example.easyspec.databinding.InventoryProductPageLayoutBinding;
 import com.example.easyspec.Data.ProductItem;
 import com.example.easyspec.Firebase.FirebaseHelper;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +32,10 @@ public class InventoryProductPage extends AppCompatActivity implements View.OnCl
 
     // FirebaseHelper 인스턴스
     FirebaseHelper firebaseHelper;
+
+
+    public AlertDialog listdialog;
+    int sortType;
 
     // 사용자 ID (Intent로 전달받아 초기화)
     String userId;
@@ -41,11 +49,12 @@ public class InventoryProductPage extends AppCompatActivity implements View.OnCl
         // FirebaseHelper 초기화
         firebaseHelper = FirebaseHelper.getInstance();
 
-        // Intent로 전달된 userId를 가져옴
-        userId = getIntent().getStringExtra("userId");
-        if (userId == null || userId.isEmpty()) {
-            Toast.makeText(this, "User ID is missing. Please log in again.", Toast.LENGTH_SHORT).show();
-            finish(); // userId가 없으면 액티비티 종료
+        // Firebase Authentication에서 현재 사용자의 uid 가져오기
+        userId = FirebaseAuth.getInstance().getCurrentUser().getUid(); // uid 가져오기
+
+        if (userId == null) {
+            Toast.makeText(this, "No user ID found. Please log in again.", Toast.LENGTH_SHORT).show();
+            finish(); // 사용자 ID가 없으면 액티비티 종료
             return;
         }
 
@@ -59,6 +68,8 @@ public class InventoryProductPage extends AppCompatActivity implements View.OnCl
 
         // Firebase에서 데이터 로드
         fetchProductData();
+
+        Toast.makeText(this, "User ID: " + userId, Toast.LENGTH_SHORT).show();
     }
 
     private void fetchProductData() {
@@ -91,7 +102,19 @@ public class InventoryProductPage extends AppCompatActivity implements View.OnCl
         if (view == binding.searchBar) {
             Toast.makeText(this, "SearchBar clicked", Toast.LENGTH_SHORT).show();
         } else if (view == binding.check) {
-            Toast.makeText(this, "CheckButton clicked", Toast.LENGTH_SHORT).show();
+            String[] data = getResources().getStringArray(R.array.depart_name);
+            listdialog = new AlertDialog.Builder(this)
+                    .setTitle("대학을 골라주세요")
+                    .setSingleChoiceItems(R.array.depart_name, -1, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            sortType = i;
+                        }
+                    })
+                    .setPositiveButton("확인", null)
+                    .setNegativeButton("확인", null)
+                    .create();
+            listdialog.show();
         }
     }
 

@@ -1,6 +1,7 @@
 package com.example.easyspec.Firebase;
 
 import com.example.easyspec.Data.ProductItem;
+import com.example.easyspec.Data.Users;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -192,6 +193,46 @@ public class FirebaseHelper {
      */
     public interface FirebaseCallback {
         void onSuccess(List<ProductItem> productItems); // 작업 성공 시 호출
+        void onFailure(Exception e); // 작업 실패 시 호출
+    }
+
+
+
+    /**
+     * Firebase에서 사용자 데이터를 가져오는 메서드
+     * @param callback 데이터를 가져온 후 호출될 콜백
+     */
+    public void fetchAllUsersFromFirebase(final FirebaseUserCallback callback) {
+        userReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                List<Users> userList = new ArrayList<>(); // 사용자 데이터를 저장할 리스트
+
+                // 모든 사용자 데이터를 탐색하여 객체로 변환
+                for (DataSnapshot child : snapshot.getChildren()) {
+                    Users user = child.getValue(Users.class);
+                    if (user != null) {
+                        userList.add(user); // 리스트에 추가
+                    }
+                }
+
+                // 성공적으로 데이터를 가져왔을 때 콜백 호출
+                callback.onSuccess(userList);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                // 데이터를 가져오지 못했을 때 콜백 호출
+                callback.onFailure(error.toException());
+            }
+        });
+    }
+
+    /**
+     * Firebase 작업 결과를 전달하는 사용자 콜백 인터페이스
+     */
+    public interface FirebaseUserCallback {
+        void onSuccess(List<Users> users); // 작업 성공 시 호출
         void onFailure(Exception e); // 작업 실패 시 호출
     }
 }
