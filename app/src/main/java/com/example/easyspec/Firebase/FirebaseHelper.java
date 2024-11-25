@@ -34,28 +34,19 @@ public class FirebaseHelper {
 
     /**
      * Firebase에서 데이터를 한 번만 불러오는 메서드
-     * @param callback 데이터 로드 완료 또는 실패 시 실행할 콜백 인터페이스
+     * Firebase Realtime Database에서 데이터를 한 번만 가져오고, 데이터를 처리한 후 콜백을 호출합니다.
+     *
+     * @param callback 데이터 로드 완료 또는 실패 시 호출될 콜백 인터페이스
      */
-    public void fetchDataFromFirebase(final FirebaseCallback callback) {
+    public void fetchAllDataFromFirebase(final FirebaseCallback callback) {
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 productItems.clear(); // 기존 데이터를 지워 새로 로드
 
-                // Firebase의 각 카테고리(laptops, phones, tablets) 반복
-                for (DataSnapshot category : snapshot.getChildren()) {
-                    // 각 카테고리 내 제품 반복
-                    for (DataSnapshot product : category.getChildren()) {
-                        // 제품 데이터 추출
-                        String name = product.child("name").getValue(String.class);
-                        int price = product.child("price").getValue(Integer.class);
-                        int productType = product.child("productType").getValue(Integer.class);
+                // Firebase의 전체 데이터를 재귀적으로 탐색하여 제품 정보를 추출
+                traverseSnapshot(snapshot);
 
-                        // ProductItem 객체 생성 및 리스트에 추가
-                        ProductItem item = new ProductItem(name, price, 0, 0.0, false, productType, null);
-                        productItems.add(item);
-                    }
-                }
                 // 데이터 로드 성공 시 콜백 호출
                 callback.onSuccess(productItems);
             }
@@ -67,6 +58,42 @@ public class FirebaseHelper {
             }
         });
     }
+
+    /**
+     * Firebase의 데이터를 재귀적으로 탐색하여 제품 정보를 추출하는 메서드
+     * 주어진 DataSnapshot 객체에서 자식 데이터를 순차적으로 탐색하며,
+     * 각 제품 정보를 추출하여 리스트에 저장합니다.
+     *
+     * @param snapshot Firebase DataSnapshot 객체
+     */
+    private void traverseSnapshot(DataSnapshot snapshot) {
+        for (DataSnapshot child : snapshot.getChildren()) {
+            // 각 제품이 'name', 'price', 'productType' 속성을 갖고 있는지 확인
+            if (child.hasChild("name") && child.hasChild("price") && child.hasChild("productType")) {
+                // 제품 정보를 추출
+                String name = child.child("name").getValue(String.class);
+                int price = child.child("price").getValue(Integer.class);
+                int productType = child.child("productType").getValue(Integer.class);
+
+                // 선택적 필드 'rating'과 'heart'를 처리
+                double rating = child.child("rating").getValue(Double.class) != null ?
+                        child.child("rating").getValue(Double.class) : 0.0;  // 기본값 0.0
+                boolean heart = child.child("heart").getValue(Boolean.class) != null &&
+                        child.child("heart").getValue(Boolean.class);
+
+                // ProductItem 객체 생성 후 리스트에 추가
+                ProductItem item = new ProductItem(name, price, 0, rating, heart, productType, null);
+                productItems.add(item);
+            }
+
+            // 자식 데이터가 더 있을 경우 재귀 호출하여 추가 탐색
+            if (child.getChildrenCount() > 0) {
+                traverseSnapshot(child);
+            }
+        }
+    }
+
+
 
     /**
      * Firebase에서 특정 제품 데이터를 수정하는 메서드

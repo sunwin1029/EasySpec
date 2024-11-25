@@ -2,81 +2,51 @@ package com.example.easyspec.Firebase;
 
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.Button;
-import com.example.easyspec.Data.ProductItem;
-import android.widget.TextView;
-import androidx.annotation.Nullable;
+import android.widget.ListView;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.easyspec.Data.ProductItem;
+import com.example.easyspec.Firebase.FirebaseHelper;
+import com.example.easyspec.ProductAdapter;
 import com.example.easyspec.R;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class FirebaseTestActivity extends AppCompatActivity {
 
-    private TextView textViewProducts;
-    private Button buttonUpdate;
+    private ListView listViewProducts; // ListView
+    private ProductAdapter productAdapter; // 어댑터
+    private List<ProductItem> productItems = new ArrayList<>(); // 제품 리스트
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_firebase_test);
+        setContentView(R.layout.activity_firebase_test); // 레이아웃 설정
 
-        textViewProducts = findViewById(R.id.textViewProducts);
-        buttonUpdate = findViewById(R.id.buttonUpdate);
+        // ListView 연결
+        listViewProducts = findViewById(R.id.listViewProducts);
 
-        // 데이터 로드
-        FirebaseHelper.getInstance().fetchDataFromFirebase(new FirebaseHelper.FirebaseCallback() {
+        // 어댑터 초기화 및 연결
+        productAdapter = new ProductAdapter(this, productItems);
+        listViewProducts.setAdapter(productAdapter);
+
+        // Firebase에서 데이터 불러오기
+        FirebaseHelper.getInstance().fetchAllDataFromFirebase(new FirebaseHelper.FirebaseCallback() {
             @Override
-            public void onSuccess(List<ProductItem> productItems) {
-                StringBuilder productList = new StringBuilder();
-                for (ProductItem item : productItems) {
-                    productList.append("Name: ").append(item.getName())
-                            .append(", Price: ").append(item.getPrice())
-                            .append(", Type: ").append(item.getProductType())
-                            .append("\n");
-                }
-                textViewProducts.setText(productList.toString());
+            public void onSuccess(List<ProductItem> items) {
+                // 데이터 로드 성공 시 리스트 업데이트
+                productItems.clear();
+                productItems.addAll(items);
+                productAdapter.notifyDataSetChanged(); // 어댑터 갱신
             }
 
             @Override
             public void onFailure(Exception e) {
+                // 데이터 로드 실패 시 로그 출력
                 Log.e("FirebaseTestActivity", "Error fetching data", e);
-                textViewProducts.setText("Error fetching data: " + e.getMessage());
             }
-        });
-
-        // 버튼 클릭 시 제품 수정
-        buttonUpdate.setOnClickListener(v -> {
-            ProductItem updatedItem = new ProductItem(
-                    "수정된 제품 이름",  // 수정된 이름
-                    1500000,           // 수정된 가격
-                    0,                 // 이미지 리소스
-                    4.5,               // 수정된 평점
-                    true,              // 수정된 즐겨찾기 상태
-                    1,                 // 제품 타입 (노트북)
-                    null               // UsersOfTheProduct
-            );
-
-            FirebaseHelper.getInstance().updateProduct(
-                    "laptops", // 카테고리
-                    "product3zz", // 제품 ID
-                    updatedItem,
-                    new FirebaseHelper.FirebaseCallback() {
-                        @Override
-                        public void onSuccess(List<ProductItem> productItems) {
-                            Log.d("FirebaseTestActivity", "Product updated successfully!");
-                            textViewProducts.setText("Product updated successfully!");
-                        }
-
-                        @Override
-                        public void onFailure(Exception e) {
-                            Log.e("FirebaseTestActivity", "Failed to update product", e);
-                            textViewProducts.setText("Failed to update product: " + e.getMessage());
-                        }
-                    }
-            );
         });
     }
 }
