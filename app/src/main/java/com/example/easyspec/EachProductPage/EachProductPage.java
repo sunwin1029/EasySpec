@@ -1,4 +1,4 @@
-package com.example.easyspec;
+package com.example.easyspec.EachProductPage;
 
 import android.animation.ValueAnimator;
 import android.os.Bundle;
@@ -8,18 +8,16 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.easyspec.Data.ProductItem;
+import com.example.easyspec.R;
 import com.example.easyspec.databinding.ActivityEachProductPageBinding;
 import com.example.easyspec.databinding.EachProductPropertyBinding;
+import com.example.easyspec.databinding.EachProductPropertyReviewExpandedBinding;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +25,7 @@ import java.util.List;
 public class EachProductPage extends AppCompatActivity {
 
 
-
+    int productType;
     ProductItem productItem;
     List<String> featureList = new ArrayList<>();
 
@@ -39,16 +37,12 @@ public class EachProductPage extends AppCompatActivity {
 
 
 
-        String name = getIntent().getStringExtra("productName");
-        int price = getIntent().getIntExtra("productPrice", 0);
-        float rating = getIntent().getFloatExtra("productRating", 0.0f);
-        int productType = getIntent().getIntExtra("productType", 0 );
-
-
+        productItem = (ProductItem) getIntent().getSerializableExtra("selectedProduct");
+        productType = productItem.getProductType();
         //binding.ImageInEachProduct.setImageResource();
-        binding.NameInEachProduct.setText(name);
-        binding.PriceInEachProduct.setText(price);
-        binding.ratingInEachProduct.setText(String.valueOf(rating));
+        binding.NameInEachProduct.setText(productItem.getName());
+        binding.PriceInEachProduct.setText(String.valueOf(productItem.getPrice()));
+        binding.ratingInEachProduct.setText(String.valueOf(productItem.getRating()));
 
 
         binding.EvaluationInEachProduct.setOnClickListener(new View.OnClickListener() {
@@ -65,7 +59,7 @@ public class EachProductPage extends AppCompatActivity {
             }
         });
 
-        productType = 1;
+        //productType = 2;
 
         switch (productType) {
             case 1: // 핸드폰
@@ -252,4 +246,45 @@ public class EachProductPage extends AppCompatActivity {
         animator.setDuration(300); // 애니메이션 시간
         animator.start();
     }
+
+
+    private class ReviewViewHolder extends RecyclerView.ViewHolder {
+
+        private EachProductPropertyReviewExpandedBinding binding;
+
+        public ReviewViewHolder(EachProductPropertyReviewExpandedBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
+        }
+    }
+
+    private class ReviewAdapter extends RecyclerView.Adapter<ReviewViewHolder> {
+
+        private List<ReviewInEachProductProperty> list;
+
+        private ReviewAdapter(List<ReviewInEachProductProperty> list) {
+            this.list = list;
+        }
+
+        @NonNull
+        @Override
+        public ReviewViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            EachProductPropertyReviewExpandedBinding binding = EachProductPropertyReviewExpandedBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
+            return new ReviewViewHolder(binding);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull ReviewViewHolder holder, int position) {
+            ReviewInEachProductProperty review = list.get(position);
+            /*
+            여기서 수정해야함!
+             */
+        }
+
+        @Override
+        public int getItemCount() {
+            return list.size();
+        }
+    }
+
 }

@@ -1,6 +1,9 @@
 package com.example.easyspec.Data;
 
-public class ProductItem {
+import java.io.Serial;
+import java.io.Serializable;
+
+public class ProductItem implements Serializable {
 
     private String name; // 이름, 불변함
     private int price; // 가격, 불변함

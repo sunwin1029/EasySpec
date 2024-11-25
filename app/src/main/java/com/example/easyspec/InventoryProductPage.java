@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.easyspec.EachProductPage.EachProductPage;
 import com.example.easyspec.databinding.ActivityInventoryProductPageBinding;
 import com.example.easyspec.databinding.InventoryProductPageLayoutBinding;
 import com.example.easyspec.Data.ProductItem;
