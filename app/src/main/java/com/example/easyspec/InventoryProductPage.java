@@ -2,6 +2,7 @@ package com.example.easyspec;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,21 +28,49 @@ import java.util.List;
 
 public class InventoryProductPage extends AppCompatActivity implements View.OnClickListener{
     ActivityInventoryProductPageBinding binding;
+    List<ProductItem> list = new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityInventoryProductPageBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        FirebaseHelper firebaseHelper = new FirebaseHelper();
-        List<ProductItem> list = firebaseHelper.getProductItems();
-
 
         binding.searchBar.setOnClickListener(this);
         binding.check.setOnClickListener(this);
         binding.productRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         binding.productRecyclerView.setAdapter(new InventoryAdapter(list));
+        fetchProductData();
     }
+
+    private void fetchProductData() {
+        FirebaseHelper firebaseHelper = FirebaseHelper.getInstance(); // FirebaseHelper의 싱글톤 인스턴스 가져오기
+
+        // 데이터를 불러오는 메서드 호출
+        firebaseHelper.fetchDataFromFirebase(new FirebaseHelper.FirebaseCallback() {
+            @Override
+            public void onSuccess(List<ProductItem> productItems) {
+                // 데이터 로드 성공
+                list.clear(); // 기존 데이터 초기화
+                list.addAll(productItems); // 불러온 데이터를 리스트에 추가
+
+                // 데이터를 성공적으로 로드했음을 UI나 로그로 확인
+                Log.d("Firebase", "Data loaded successfully: " + list.size() + " items.");
+                Toast.makeText(InventoryProductPage.this, "Data loaded: " + list.size() + " items.", Toast.LENGTH_SHORT).show();
+
+                // TODO: 여기서 데이터를 RecyclerView 등 UI 요소에 적용
+                //updateUIWithData();
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                // 데이터 로드 실패
+                Log.e("Firebase", "Error loading data", e);
+                Toast.makeText(InventoryProductPage.this, "Failed to load data: " + e.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
 
     @Override
     public void onClick(View view) {
@@ -82,10 +111,9 @@ public class InventoryProductPage extends AppCompatActivity implements View.OnCl
         @Override
         public void onBindViewHolder(@NonNull InventoryViewHolder holder, int position) {
             ProductItem productItem = list.get(position);
-            // 설정사항
-            /*
+            holder.binding.productName.setText(productItem.getName());
+            holder.binding.productPrice.setText(productItem.getPrice());
 
-             */
         }
 
         @Override
