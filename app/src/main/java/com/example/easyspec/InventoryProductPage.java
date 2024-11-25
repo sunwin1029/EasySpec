@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -24,19 +25,32 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class InventoryProductPage extends AppCompatActivity {
-
+public class InventoryProductPage extends AppCompatActivity implements View.OnClickListener{
+    ActivityInventoryProductPageBinding binding;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ActivityInventoryProductPageBinding binding = ActivityInventoryProductPageBinding.inflate(getLayoutInflater());
+        binding = ActivityInventoryProductPageBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
         FirebaseHelper firebaseHelper = new FirebaseHelper();
         List<ProductItem> list = firebaseHelper.getProductItems();
 
+
+        binding.searchBar.setOnClickListener(this);
+        binding.check.setOnClickListener(this);
         binding.productRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         binding.productRecyclerView.setAdapter(new InventoryAdapter(list));
+    }
+
+    @Override
+    public void onClick(View view) {
+        if(view == binding.searchBar) {
+            Toast.makeText(this, "searchBar clicked", Toast.LENGTH_SHORT).show();
+        }
+        else if(view == binding.check) {
+            Toast.makeText(this, "checkButton clicked", Toast.LENGTH_SHORT).show();
+        }
     }
 
 
@@ -47,7 +61,9 @@ public class InventoryProductPage extends AppCompatActivity {
         public InventoryViewHolder(InventoryProductPageLayoutBinding binding) {
             super(binding.getRoot());
             this.binding = binding;
+
         }
+
     }
 
     private class InventoryAdapter extends RecyclerView.Adapter<InventoryViewHolder> {
