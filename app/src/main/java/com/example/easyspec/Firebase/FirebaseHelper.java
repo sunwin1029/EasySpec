@@ -1,14 +1,16 @@
 package com.example.easyspec.Firebase;
+
 import com.example.easyspec.Data.ProductItem;
 import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.database.DatabaseError;
-
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 // Firebase와 상호작용하기 위한 헬퍼 클래스
 public class FirebaseHelper {
@@ -16,12 +18,13 @@ public class FirebaseHelper {
     // FirebaseHelper의 싱글톤 인스턴스
     private static FirebaseHelper instance;
     private List<ProductItem> productItems = new ArrayList<>(); // 불러온 제품 리스트를 저장하는 리스트
-    private DatabaseReference databaseReference; // Firebase Realtime Database의 참조
+    private DatabaseReference databaseReference; // Firebase Realtime Database의 "ProductItems" 참조
+    private DatabaseReference userReference; // Firebase Realtime Database의 "Users" 참조
 
-    // 생성자: Firebase Realtime Database의 "ProductItems" 경로 참조 생성
+    // 생성자: Firebase Realtime Database의 "ProductItems"와 "Users" 경로 참조 생성
     public FirebaseHelper() {
-        databaseReference = FirebaseDatabase.getInstance()
-                .getReference("ProductItems");
+        databaseReference = FirebaseDatabase.getInstance().getReference("ProductItems");
+        userReference = FirebaseDatabase.getInstance().getReference("Users");
     }
 
     // 싱글톤 패턴 구현: FirebaseHelper의 단일 인스턴스를 반환
@@ -93,32 +96,85 @@ public class FirebaseHelper {
         }
     }
 
+    /**
+     * Firebase에서 특정 사용자의 favorite_item 목록에 아이템 추가
+     * @param userId 사용자 ID
+     * @param productName 추가할 상품 이름
+     * @param callback 작업 성공/실패 시 호출될 콜백
+     */
+    public void addFavoriteItem(String userId, String productName, final FirebaseCallback callback) {
+        DatabaseReference favoriteRef = userReference.child(userId).child("favorite_item");
 
+        // favorite_item 데이터 불러오기
+        favoriteRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                Map<String, Boolean> favoriteItems = new HashMap<>();
+
+                // 기존 favorite_item이 있는 경우
+                if (snapshot.exists()) {
+                    favoriteItems = (Map<String, Boolean>) snapshot.getValue();
+                }
+
+                // 새 상품 추가
+                favoriteItems.put(productName, true);
+
+                // 업데이트 작업
+                favoriteRef.setValue(favoriteItems, (error, ref) -> {
+                    if (error == null) {
+                        callback.onSuccess(null); // 성공 시 콜백
+                    } else {
+                        callback.onFailure(error.toException()); // 실패 시 콜백
+                    }
+                });
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                callback.onFailure(error.toException());
+            }
+        });
+    }
 
     /**
-     * Firebase에서 특정 제품 데이터를 수정하는 메서드
-     * @param category 수정할 제품이 속한 카테고리(laptops, phones, tablets)
-     * @param productId 수정할 제품의 ID(product1, product2 등)
-     * @param updatedItem 업데이트된 데이터가 포함된 ProductItem 객체
-     * @param callback 수정 성공/실패 시 호출될 콜백 인터페이스
+     * Firebase에서 특정 사용자의 favorite_item 목록에서 아이템 제거
+     * @param userId 사용자 ID
+     * @param productName 제거할 상품 이름
+     * @param callback 작업 성공/실패 시 호출될 콜백
      */
-    public void updateProduct(String category, String productId, ProductItem updatedItem, final FirebaseCallback callback) {
-        DatabaseReference productRef = databaseReference.child(category).child(productId);
+    public void removeFavoriteItem(String userId, String productName, final FirebaseCallback callback) {
+        DatabaseReference favoriteRef = userReference.child(userId).child("favorite_item");
 
-        // 업데이트할 데이터 필드 설정
-        productRef.child("name").setValue(updatedItem.getName());
-        productRef.child("price").setValue(updatedItem.getPrice());
-        productRef.child("productType").setValue(updatedItem.getProductType());
+        // favorite_item 데이터 불러오기
+        favoriteRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    Map<String, Boolean> favoriteItems = (Map<String, Boolean>) snapshot.getValue();
 
-        productRef.child("rating").setValue(updatedItem.getRating());
-        productRef.child("heart").setValue(updatedItem.heart());
+                    // 상품 제거
+                    if (favoriteItems != null && favoriteItems.containsKey(productName)) {
+                        favoriteItems.remove(productName);
 
-        // 데이터 전체 설정 및 완료 핸들링
-        productRef.setValue(updatedItem, (error, ref) -> {
-            if (error == null) {
-                callback.onSuccess(null); // 성공 시 콜백
-            } else {
-                callback.onFailure(error.toException()); // 실패 시 콜백
+                        // 업데이트 작업
+                        favoriteRef.setValue(favoriteItems, (error, ref) -> {
+                            if (error == null) {
+                                callback.onSuccess(null); // 성공 시 콜백
+                            } else {
+                                callback.onFailure(error.toException()); // 실패 시 콜백
+                            }
+                        });
+                    } else {
+                        callback.onFailure(new Exception("Item not found in favorite_item."));
+                    }
+                } else {
+                    callback.onFailure(new Exception("favorite_item field does not exist."));
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                callback.onFailure(error.toException());
             }
         });
     }
