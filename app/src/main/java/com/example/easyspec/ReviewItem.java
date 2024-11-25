@@ -9,6 +9,9 @@ public class ReviewItem {
         // Default constructor required for Firebase
     }
 
+    public ReviewItem(String userId, String batteryReview, String performanceReview) {
+    }
+
     public String getBatteryReview() {
         return batteryReview;
     }
