@@ -6,17 +6,32 @@
     android:orientation="vertical"
     android:padding="16dp">
 
+    <!-- 제품 목록을 표시할 ListView -->
+    <ListView
+        android:id="@+id/listView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:divider="@android:color/darker_gray"
+        android:dividerHeight="0.5dp"
+        android:scrollbars="vertical" />
+
+    <!-- 제품 목록 로딩 중에 표시될 텍스트 -->
     <TextView
         android:id="@+id/textViewProducts"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Loading products..."
         android:textSize="16sp"
-        android:padding="8dp" />
+        android:padding="8dp"
+        android:visibility="gone" />
 
+    <!-- 제품 업데이트를 위한 버튼 -->
     <Button
         android:id="@+id/buttonUpdate"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Update Product" />
+        android:text="Update Product"
+        android:visibility="gone" />
+
 </LinearLayout>

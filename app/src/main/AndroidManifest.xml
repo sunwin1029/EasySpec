@@ -13,31 +13,19 @@
         android:theme="@style/Theme.EasySpec"
         tools:targetApi="31">
         <activity
+            android:name=".ReviewWriteActivity"
+            android:exported="false" />
+        <activity
             android:name=".InventoryProductPage"
             android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".EachProductPage"
             android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".Firebase.FirebaseTestActivity"
             android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".MyReviewActivity"
@@ -54,9 +42,6 @@
         <activity
             android:name=".LogIn.SignUpStep1Activity"
             android:exported="false" />
-        <activity
-            android:name=".EachProduct"
-            android:exported="true" />
         <activity
             android:name=".MainActivity"
             android:exported="true" />
