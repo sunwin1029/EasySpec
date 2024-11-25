@@ -1,5 +1,6 @@
 package com.example.easyspec;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -134,7 +135,6 @@ public class InventoryProductPage extends AppCompatActivity implements View.OnCl
                         firebaseHelper.removeFavoriteItem(userId, productItem.getName(), new FirebaseHelper.FirebaseCallback() {
                             @Override
                             public void onSuccess(List<ProductItem> productItems) {
-                                // UI 업데이트
                                 productItem.setFavorite(false);
                                 holder.binding.heartIcon.setImageResource(R.drawable.heart_empty);
                                 Toast.makeText(holder.itemView.getContext(), productItem.getName() + " removed from favorites.", Toast.LENGTH_SHORT).show();
@@ -150,7 +150,6 @@ public class InventoryProductPage extends AppCompatActivity implements View.OnCl
                         firebaseHelper.addFavoriteItem(userId, productItem.getName(), new FirebaseHelper.FirebaseCallback() {
                             @Override
                             public void onSuccess(List<ProductItem> productItems) {
-                                // UI 업데이트
                                 productItem.setFavorite(true);
                                 holder.binding.heartIcon.setImageResource(R.drawable.heart);
                                 Toast.makeText(holder.itemView.getContext(), productItem.getName() + " added to favorites.", Toast.LENGTH_SHORT).show();
@@ -165,10 +164,30 @@ public class InventoryProductPage extends AppCompatActivity implements View.OnCl
                 }
             });
 
+            // 아이템 전체 클릭 리스너 (heart를 제외한 영역)
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    // 새로운 액티비티로 이동
+                    Intent intent = new Intent(holder.itemView.getContext(), EachProductPage.class);
+
+                    // userId와 productItem 정보를 Intent로 전달
+                    intent.putExtra("userId", userId);
+                    intent.putExtra("productName", productItem.getName());
+                    intent.putExtra("productPrice", productItem.getPrice());
+                    intent.putExtra("productRating", productItem.getRating());
+                    intent.putExtra("isFavorite", productItem.isFavorite());
+
+                    // 새로운 액티비티 시작
+                    holder.itemView.getContext().startActivity(intent);
+                }
+            });
+
             // 즐겨찾기 상태에 따라 heart 아이콘 설정
             boolean isFavorite = productItem.isFavorite();
             holder.binding.heartIcon.setImageResource(isFavorite ? R.drawable.heart : R.drawable.heart_empty);
         }
+
 
         @Override
         public int getItemCount() {

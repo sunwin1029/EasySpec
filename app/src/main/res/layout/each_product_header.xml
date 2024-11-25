@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".EachProduct">
+    >
 
     <ImageView
         android:id="@+id/ImageInEachProduct"
@@ -57,7 +57,7 @@
         android:text="기본정보"
         />
     <TextView
-        android:id="@+id/PrinceInEachProduct"
+        android:id="@+id/PriceInEachProduct"
         android:layout_width="150dp"
         android:layout_height="30dp"
         android:layout_marginTop="5dp"
