@@ -5,22 +5,19 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Test">
-
-
+    tools:context=".IntentTest">
     <Button
-        android:text="test"
-        android:id="@+id/button"
         android:layout_width="100dp"
         android:layout_height="100dp"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"/>
+        app:layout_constraintStart_toStartOf="parent"
+        android:id="@+id/intentButton" />
 
     <Button
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:id="@+id/inventorybutton"
-        android:text="inventory"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        android:id="@+id/inventoryButton" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

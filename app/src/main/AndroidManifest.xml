@@ -13,7 +13,7 @@
         android:theme="@style/Theme.EasySpec"
         tools:targetApi="31">
         <activity
-            android:name=".Test"
+            android:name=".IntentTest"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -26,13 +26,13 @@
             android:exported="false" />
         <activity
             android:name=".InventoryProductPage"
-            android:exported="true"></activity>
+            android:exported="true" />
         <activity
             android:name=".EachProductPage.EachProductPage"
-            android:exported="true"></activity>
+            android:exported="true" />
         <activity
             android:name=".Firebase.FirebaseTestActivity"
-            android:exported="true"></activity>
+            android:exported="true" />
         <activity
             android:name=".MyReviewActivity"
             android:exported="false" />

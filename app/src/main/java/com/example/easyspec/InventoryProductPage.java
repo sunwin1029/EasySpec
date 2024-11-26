@@ -36,8 +36,6 @@ public class InventoryProductPage extends AppCompatActivity implements View.OnCl
 
     public AlertDialog listdialog;
     int sortType;
-
-    // 사용자 ID (Intent로 전달받아 초기화)
     String userId;
 
     @Override
@@ -49,14 +47,25 @@ public class InventoryProductPage extends AppCompatActivity implements View.OnCl
         // FirebaseHelper 초기화
         firebaseHelper = FirebaseHelper.getInstance();
 
-        // Firebase Authentication에서 현재 사용자의 uid 가져오기
-        userId = FirebaseAuth.getInstance().getCurrentUser().getUid(); // uid 가져오기
-
+        // Intent로 전달된 사용자 데이터 가져오기
+        Intent intent = getIntent();
+        userId = intent.getStringExtra("userId"); // 전달받은 userId 사용
+        /*
+        // userId가 null이면 FirebaseAuth에서 가져오기
         if (userId == null) {
-            Toast.makeText(this, "No user ID found. Please log in again.", Toast.LENGTH_SHORT).show();
-            finish(); // 사용자 ID가 없으면 액티비티 종료
-            return;
+            if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+                userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+            } else {
+                Toast.makeText(this, "User not logged in. Redirecting to login screen.", Toast.LENGTH_SHORT).show();
+                // 로그인 화면으로 리디렉션
+                Intent loginIntent = new Intent(this, LoginActivity.class); // LoginActivity를 실제 구현해야 합니다.
+                startActivity(loginIntent);
+                finish();
+                return;
+            }
         }
+
+         */
 
         // UI 클릭 리스너 설정
         binding.searchBar.setOnClickListener(this);
@@ -141,6 +150,8 @@ public class InventoryProductPage extends AppCompatActivity implements View.OnCl
             return new InventoryViewHolder(binding);
         }
 
+
+
         @Override
         public void onBindViewHolder(@NonNull InventoryViewHolder holder, int position) {
             ProductItem productItem = list.get(position);
@@ -151,66 +162,58 @@ public class InventoryProductPage extends AppCompatActivity implements View.OnCl
             holder.binding.ratingText.setText(String.valueOf(productItem.getRating()));
 
             // heart 아이콘 클릭 리스너
-            holder.binding.heartIcon.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (productItem.isFavorite()) {
-                        // 즐겨찾기에서 제거
-                        firebaseHelper.removeFavoriteItem(userId, productItem.getName(), new FirebaseHelper.FirebaseCallback() {
-                            @Override
-                            public void onSuccess(List<ProductItem> productItems) {
-                                productItem.setFavorite(false);
-                                holder.binding.heartIcon.setImageResource(R.drawable.heart_empty);
-                                Toast.makeText(holder.itemView.getContext(), productItem.getName() + " removed from favorites.", Toast.LENGTH_SHORT).show();
-                            }
+            holder.binding.heartIcon.setOnClickListener(view -> {
+                if (productItem.isFavorite()) {
+                    // 즐겨찾기에서 제거
+                    firebaseHelper.removeFavoriteItem(userId, productItem.getName(), new FirebaseHelper.FirebaseCallback() {
+                        @Override
+                        public void onSuccess(List<ProductItem> productItems) {
+                            productItem.setFavorite(false);
+                            holder.binding.heartIcon.setImageResource(R.drawable.heart_empty);
+                            Toast.makeText(holder.itemView.getContext(), productItem.getName() + " removed from favorites.", Toast.LENGTH_SHORT).show();
+                        }
 
-                            @Override
-                            public void onFailure(Exception e) {
-                                Toast.makeText(holder.itemView.getContext(), "Failed to remove favorite: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                    } else {
-                        // 즐겨찾기에 추가
-                        firebaseHelper.addFavoriteItem(userId, productItem.getName(), new FirebaseHelper.FirebaseCallback() {
-                            @Override
-                            public void onSuccess(List<ProductItem> productItems) {
-                                productItem.setFavorite(true);
-                                holder.binding.heartIcon.setImageResource(R.drawable.heart);
-                                Toast.makeText(holder.itemView.getContext(), productItem.getName() + " added to favorites.", Toast.LENGTH_SHORT).show();
-                            }
+                        @Override
+                        public void onFailure(Exception e) {
+                            Toast.makeText(holder.itemView.getContext(), "Failed to remove favorite: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                } else {
+                    // 즐겨찾기에 추가
+                    firebaseHelper.addFavoriteItem(userId, productItem.getName(), new FirebaseHelper.FirebaseCallback() {
+                        @Override
+                        public void onSuccess(List<ProductItem> productItems) {
+                            productItem.setFavorite(true);
+                            holder.binding.heartIcon.setImageResource(R.drawable.heart);
+                            Toast.makeText(holder.itemView.getContext(), productItem.getName() + " added to favorites.", Toast.LENGTH_SHORT).show();
+                        }
 
-                            @Override
-                            public void onFailure(Exception e) {
-                                Toast.makeText(holder.itemView.getContext(), "Failed to add favorite: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                    }
+                        @Override
+                        public void onFailure(Exception e) {
+                            Toast.makeText(holder.itemView.getContext(), "Failed to add favorite: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 }
             });
 
-            // 아이템 전체 클릭 리스너 (heart를 제외한 영역)
-            holder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    // 새로운 액티비티로 이동
-                    Intent intent = new Intent(holder.itemView.getContext(), EachProductPage.class);
+            // 아이템 전체 클릭 리스너
+            holder.itemView.setOnClickListener(view -> {
+                Intent intent = new Intent(holder.itemView.getContext(), EachProductPage.class);
 
-                    // userId와 productItem 정보를 Intent로 전달
-                    intent.putExtra("userId", userId);
-                    intent.putExtra("productName", productItem.getName());
-                    intent.putExtra("productPrice", productItem.getPrice());
-                    intent.putExtra("productRating", productItem.getRating());
-                    intent.putExtra("isFavorite", productItem.isFavorite());
+                // ProductItem 객체를 Intent로 전달
+                intent.putExtra("selectedProduct", productItem);
 
-                    // 새로운 액티비티 시작
-                    holder.itemView.getContext().startActivity(intent);
-                }
+                holder.itemView.getContext().startActivity(intent);
+
+                // 로그로 확인
+                Log.d("InventoryProductPage", "ProductItem sent: " + productItem.getName());
             });
 
             // 즐겨찾기 상태에 따라 heart 아이콘 설정
             boolean isFavorite = productItem.isFavorite();
             holder.binding.heartIcon.setImageResource(isFavorite ? R.drawable.heart : R.drawable.heart_empty);
         }
+
 
 
         @Override
