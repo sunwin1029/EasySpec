@@ -42,21 +42,28 @@ public class EachProductPage extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = ActivityEachProductPageBinding.inflate(getLayoutInflater());
+        ActivityEachProductPageBinding binding = ActivityEachProductPageBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        // Intent로 전달된 productName 가져오기
-        String productName = getIntent().getStringExtra("productName");
+        // Intent로 전달된 ProductItem 가져오기
+        ProductItem productItem = (ProductItem) getIntent().getSerializableExtra("selectedProduct");
 
-        // Firebase 초기화
-        databaseReference = FirebaseDatabase.getInstance().getReference("ProductItems");
+        if (productItem == null) {
+            Toast.makeText(this, "Product data not found.", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
 
-        // Firebase에서 해당 제품 데이터 가져오기
-        fetchProductItemFromFirebase(productName);
+        // UI 업데이트
+        binding.NameInEachProduct.setText(productItem.getName());
+        binding.PriceInEachProduct.setText(String.format("₩%,d", productItem.getPrice()));
+        binding.ratingInEachProduct.setText(String.format("%.1f", productItem.getAverageRating()));
 
-        // 버튼 동작 설정
-        setupButtonActions();
+        // **이미지가 없는 경우 기본 이미지를 표시**
+        binding.ImageInEachProduct.setImageResource(
+                productItem.getImageResource() != null ? productItem.getImageResource() : R.drawable.ic_launcher_foreground);
     }
+
 
     private void fetchProductItemFromFirebase(String productName) {
         if (productName == null || productName.isEmpty()) {
