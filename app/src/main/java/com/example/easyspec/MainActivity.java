@@ -1,8 +1,11 @@
 package com.example.easyspec;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Gravity;
+import android.view.inputmethod.InputMethodManager;
+
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.easyspec.databinding.ActivityMainBinding;
 import androidx.appcompat.widget.SearchView;
@@ -23,6 +26,13 @@ public class MainActivity extends AppCompatActivity {
 
         // SearchView 초기화 메서드 호출
         initSearchView();
+
+        // 서치버튼 클릭 시 필터링 화면으로 이동
+        binding.search.setOnClickListener(v -> {
+            // 필터링 화면으로 이동
+            Intent intent = new Intent(MainActivity.this, Filtering.class);
+            startActivity(intent);
+        });
 
         // 사이드바 열기 버튼 클릭 시 사이드바 열기
         binding.openSidebarButton.setOnClickListener(v -> {
@@ -67,6 +77,13 @@ public class MainActivity extends AppCompatActivity {
             public boolean onQueryTextChange(String newText) {
                 // @TODO
                 return true;
+            }
+        });
+        // 검색창 클릭 시 키보드 표시
+        binding.search.setOnQueryTextFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) {
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.showSoftInput(v, InputMethodManager.SHOW_IMPLICIT);
             }
         });
     }

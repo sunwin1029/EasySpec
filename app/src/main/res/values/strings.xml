@@ -14,12 +14,12 @@
     <string-array name="item_titles">
         <item>CPU</item>
         <item>SSD</item>
-        <item>GPU</item>
+        <item>GPU(그래픽카드)</item>
         <item>RAM</item>
-        <item>PORT</item>
-        <item>DISPLAY</item>
-        <item>BATTERY</item>
-        <item>CAMERA</item>
+        <item>포트 구성</item>
+        <item>디스플레이</item>
+        <item>배터리</item>
+        <item>카메라</item>
     </string-array>
 
     <string-array name="item_subtitles">
@@ -125,6 +125,13 @@
             부드러운 화면 전환이 필요할 때 유용하며, 고급 회의용이나 스트리밍 환경에서 유리.\n
         </item>
 
+    </string-array>
+
+    <string-array name="device_types">
+        <item>None</item>
+        <item>laptops</item>
+        <item>phones</item>
+        <item>tablets</item>
     </string-array>
 
 
