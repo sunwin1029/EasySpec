@@ -144,10 +144,12 @@ public class EachProductPage extends AppCompatActivity {
         String productTypeName = getProductTypeName(productItem.getProductType()); // int → String 변환
         List<String> features = featureMap.getOrDefault(productTypeName, new ArrayList<>());
 
-        EachProductAdapter adapter = new EachProductAdapter(features);
+        // 변경된 생성자에 맞게 호출
+        EachProductAdapter adapter = new EachProductAdapter(features, productItem.getId(), userId);
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(this));
         binding.recyclerView.setAdapter(adapter);
     }
+
 
     private String getProductTypeName(int productType) {
         switch (productType) {

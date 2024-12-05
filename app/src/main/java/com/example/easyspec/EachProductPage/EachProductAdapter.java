@@ -3,14 +3,15 @@ package com.example.easyspec.EachProductPage;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.easyspec.R;
+import com.example.easyspec.Review.ReviewFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,12 +23,18 @@ public class EachProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     private List<String> featureList;
     private List<Boolean> expandedStates;
+    private String productId;
+    private String userId;
 
-    public EachProductAdapter(List<String> featureList) {
+    public EachProductAdapter(List<String> featureList, String productId, String userId) {
         this.featureList = featureList;
+        this.productId = productId;
+        this.userId = userId;
+
+        // 초기 상태: 모두 축소
         this.expandedStates = new ArrayList<>();
         for (int i = 0; i < featureList.size(); i++) {
-            expandedStates.add(false); // 초기 상태는 모두 축소
+            expandedStates.add(false);
         }
     }
 
@@ -52,21 +59,23 @@ public class EachProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         String feature = featureList.get(position);
-        boolean isExpanded = expandedStates.get(position);
 
         if (holder instanceof ExpandedViewHolder) {
             ExpandedViewHolder expandedHolder = (ExpandedViewHolder) holder;
+            expandedHolder.featureText.setText(feature);
 
-            expandedHolder.propertyTextView.setText(feature);
+            // 리뷰 작성 버튼 클릭 리스너 설정
+            expandedHolder.reviewButton.setOnClickListener(v -> {
+                ReviewFragment fragment = ReviewFragment.newInstance(productId, feature, userId); // userId 추가
+                ((AppCompatActivity) expandedHolder.itemView.getContext())
+                        .getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(android.R.id.content, fragment)
+                        .addToBackStack(null)
+                        .commit();
+            });
 
-            // RecyclerView 설정 (현재는 빈 상태)
-            expandedHolder.expandedRecyclerView.setLayoutManager(new LinearLayoutManager(expandedHolder.itemView.getContext()));
-            expandedHolder.expandedRecyclerView.setAdapter(new EmptyReviewAdapter());
-
-            // 확장 상태 버튼 이미지 설정
-            expandedHolder.expandButton.setImageResource(R.drawable.arrow_up);
-
-            // 축소 버튼 동작
+            // 축소 버튼 클릭 리스너
             expandedHolder.expandButton.setOnClickListener(v -> {
                 expandedStates.set(position, false);
                 notifyItemChanged(position);
@@ -74,20 +83,15 @@ public class EachProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
         } else if (holder instanceof CollapsedViewHolder) {
             CollapsedViewHolder collapsedHolder = (CollapsedViewHolder) holder;
+            collapsedHolder.featureText.setText(feature);
 
-            collapsedHolder.propertyTextView.setText(feature);
-
-            // 축소 상태 버튼 이미지 설정
-            collapsedHolder.expandButton.setImageResource(R.drawable.arrow_down);
-
-            // 확장 버튼 동작
+            // 확장 버튼 클릭 리스너
             collapsedHolder.expandButton.setOnClickListener(v -> {
                 expandedStates.set(position, true);
                 notifyItemChanged(position);
             });
         }
     }
-
 
     @Override
     public int getItemCount() {
@@ -96,27 +100,27 @@ public class EachProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     // ViewHolder for collapsed state
     static class CollapsedViewHolder extends RecyclerView.ViewHolder {
-        TextView propertyTextView;
-        ImageView expandButton;
+        TextView featureText;
+        View expandButton;
 
         public CollapsedViewHolder(@NonNull View itemView) {
             super(itemView);
-            propertyTextView = itemView.findViewById(R.id.property);
+            featureText = itemView.findViewById(R.id.property);
             expandButton = itemView.findViewById(R.id.expandButton);
         }
     }
 
     // ViewHolder for expanded state
     static class ExpandedViewHolder extends RecyclerView.ViewHolder {
-        TextView propertyTextView;
-        ImageView expandButton;
-        RecyclerView expandedRecyclerView;
+        TextView featureText;
+        View expandButton;
+        Button reviewButton;
 
         public ExpandedViewHolder(@NonNull View itemView) {
             super(itemView);
-            propertyTextView = itemView.findViewById(R.id.property);
+            featureText = itemView.findViewById(R.id.property);
             expandButton = itemView.findViewById(R.id.expandButton);
-            expandedRecyclerView = itemView.findViewById(R.id.expandedRecyclerView);
+            reviewButton = itemView.findViewById(R.id.reviewButton); // 초기화
         }
     }
 }
