@@ -40,6 +40,7 @@ public class InventoryProductPage extends AppCompatActivity implements View.OnCl
     private AlertDialog listdialog;
 
     private String userId; // 사용자 ID
+    private ValueEventListener productListener; // 실시간 업데이트 리스너
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,7 +68,7 @@ public class InventoryProductPage extends AppCompatActivity implements View.OnCl
         binding.productRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         binding.productRecyclerView.setAdapter(adapter);
 
-        // Firebase에서 모든 데이터 로드
+        // Firebase에서 모든 데이터 로드 (실시간 반영)
         fetchProductData();
 
         // UI 클릭 리스너 설정
@@ -105,7 +106,13 @@ public class InventoryProductPage extends AppCompatActivity implements View.OnCl
     }
 
     private void fetchProductData() {
-        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+        // 이전에 등록된 리스너가 있다면 제거
+        if (productListener != null) {
+            databaseReference.removeEventListener(productListener);
+        }
+
+        // 새로운 ValueEventListener 등록
+        productListener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 productList.clear();
@@ -127,9 +134,10 @@ public class InventoryProductPage extends AppCompatActivity implements View.OnCl
             public void onCancelled(@NonNull DatabaseError error) {
                 Log.e("InventoryProductPage", "Failed to load data", error.toException());
             }
-        });
-    }
+        };
 
+        databaseReference.addValueEventListener(productListener);
+    }
 
     private ProductItem createProductItemFromSnapshot(DataSnapshot snapshot) {
         String name = snapshot.child("name").getValue(String.class);
@@ -165,6 +173,14 @@ public class InventoryProductPage extends AppCompatActivity implements View.OnCl
                     .setNegativeButton("Cancel", null)
                     .create();
             listdialog.show();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (productListener != null) {
+            databaseReference.removeEventListener(productListener);
         }
     }
 
@@ -266,11 +282,6 @@ public class InventoryProductPage extends AppCompatActivity implements View.OnCl
                 holder.itemView.getContext().startActivity(intent);
             });
         }
-
-
-
-
-
 
         @Override
         public int getItemCount() {
