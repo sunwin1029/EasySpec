@@ -11,12 +11,14 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.easyspec.Data.ProductItem;
 import com.example.easyspec.Data.Review;
 import com.example.easyspec.R;
+import com.example.easyspec.Review.RatingReviewFragment;
 import com.example.easyspec.databinding.ActivityEachProductPageBinding;
 import com.example.easyspec.databinding.EachProductPropertyBinding;
 import com.google.firebase.database.DataSnapshot;
@@ -42,11 +44,11 @@ public class EachProductPage extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ActivityEachProductPageBinding binding = ActivityEachProductPageBinding.inflate(getLayoutInflater());
+        binding = ActivityEachProductPageBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
         // Intent로 전달된 ProductItem 가져오기
-        ProductItem productItem = (ProductItem) getIntent().getSerializableExtra("selectedProduct");
+        productItem = (ProductItem) getIntent().getSerializableExtra("selectedProduct");
 
         if (productItem == null) {
             Toast.makeText(this, "Product data not found.", Toast.LENGTH_SHORT).show();
@@ -55,15 +57,23 @@ public class EachProductPage extends AppCompatActivity {
         }
 
         // UI 업데이트
-        binding.NameInEachProduct.setText(productItem.getName());
-        binding.PriceInEachProduct.setText(String.format("₩%,d", productItem.getPrice()));
-        binding.ratingInEachProduct.setText(String.format("%.1f", productItem.getAverageRating()));
+        updateUIWithProductItem(productItem);
 
-        // **이미지가 없는 경우 기본 이미지를 표시**
-        binding.ImageInEachProduct.setImageResource(
-                productItem.getImageResource() != null ? productItem.getImageResource() : R.drawable.ic_launcher_foreground);
+        // 버튼 동작 설정
+        setupButtonActions();
     }
 
+    private void setupButtonActions() {
+        binding.EvaluationInEachProduct.setOnClickListener(v -> {
+            // RatingReviewFragment 표시
+            RatingReviewFragment fragment = new RatingReviewFragment();
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .add(android.R.id.content, fragment) // Activity 전체 화면에 Fragment 추가
+                    .addToBackStack(null)
+                    .commit();
+        });
+    }
 
     private void fetchProductItemFromFirebase(String productName) {
         if (productName == null || productName.isEmpty()) {
@@ -151,12 +161,11 @@ public class EachProductPage extends AppCompatActivity {
         );
     }
 
-
     private void updateUIWithProductItem(ProductItem item) {
         if (item == null) return;
 
         binding.NameInEachProduct.setText(item.getName());
-        binding.PriceInEachProduct.setText(String.valueOf(item.getPrice()));
+        binding.PriceInEachProduct.setText(String.format("₩%,d", item.getPrice()));
         binding.ratingInEachProduct.setText(String.format("%.1f", item.getAverageRating()));
         binding.ImageInEachProduct.setImageResource(item.getImageResource() != null ?
                 item.getImageResource() : R.drawable.iphone15_promax);
@@ -170,16 +179,6 @@ public class EachProductPage extends AppCompatActivity {
 
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(this));
         binding.recyclerView.setAdapter(new EachProductAdapter(featureList));
-    }
-
-    private void setupButtonActions() {
-        binding.EvaluationInEachProduct.setOnClickListener(v -> {
-            // 평가 버튼 클릭 시 동작 정의
-        });
-
-        binding.BasicInformationInEachProduct.setOnClickListener(v -> {
-            // 기본정보 버튼 클릭 시 동작 정의
-        });
     }
 
     public class EachProductAdapter extends RecyclerView.Adapter<EachProductAdapter.EachProductViewHolder> {
@@ -233,7 +232,6 @@ public class EachProductPage extends AppCompatActivity {
             }
         }
 
-
         @Override
         public int getItemCount() {
             return featureList.size();
@@ -286,6 +284,5 @@ public class EachProductPage extends AppCompatActivity {
                 }
             }
         }
-
     }
 }
