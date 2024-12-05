@@ -2,7 +2,6 @@ package com.example.easyspec.EachProductPage;
 
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -13,7 +12,6 @@ import com.example.easyspec.Data.ProductItem;
 import com.example.easyspec.R;
 import com.example.easyspec.Review.RatingReviewFragment;
 import com.example.easyspec.databinding.ActivityEachProductPageBinding;
-import com.example.easyspec.databinding.EachProductPropertyBinding;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -21,7 +19,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class EachProductPage extends AppCompatActivity {
 
@@ -29,11 +30,12 @@ public class EachProductPage extends AppCompatActivity {
 
     private DatabaseReference databaseReference; // Firebase 참조
     private ProductItem productItem; // 로드된 ProductItem 객체
-    private List<String> featureList = new ArrayList<>(); // 리뷰 카테고리 리스트
     private ActivityEachProductPageBinding binding;
     private String userId;
 
     private ValueEventListener productListener;
+
+    private Map<String, List<String>> featureMap = new HashMap<>(); // ProductType별 Feature 리스트
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +52,14 @@ public class EachProductPage extends AppCompatActivity {
             return;
         }
 
+        setupFeatureMap(); // Feature 리스트 초기화
         fetchProductItemFromFirebase(productId);
+    }
+
+    private void setupFeatureMap() {
+        featureMap.put("핸드폰", Arrays.asList("배터리", "성능", "카메라", "무게", "기타 특징"));
+        featureMap.put("노트북", Arrays.asList("화면", "성능", "무게", "호환성", "웹캠", "배터리", "기타 특징"));
+        featureMap.put("태블릿", Arrays.asList("화면", "배터리", "무게", "펜슬", "기타 특징"));
     }
 
     private void setupButtonActions(String productId) {
@@ -87,8 +96,8 @@ public class EachProductPage extends AppCompatActivity {
                 productItem = createProductItemFromSnapshot(snapshot);
                 updateUIWithProductItem(productItem);
 
-                // 평가 버튼 설정 호출
-                setupButtonActions(productId);
+                setupRecyclerView(); // RecyclerView 설정
+                setupButtonActions(productId); // 평가 버튼 설정 호출
             }
 
             @Override
@@ -129,6 +138,24 @@ public class EachProductPage extends AppCompatActivity {
         binding.ratingInEachProduct.setText(String.format("%.1f", item.getAverageRating()));
         binding.ImageInEachProduct.setImageResource(item.getImageResource() != null ?
                 item.getImageResource() : R.drawable.iphone15_promax);
+    }
+
+    private void setupRecyclerView() {
+        String productTypeName = getProductTypeName(productItem.getProductType()); // int → String 변환
+        List<String> features = featureMap.getOrDefault(productTypeName, new ArrayList<>());
+
+        EachProductAdapter adapter = new EachProductAdapter(features);
+        binding.recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        binding.recyclerView.setAdapter(adapter);
+    }
+
+    private String getProductTypeName(int productType) {
+        switch (productType) {
+            case 3: return "핸드폰";
+            case 1: return "노트북";
+            case 2: return "태블릿";
+            default: return "기타";
+        }
     }
 
     @Override
