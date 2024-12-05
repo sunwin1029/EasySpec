@@ -24,11 +24,8 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        // SearchView 초기화 메서드 호출
-        initSearchView();
-
         // 서치버튼 클릭 시 필터링 화면으로 이동
-        binding.search.setOnClickListener(v -> {
+        binding.searchButton.setOnClickListener(v -> {
             // 필터링 화면으로 이동
             Intent intent = new Intent(MainActivity.this, Filtering.class);
             startActivity(intent);
@@ -56,35 +53,5 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        // "리스트 보기" 버튼 클릭 시 RecyclerViewActivity로 이동
-        binding.goToRecyclerviewButton.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, RecyclerViewActivity.class);
-            startActivity(intent);
-        });
-    }
-
-    private void initSearchView() {
-        // SearchView 초기화
-        binding.search.setSubmitButtonEnabled(true);
-        binding.search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                // @TODO
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                // @TODO
-                return true;
-            }
-        });
-        // 검색창 클릭 시 키보드 표시
-        binding.search.setOnQueryTextFocusChangeListener((v, hasFocus) -> {
-            if (hasFocus) {
-                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.showSoftInput(v, InputMethodManager.SHOW_IMPLICIT);
-            }
-        });
     }
 }
