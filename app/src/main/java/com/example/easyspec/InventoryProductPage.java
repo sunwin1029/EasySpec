@@ -110,9 +110,10 @@ public class InventoryProductPage extends AppCompatActivity implements View.OnCl
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 productList.clear();
 
-                // ProductItems 노드의 모든 데이터를 순회하며 ProductItem 객체 생성
                 for (DataSnapshot productSnapshot : snapshot.getChildren()) {
+                    String productId = productSnapshot.getKey(); // 고유 ID 가져오기
                     ProductItem productItem = createProductItemFromSnapshot(productSnapshot);
+                    productItem.setId(productId); // ProductItem에 고유 ID 저장
                     productList.add(productItem);
                 }
 
@@ -120,18 +121,15 @@ public class InventoryProductPage extends AppCompatActivity implements View.OnCl
                 filteredList.clear();
                 filteredList.addAll(productList);
                 adapter.notifyDataSetChanged();
-
-                Log.d("InventoryProductPage", "Loaded products: " + filteredList.size());
-                Toast.makeText(InventoryProductPage.this, "Loaded " + filteredList.size() + " items.", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 Log.e("InventoryProductPage", "Failed to load data", error.toException());
-                Toast.makeText(InventoryProductPage.this, "Failed to load data.", Toast.LENGTH_LONG).show();
             }
         });
     }
+
 
     private ProductItem createProductItemFromSnapshot(DataSnapshot snapshot) {
         String name = snapshot.child("name").getValue(String.class);
@@ -196,7 +194,8 @@ public class InventoryProductPage extends AppCompatActivity implements View.OnCl
         @Override
         public void onBindViewHolder(@NonNull InventoryViewHolder holder, int position) {
             ProductItem productItem = list.get(position);
-            String productName = productItem.getName();
+            String productId = productItem.getId(); // 고유 ID 가져오기
+            String productName = productItem.getName(); // UI 표시용 이름 가져오기
 
             DatabaseReference userFavoritesRef = FirebaseDatabase.getInstance()
                     .getReference("Users")
@@ -209,54 +208,41 @@ public class InventoryProductPage extends AppCompatActivity implements View.OnCl
             userFavoritesRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    // `DataSnapshot`을 순회하며 `favorites` 확인
                     for (DataSnapshot favoriteSnapshot : snapshot.getChildren()) {
-                        String favoriteName = favoriteSnapshot.getValue(String.class); // 값 가져오기
-                        if (productName.equals(favoriteName)) {
-                            isFavorite[0] = true; // 즐겨찾기 상태 업데이트
+                        String favoriteId = favoriteSnapshot.getKey(); // 고유 ID 가져오기
+                        if (productId.equals(favoriteId)) { // 고유 ID로 비교
+                            isFavorite[0] = true;
                             break;
                         }
                     }
 
-                    // 아이콘 상태 설정
                     holder.binding.heartIcon.setImageResource(
                             isFavorite[0] ? R.drawable.heart : R.drawable.heart_empty
                     );
 
-                    // 클릭 이벤트 처리
                     holder.binding.heartIcon.setOnClickListener(view -> {
                         if (isFavorite[0]) {
-                            // 즐겨찾기에서 제거
-                            userFavoritesRef.orderByValue().equalTo(productName)
-                                    .addListenerForSingleValueEvent(new ValueEventListener() {
-                                        @Override
-                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                            for (DataSnapshot item : dataSnapshot.getChildren()) {
-                                                item.getRef().removeValue(); // Firebase에서 제거
-                                            }
-                                            Toast.makeText(holder.itemView.getContext(),
-                                                    productName + " removed from favorites.",
-                                                    Toast.LENGTH_SHORT).show();
-                                            holder.binding.heartIcon.setImageResource(R.drawable.heart_empty);
-                                            isFavorite[0] = false; // 상태 업데이트
-                                        }
-
-                                        @Override
-                                        public void onCancelled(@NonNull DatabaseError error) {
-                                            Log.e("InventoryAdapter", "Failed to remove favorite", error.toException());
-                                        }
+                            userFavoritesRef.child(productId).removeValue()
+                                    .addOnSuccessListener(aVoid -> {
+                                        Toast.makeText(holder.itemView.getContext(),
+                                                productName + " removed from favorites.",
+                                                Toast.LENGTH_SHORT).show();
+                                        holder.binding.heartIcon.setImageResource(R.drawable.heart_empty);
+                                        isFavorite[0] = false;
+                                    }).addOnFailureListener(e -> {
+                                        Log.e("InventoryAdapter", "Failed to remove favorite", e);
                                     });
                         } else {
-                            // 즐겨찾기에 추가
-                            userFavoritesRef.push().setValue(productName).addOnSuccessListener(aVoid -> {
-                                Toast.makeText(holder.itemView.getContext(),
-                                        productName + " added to favorites.",
-                                        Toast.LENGTH_SHORT).show();
-                                holder.binding.heartIcon.setImageResource(R.drawable.heart);
-                                isFavorite[0] = true; // 상태 업데이트
-                            }).addOnFailureListener(e -> {
-                                Log.e("InventoryAdapter", "Failed to add favorite", e);
-                            });
+                            userFavoritesRef.child(productId).setValue(productName)
+                                    .addOnSuccessListener(aVoid -> {
+                                        Toast.makeText(holder.itemView.getContext(),
+                                                productName + " added to favorites.",
+                                                Toast.LENGTH_SHORT).show();
+                                        holder.binding.heartIcon.setImageResource(R.drawable.heart);
+                                        isFavorite[0] = true;
+                                    }).addOnFailureListener(e -> {
+                                        Log.e("InventoryAdapter", "Failed to add favorite", e);
+                                    });
                         }
                     });
                 }
@@ -267,19 +253,21 @@ public class InventoryProductPage extends AppCompatActivity implements View.OnCl
                 }
             });
 
-            // 제품 정보 설정
-            holder.binding.productName.setText(productItem.getName());
+            // UI 표시
+            holder.binding.productName.setText(productName);
             holder.binding.productPrice.setText(String.format("₩%,d", productItem.getPrice()));
             holder.binding.ratingText.setText(String.format("%.1f", productItem.getAverageRating()));
 
             // 제품 상세 보기로 이동
             holder.itemView.setOnClickListener(view -> {
                 Intent intent = new Intent(holder.itemView.getContext(), EachProductPage.class);
-                intent.putExtra("selectedProduct", productItem);
-                intent.putExtra("userId", userId);
+                intent.putExtra("productId", productId); // 고유 ID 전달
+                intent.putExtra("userId", userId); // 사용자 ID 전달
                 holder.itemView.getContext().startActivity(intent);
             });
         }
+
+
 
 
 

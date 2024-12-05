@@ -40,6 +40,7 @@ public class EachProductPage extends AppCompatActivity {
     private ProductItem productItem; // 로드된 ProductItem 객체
     private List<String> featureList = new ArrayList<>(); // 리뷰 카테고리 리스트
     private ActivityEachProductPageBinding binding;
+    private String userId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,119 +48,86 @@ public class EachProductPage extends AppCompatActivity {
         binding = ActivityEachProductPageBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        // Intent로 전달된 ProductItem 가져오기
-        productItem = (ProductItem) getIntent().getSerializableExtra("selectedProduct");
+        String productId = getIntent().getStringExtra("productId");
+        userId = getIntent().getStringExtra("userId"); // 로컬 변수가 아닌 멤버 변수에 저장
 
-        if (productItem == null) {
-            Toast.makeText(this, "Product data not found.", Toast.LENGTH_SHORT).show();
+        if (productId == null || userId == null) {
+            Toast.makeText(this, "Missing essential data.", Toast.LENGTH_SHORT).show();
             finish();
             return;
         }
 
-        // UI 업데이트
-        updateUIWithProductItem(productItem);
-
-        // 버튼 동작 설정
-        setupButtonActions();
+        fetchProductItemFromFirebase(productId);
     }
 
-    private void setupButtonActions() {
+
+    private void setupButtonActions(String productId) {
         binding.EvaluationInEachProduct.setOnClickListener(v -> {
-            // RatingReviewFragment 표시
             RatingReviewFragment fragment = new RatingReviewFragment();
+            Bundle args = new Bundle();
+            args.putString("userId", userId); // 사용자 ID 전달
+            args.putString("productId", productId); // 고유 ID 전달
+            fragment.setArguments(args);
+
             getSupportFragmentManager()
                     .beginTransaction()
-                    .add(android.R.id.content, fragment) // Activity 전체 화면에 Fragment 추가
+                    .add(android.R.id.content, fragment)
                     .addToBackStack(null)
                     .commit();
         });
     }
 
-    private void fetchProductItemFromFirebase(String productName) {
-        if (productName == null || productName.isEmpty()) {
-            Log.e(TAG, "Product name is null or empty");
-            return;
-        }
 
-        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+    private void fetchProductItemFromFirebase(String productId) {
+        DatabaseReference productRef = FirebaseDatabase.getInstance()
+                .getReference("ProductItems")
+                .child(productId);
+
+        productRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                boolean productFound = false;
-
-                for (DataSnapshot category : snapshot.getChildren()) {
-                    for (DataSnapshot child : category.getChildren()) {
-                        String name = child.child("name").getValue(String.class);
-                        if (name != null && name.equals(productName)) {
-                            productItem = createProductItemFromSnapshot(child);
-                            updateUIWithProductItem(productItem);
-                            setupRecyclerView();
-                            productFound = true;
-                            break;
-                        }
-                    }
-                    if (productFound) break;
+                if (!snapshot.exists()) {
+                    Toast.makeText(EachProductPage.this, "제품 정보를 찾을 수 없습니다.", Toast.LENGTH_SHORT).show();
+                    finish();
+                    return;
                 }
 
-                if (!productFound) {
-                    Log.e(TAG, "Product not found in Firebase");
-                    Toast.makeText(EachProductPage.this, "Product not found", Toast.LENGTH_SHORT).show();
-                }
+                productItem = createProductItemFromSnapshot(snapshot);
+                updateUIWithProductItem(productItem);
+
+                // 평가 버튼 설정 호출
+                setupButtonActions(productId); // <- 여기에 호출 추가
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Log.e(TAG, "Failed to load product data", error.toException());
+                Toast.makeText(EachProductPage.this, "데이터 로드 실패", Toast.LENGTH_SHORT).show();
+                finish();
             }
         });
     }
 
+
     private ProductItem createProductItemFromSnapshot(DataSnapshot snapshot) {
-        // 기본 정보
         String name = snapshot.child("name").getValue(String.class);
         int price = snapshot.child("price").getValue(Integer.class);
+        String company = snapshot.child("Company").getValue(String.class);
         int productType = snapshot.child("productType").getValue(Integer.class);
         double totalRating = snapshot.child("rating/totalRating").getValue(Double.class) != null ?
                 snapshot.child("rating/totalRating").getValue(Double.class) : 0.0;
         int ratingCount = snapshot.child("rating/ratingCount").getValue(Integer.class) != null ?
                 snapshot.child("rating/ratingCount").getValue(Integer.class) : 0;
-        boolean heart = snapshot.child("heart").getValue(Boolean.class) != null &&
-                snapshot.child("heart").getValue(Boolean.class);
 
-        // 리뷰 데이터
-        Map<String, List<Review>> reviews = new HashMap<>();
-        DataSnapshot reviewsSnapshot = snapshot.child("reviews");
-
-        // 기본 속성 목록 정의
-        String[] defaultFeatures = {"화면", "배터리", "무게", "성능", "호환성", "웹캠", "기타 특징"};
-
-        // 데이터베이스에서 가져온 속성 추가
-        for (DataSnapshot featureSnapshot : reviewsSnapshot.getChildren()) {
-            String featureName = featureSnapshot.getKey();
-            List<Review> featureReviews = new ArrayList<>();
-            for (DataSnapshot reviewSnapshot : featureSnapshot.getChildren()) {
-                String reviewText = reviewSnapshot.child("reviewText").getValue(String.class);
-                String userId = reviewSnapshot.child("userId").getValue(String.class);
-                int likes = reviewSnapshot.child("likes").getValue(Integer.class) != null ?
-                        reviewSnapshot.child("likes").getValue(Integer.class) : 0;
-                featureReviews.add(new Review(reviewText, userId, likes));
-            }
-            reviews.put(featureName, featureReviews);
-            featureList.add(featureName);
-        }
-
-        // 기본 속성 추가 (리뷰 데이터가 없는 속성)
-        for (String feature : defaultFeatures) {
-            if (!reviews.containsKey(feature)) {
-                reviews.put(feature, new ArrayList<>()); // 빈 리뷰 리스트 추가
-                featureList.add(feature); // RecyclerView에 표시하기 위해 추가
-            }
-        }
-
-        return new ProductItem(
-                name, price, null, productType, "Company", "Features",
-                totalRating, ratingCount, heart, reviews, 0, 0, 0, 0, 0, 0
+        ProductItem productItem = new ProductItem(
+                name, price, null, productType, company, "Features",
+                totalRating, ratingCount, false, null, 0, 0, 0, 0, 0, 0
         );
+
+        // productId 설정
+        productItem.setId(snapshot.getKey());
+        return productItem;
     }
+
 
     private void updateUIWithProductItem(ProductItem item) {
         if (item == null) return;
