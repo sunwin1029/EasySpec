@@ -1,4 +1,4 @@
-package com.example.easyspec;
+package com.example.easyspec.LogIn;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,6 +9,8 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.easyspec.R;
+import com.example.easyspec.Data.Users;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;

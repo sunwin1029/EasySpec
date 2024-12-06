@@ -1,4 +1,4 @@
-package com.example.easyspec;
+package com.example.easyspec.LogIn;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.easyspec.R;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class SignUpStep1Activity extends AppCompatActivity {
