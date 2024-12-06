@@ -11,7 +11,7 @@ public class RecyclerViewActivity extends AppCompatActivity {
 
     private int[] imageResIds = {
             R.drawable.cpu,
-            R.drawable.ssd,
+            R.drawable.ssd, // no error
             R.drawable.gpu,
             R.drawable.ram,
             R.drawable.port,

@@ -202,7 +202,7 @@ public class Filtering extends AppCompatActivity {
 
         Log.d("FILTER_RESULT", String.format(
                 "Product Name: %s, Device Type: %d, Manufacturer: %d, Min Price: %d, Max Price: %d",
-                productName.isEmpty() ? "-1" : productName, // 제품명 없으면 -1
+                productName.isEmpty() ? null : productName, // 제품명 없으면 -1
                 deviceType == 0 ? -1 : deviceType, // 기기 종류 인덱스 출력
                 manufacturer, // 제조사 숫자 출력
                 minPrice, // 최소 가격 출력

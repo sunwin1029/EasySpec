@@ -1,13 +1,161 @@
 <resources>
-<string name="app_name">EasySpec</string>
-<string-array name="university_list">
-    <item>인문대학</item>
-    <item>자연과학대학</item>
-    <item>법과대학</item>
-    <item>사회과학대학</item>
-    <item>경제통상대학</item>
-    <item>경영대학</item>
-    <item>공과대학</item>
-    <item>IT대학</item>
-</string-array>
+    <string name="app_name">EasySpec</string>
+    <!-- Laptop 옵션 배열 -->
+    <string-array name="laptop_options">
+        <item>MacBook Pro</item>
+        <item>Windows Laptop</item>
+        <item>Chromebook</item>
+        <item>None</item>
+    </string-array>
+
+    <!-- Tablet 옵션 배열 -->
+    <string-array name="tablet_options">
+        <item>iPad</item>
+        <item>Android Tablet</item>
+        <item>Surface Tablet</item>
+        <item>None</item>
+    </string-array>
+
+    <!-- Phone 옵션 배열 -->
+    <string-array name="phone_options">
+        <item>iPhone</item>
+        <item>Android Phone</item>
+        <item>None</item>
+    </string-array>
+
+    <string-array name="university_list">
+        <item>인문대학</item>
+        <item>자연과학대학</item>
+        <item>법과대학</item>
+        <item>사회과학대학</item>
+        <item>경제통상대학</item>
+        <item>경영대학</item>
+        <item>공과대학</item>
+        <item>IT대학</item>
+    </string-array>
+
+    <string-array name="item_titles">
+        <item>CPU</item>
+        <item>SSD</item>
+        <item>GPU(그래픽카드)</item>
+        <item>RAM</item>
+        <item>포트 구성</item>
+        <item>디스플레이</item>
+        <item>배터리</item>
+        <item>카메라</item>
+    </string-array>
+
+    <string-array name="item_subtitles">
+        <item>노트북의 성능 결정</item>
+        <item>저장소, 파일 저장</item>
+        <item>그래픽 작업 역할</item>
+        <item>멀티태스킹 환경에서 중요</item>
+        <item>노트북과 연결 가능한 단자</item>
+        <item>화면의 해상도와 크기</item>
+        <item>노트북의 이동성과 직결되는 요소</item>
+        <item>노트북에 내장된 카메라</item>
+    </string-array>
+
+    <string-array name="descriptions">
+        <item>
+            -듀얼코어 (2코어):
+            \n웹 서핑, 문서 작성, 이메일 등 가벼운 작업에는 충분하지만, 고사양 작업이나 여러 프로그램을 동시에 실행하면 성능 저하가 발생할 수 있음. 일반적으로 저가형 노트북이나 초경량 모델에 많이 탑재됨.\n\n
+            -쿼드코어 (4코어):
+            \n대부분의 사용자에게 적합한 수준. 가벼운 사진 편집, 간단한 영상 편집, 중간 사양의 게임까지도 무리 없이 소화 가능함. Intel Core i5, AMD Ryzen 5 라인업이 대표적임.\n\n
+            -헥사코어 이상 (6코어~16코어):
+            \n영상 편집, 3D 모델링, 프로그래밍, 고사양 게임 등 CPU를 많이 사용하는 작업에 적합. 코어가 많을수록 더 많은 작업을 동시에 처리 가능. Intel Core i7i9, AMD Ryzen 79 라인업이 해당됨.\n\n
+            참고: CPU 선택 시 세대(Intel 12세대, 13세대 / AMD 5000, 7000 시리즈)와 클럭 속도(예: 3.0GHz 이상)를 확인하는 것도 중요.\n
+        </item>
+
+        <item>
+            -256GB SSD:
+            \n저장공간이 부족할 가능성이 높음. 특히 사진, 동영상, 프로그램 설치 파일 등이 쌓이면서 여유 공간이 줄어듦. 기본적인 용량으로는 다소 아쉬울 수 있음.\n\n
+            -512GB SSD:
+            \n일반적인 사용자라면 충분함. 문서 작업, 간단한 프로그램 설치, 그리고 적당한 사진과 동영상 파일을 저장하기에 넉넉한 편. 다만, 고해상도 사진이나 동영상을 자주 다루는 경우, 장기적으로는 여유 공간이 부족할 수 있음.\n\n
+            -1TB SSD:
+            \n오랫동안 넉넉하게 사용할 수 있음. 특히 고용량의 디자인 파일, 게임, 영상 파일 등을 주로 사용하는 경우에는 1TB SSD가 안정적이며, 장기간 용량 부족을 걱정할 필요가 없음.\n\n
+            참고: SSD 용량이 부족할 경우 외장 SSD나 클라우드 저장소를 활용하면 추가 공간 문제를 해결할 수 있음.\n
+        </item>
+
+        <item>
+            -내장 그래픽:
+            \nCPU에 내장된 그래픽 처리 장치. 일반적인 작업(문서 작성, 유튜브 시청 등)에는 충분하지만, 고사양 게임이나 그래픽 작업에서는 한계가 있음. 대표적으로 Intel Iris Xe, AMD Radeon Vega 등이 있음.\n\n
+            -외장 그래픽:
+            \n별도로 장착된 고성능 GPU로, Nvidia GeForce RTX 또는 AMD Radeon RX 시리즈가 대표적임. RTX 3050~4060: 중간 수준의 게임, 영상 편집에 적합하며, 가격 대비 성능이 우수. RTX 4070~4090: 고해상도 그래픽 작업, AAA급 게임, 4K 영상 제작에 탁월한 성능을 제공.\n\n
+            참고: GPU의 성능은 VRAM(그래픽 전용 메모리)의 크기와도 관련이 있음. VRAM 4GB 이상을 권장하며, 영상 편집이나 4K 해상도를 다룰 경우 최소 8GB가 필요.\n
+        </item>
+
+        <item>
+            -8GB:\n문서 작업, 인터넷 서핑, 영상 스트리밍에는 충분함. 다만, 여러 프로그램을 동시에 실행하거나 고사양 프로그램(게임, 영상 편집 등)을 실행하면 성능 저하가 발생할 수 있음.\n\n
+            -16GB:\n다중 작업을 자주 하거나, 가벼운 영상 편집, 게임을 즐기는 사용자에게 적합. 일반 사용자에게 가장 추천되는 용량.\n\n
+            -32GB 이상:\n3D 렌더링, 대규모 데이터 분석, 고해상도 영상 편집 등 전문가 작업에 적합.\n\n
+            참고: 노트북의 RAM이 업그레이드 가능한지 확인 필수. 일부 모델은 RAM이 메인보드에 고정되어 확장할 수 없음. 듀얼 채널(예: 8GB x 2) 구성을 사용하면 메모리 대역폭이 늘어나 성능이 더 향상됨.\n
+        </item>
+
+        <item>
+            -USB-A (3.0 이상):
+            \n키보드, 마우스, 외장 하드 등 기본적인 장치 연결에 필수. USB 3.0 이상은 데이터 전송 속도가 더 빠르며, 외장 SSD나 대용량 파일 전송 시 유용.\n\n
+            -USB-C (Thunderbolt 지원 여부 확인):\n최신 노트북에 주로 탑재되며, 고속 충전, 데이터 전송, 외부 디스플레이 출력까지 지원. Thunderbolt 3/4를 지원하면 더 높은 데이터 전송 속도(최대 40Gbps)를 제공.\n\n
+            -HDMI/DP (DisplayPort):
+            \n외부 모니터나 TV에 연결할 때 사용하는 포트. 프레젠테이션, 듀얼 모니터 환경을 구축하려면 HDMI 포트가 중요. DisplayPort는 고해상도/고주사율 화면을 출력할 때 유리.\n\n
+            -LAN 포트:
+            \n안정적인 유선 인터넷 연결을 위해 필요. Wi-Fi만으로 충분하다면 없어도 되지만, 빠르고 끊김 없는 인터넷 연결이 중요한 환경에서는 필수.\n\n
+            -SD 카드 슬롯:
+            \n사진, 동영상 파일을 자주 옮기는 사용자에게 유용. 특히 카메라 사용자라면 필수적인 기능.\n\n
+            참고: 노트북의 두께에 따라 LAN 포트나 HDMI 포트가 빠질 수 있으니, 필요한 포트가 없을 경우 USB 허브나 어댑터를 활용.\n
+        </item>
+
+        <item>
+            크기:\n
+            -13~14인치: 휴대성이 뛰어나며, 가벼운 작업(문서 작성, 인터넷 서핑)에 적합.\n
+            -15~16인치: 작업 공간이 넓어 생산성이 높고, 영상 감상이나 작업에 적합.\n
+            -17인치 이상: 크기가 커서 휴대성은 떨어지지만, 멀티미디어 작업이나 게임용으로는 탁월함.\n\n
+            해상도:\n
+            -FHD (1920x1080): 선명한 화면을 제공하며, 일반적인 작업과 영상 시청에 충분.\n
+            -QHD (2560x1440) 이상: 더 높은 해상도로, 고화질 작업(사진 편집, 영상 제작)에 적합.\n
+            -4K (3840x2160): 매우 세밀한 화면 표현이 가능하며, 전문가용 작업에 유용.\n\n
+            패널 종류:\n
+            -IPS: 넓은 시야각과 뛰어난 색 정확도로, 영상 편집과 디자인 작업에 적합.\n
+            -OLED: 색감이 생생하고 명암비가 우수하며, 영화 감상이나 고품질 그래픽 작업에 유리.\n
+            -TN: 반응 속도가 빠르고 저렴하지만, 색 재현력이 낮아 주로 게임용으로 사용.\n\n
+            주사율:\n
+            일반적으로 60Hz로 충분하지만, 고사양 게임이나 빠른 화면 전환이 필요한 작업에는 120Hz~240Hz 이상의 주사율이 적합.\n
+        </item>
+
+        <item>
+            배터리 용량 (Wh):\n
+            배터리 용량이 클수록 오래 사용할 수 있음. 일반적으로 50~60Wh 이상이면 좋은 편이며, 고성능 노트북은 80Wh 이상의 대용량 배터리를 탑재하기도 함.\n\n
+            사용 시간:\n
+            초경량 노트북(울트라북)은 8~12시간 이상 사용할 수 있는 경우가 많아, 장시간 외부에서 작업할 때 유리.
+            고성능 노트북은 성능 때문에 배터리가 빨리 소모되며, 4~6시간 정도 사용할 수 있음.\n\n
+            고속 충전 기능:\n
+            30분~1시간 충전으로 배터리의 50% 이상을 채울 수 있는 기능이 있는지 확인.\n\n
+            참고: 배터리 수명은 디스플레이 밝기, 실행 중인 프로그램, 무선 네트워크 사용 여부 등에 따라 크게 달라질 수 있음.\n
+        </item>
+
+        <item>
+            해상도:\n
+            -720p (HD):\n
+            대부분의 노트북에 기본 탑재된 카메라 해상도. 기본적인 화상 회의와 영상 통화에 적합하지만, 디테일이 부족하고 어두운 환경에서는 화질 저하가 발생할 수 있음.\n
+            -1080p (FHD):\n
+            더 선명한 화질을 제공하며, 고품질의 영상 녹화나 프레젠테이션에 적합. 최근 고급 노트북에서 많이 탑재되고 있음.\n
+            -4K (UHD):\n
+            매우 높은 해상도로, 영상 제작이나 전문 회의용으로 적합. 하지만 드물게 탑재되며 고가의 모델에서 주로 볼 수 있음.\n\n
+            프레임 속도 (FPS):\n
+            -30fps:\n
+            대부분의 내장 카메라에서 지원하며, 기본적인 화상 통화나 회의에 충분.\n
+            -60fps:\n
+            부드러운 화면 전환이 필요할 때 유용하며, 고급 회의용이나 스트리밍 환경에서 유리.\n
+        </item>
+
+    </string-array>
+
+    <string-array name="device_types">
+        <item>None</item>
+        <item>laptops</item>
+        <item>phones</item>
+        <item>tablets</item>
+    </string-array>
+
+
 </resources>

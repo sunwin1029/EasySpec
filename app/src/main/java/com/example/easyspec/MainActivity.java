@@ -53,5 +53,10 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
+        binding.button4.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, RecyclerViewActivity.class);
+            startActivity(intent);
+        });
+
     }
 }
