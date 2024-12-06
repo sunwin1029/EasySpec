@@ -1,5 +1,6 @@
 package com.example.easyspec.EachProductPage;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,13 +9,20 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.easyspec.R;
 import com.example.easyspec.Review.ReviewFragment;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class EachProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
@@ -64,9 +72,12 @@ public class EachProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             ExpandedViewHolder expandedHolder = (ExpandedViewHolder) holder;
             expandedHolder.featureText.setText(feature);
 
+            // Inner RecyclerView 초기화
+            setupInnerRecyclerView(expandedHolder.innerRecyclerView, feature);
+
             // 리뷰 작성 버튼 클릭 리스너 설정
             expandedHolder.reviewButton.setOnClickListener(v -> {
-                ReviewFragment fragment = ReviewFragment.newInstance(productId, feature, userId); // userId 추가
+                ReviewFragment fragment = ReviewFragment.newInstance(productId, feature, userId);
                 ((AppCompatActivity) expandedHolder.itemView.getContext())
                         .getSupportFragmentManager()
                         .beginTransaction()
@@ -115,12 +126,87 @@ public class EachProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         TextView featureText;
         View expandButton;
         Button reviewButton;
+        RecyclerView innerRecyclerView;
 
         public ExpandedViewHolder(@NonNull View itemView) {
             super(itemView);
             featureText = itemView.findViewById(R.id.property);
             expandButton = itemView.findViewById(R.id.expandButton);
-            reviewButton = itemView.findViewById(R.id.reviewButton); // 초기화
+            reviewButton = itemView.findViewById(R.id.reviewButton);
+            innerRecyclerView = itemView.findViewById(R.id.expandedRecyclerView); // Inner RecyclerView
         }
+    }
+
+    private void setupInnerRecyclerView(RecyclerView recyclerView, String feature) {
+        DatabaseReference reviewsRef = FirebaseDatabase.getInstance().getReference("Reviews");
+        reviewsRef.orderByChild("productId").equalTo(productId)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        List<InnerReviewItem> reviewItems = new ArrayList<>();
+                        AtomicInteger pendingCallbacks = new AtomicInteger((int) snapshot.getChildrenCount());
+
+                        if (pendingCallbacks.get() == 0) {
+                            // 데이터가 없을 경우 처리
+                            recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext()));
+                            recyclerView.setAdapter(new InnerReviewAdapter(reviewItems));
+                            return;
+                        }
+
+                        for (DataSnapshot reviewSnapshot : snapshot.getChildren()) {
+                            String reviewFeature = reviewSnapshot.child("feature").getValue(String.class);
+                            if (feature.equals(reviewFeature)) {
+                                String reviewText = reviewSnapshot.child("reviewText").getValue(String.class);
+                                int likes = reviewSnapshot.child("likes").getValue(Integer.class) != null ?
+                                        reviewSnapshot.child("likes").getValue(Integer.class) : 0;
+                                String userId = reviewSnapshot.child("userId").getValue(String.class);
+
+                                fetchUserDepartment(userId, department -> {
+                                    reviewItems.add(new InnerReviewItem(department, reviewText, likes));
+                                    if (pendingCallbacks.decrementAndGet() == 0) {
+                                        // 모든 데이터가 준비된 후 어댑터 설정
+                                        recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext(), LinearLayoutManager.HORIZONTAL, false));
+                                        recyclerView.setAdapter(new InnerReviewAdapter(reviewItems));
+                                    }
+                                });
+                            } else {
+                                if (pendingCallbacks.decrementAndGet() == 0) {
+                                    recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext(), LinearLayoutManager.HORIZONTAL, false));
+                                    recyclerView.setAdapter(new InnerReviewAdapter(reviewItems));
+                                }
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Log.e("EachProductAdapter", "리뷰 데이터를 가져오는 중 오류 발생: " + error.getMessage());
+                    }
+                });
+    }
+
+
+
+
+    private void fetchUserDepartment(String userId, DepartmentCallback callback) {
+        DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("Users");
+        usersRef.child(userId).child("university")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        String department = snapshot.getValue(String.class);
+                        callback.onDepartmentFetched(department != null ? department : "Unknown");
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Log.e("EachProductAdapter", "사용자 정보를 가져오는 중 오류 발생: " + error.getMessage());
+                        callback.onDepartmentFetched("Unknown");
+                    }
+                });
+    }
+
+    interface DepartmentCallback {
+        void onDepartmentFetched(String department);
     }
 }
