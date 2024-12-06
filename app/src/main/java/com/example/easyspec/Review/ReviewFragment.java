@@ -163,9 +163,10 @@ public class ReviewFragment extends Fragment {
     }
 
     private void saveNewReviewToDatabase(String reviewContent) {
-        String reviewId = reviewRef.push().getKey();
+        String reviewId = reviewRef.push().getKey(); // 새로운 리뷰 ID 생성
 
         if (reviewId != null) {
+            // 리뷰 데이터를 담을 Map 생성
             Map<String, Object> reviewData = new HashMap<>();
             reviewData.put("reviewText", reviewContent);
             reviewData.put("feature", feature);
@@ -174,14 +175,37 @@ public class ReviewFragment extends Fragment {
             reviewData.put("likes", 0);
             reviewData.put("timestamp", System.currentTimeMillis());
 
+            // Firebase 데이터베이스에 저장
+            reviewRef.child(reviewId).setValue(reviewData)
+                    .addOnSuccessListener(unused ->
+                            Log.d("ReviewFragment", "리뷰 저장 성공!")
+                    )
+                    .addOnFailureListener(e ->
+                            Log.e("ReviewFragment", "리뷰 저장 실패", e)
+                    );
+        } else {
+            Log.e("ReviewFragment", "리뷰 ID 생성 실패");
         }
     }
+
 
     private void updateReviewInDatabase(String reviewContent) {
         if (existingReviewId != null) {
             Map<String, Object> updatedData = new HashMap<>();
             updatedData.put("reviewText", reviewContent);
-            updatedData.put("timestamp", System.currentTimeMillis());
+            updatedData.put("timestamp", System.currentTimeMillis()); // 업데이트 시간 추가
+
+            // Firebase 업데이트 호출
+            reviewRef.child(existingReviewId).updateChildren(updatedData)
+                    .addOnSuccessListener(unused -> {
+                        Log.d("ReviewFragment", "리뷰 업데이트 성공!");
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.e("ReviewFragment", "리뷰 업데이트 실패", e);
+                    });
+        } else {
+            Log.e("ReviewFragment", "기존 리뷰 ID를 찾을 수 없습니다.");
         }
     }
+
 }
