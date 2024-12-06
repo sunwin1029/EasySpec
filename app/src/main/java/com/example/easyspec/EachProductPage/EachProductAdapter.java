@@ -144,46 +144,44 @@ public class EachProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         List<InnerReviewItem> reviewItems = new ArrayList<>();
-                        AtomicInteger pendingCallbacks = new AtomicInteger((int) snapshot.getChildrenCount());
-
-                        if (pendingCallbacks.get() == 0) {
-                            // 데이터가 없을 경우 처리
-                            recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext()));
-                            recyclerView.setAdapter(new InnerReviewAdapter(reviewItems));
-                            return;
-                        }
+                        boolean hasData = false; // 데이터 여부 확인 플래그
 
                         for (DataSnapshot reviewSnapshot : snapshot.getChildren()) {
                             String reviewFeature = reviewSnapshot.child("feature").getValue(String.class);
+
                             if (feature.equals(reviewFeature)) {
+                                hasData = true; // 데이터가 존재
                                 String reviewText = reviewSnapshot.child("reviewText").getValue(String.class);
                                 int likes = reviewSnapshot.child("likes").getValue(Integer.class) != null ?
                                         reviewSnapshot.child("likes").getValue(Integer.class) : 0;
                                 String userId = reviewSnapshot.child("userId").getValue(String.class);
 
-                                fetchUserDepartment(userId, department -> {
-                                    reviewItems.add(new InnerReviewItem(department, reviewText, likes));
-                                    if (pendingCallbacks.decrementAndGet() == 0) {
-                                        // 모든 데이터가 준비된 후 어댑터 설정
-                                        recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext(), LinearLayoutManager.HORIZONTAL, false));
-                                        recyclerView.setAdapter(new InnerReviewAdapter(reviewItems));
-                                    }
-                                });
-                            } else {
-                                if (pendingCallbacks.decrementAndGet() == 0) {
-                                    recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext(), LinearLayoutManager.HORIZONTAL, false));
-                                    recyclerView.setAdapter(new InnerReviewAdapter(reviewItems));
-                                }
+                                reviewItems.add(new InnerReviewItem("Unknown", reviewText, likes));
                             }
                         }
+
+                        if (hasData) {
+                            recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext(), LinearLayoutManager.HORIZONTAL, false));
+                            recyclerView.setAdapter(new InnerReviewAdapter(reviewItems));
+                        } else {
+                            Log.d("setupInnerRecyclerView", "No reviews for feature: " + feature);
+                            recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext(), LinearLayoutManager.HORIZONTAL, false));
+                            recyclerView.setAdapter(new EmptyReviewAdapter());
+                        }
+
+                        recyclerView.requestLayout(); // 레이아웃 강제 갱신
                     }
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {
-                        Log.e("EachProductAdapter", "리뷰 데이터를 가져오는 중 오류 발생: " + error.getMessage());
+                        Log.e("setupInnerRecyclerView", "Failed to fetch reviews: " + error.getMessage());
+                        recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext(), LinearLayoutManager.HORIZONTAL, false));
+                        recyclerView.setAdapter(new EmptyReviewAdapter());
+                        recyclerView.requestLayout();
                     }
                 });
     }
+
 
 
 
