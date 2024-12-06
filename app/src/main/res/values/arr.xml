@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="depart_name">
+        <item>가격높은순</item>
+        <item>가격낮은순</item>
+        <item>사용자순(소속 단과대)</item>
+        <item>사용자순(전체 학생)</item>
+        <item>별점순</item>
+    </string-array>
+</resources>
