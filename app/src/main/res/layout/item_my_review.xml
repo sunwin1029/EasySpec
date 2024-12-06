@@ -1,45 +1,81 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="16dp">
+    android:orientation="horizontal"
+    android:padding="8dp"
+    android:background="@android:color/white"
+    android:elevation="2dp"
+    android:layout_margin="8dp">
 
+    <!-- 제품 이미지 -->
+    <ImageView
+        android:id="@+id/product_image"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginEnd="8dp"
+        android:contentDescription="Product Image"
+        app:srcCompat="@drawable/iphone15_promax" />
+
+    <!-- 제품 정보 및 리뷰 -->
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_weight="1"
+        android:orientation="vertical">
 
-        <ImageView
-            android:id="@+id/imageView"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:src="@drawable/iphone15_promax" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_gravity="center_vertical"
-        android:paddingStart="16dp">
+        <!-- 제품 이름 -->
         <TextView
-            android:id="@+id/textProductName"
-            android:layout_width="match_parent"
+            android:id="@+id/product_name"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Product Name"
             android:textStyle="bold"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            android:textColor="@android:color/black" />
 
+        <!-- 리뷰 내용 -->
         <TextView
-            android:id="@+id/textBatteryReview"
-            android:layout_width="match_parent"
+            android:id="@+id/review_text"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Battery Review" />
+            android:text="리뷰 내용"
+            android:textSize="14sp"
+            android:textColor="@android:color/darker_gray"
+            android:layout_marginTop="4dp" />
 
+        <!-- 좋아요 수 -->
         <TextView
-            android:id="@+id/textPerformanceReview"
-            android:layout_width="match_parent"
+            android:id="@+id/review_score"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Performance Review" />
-        </LinearLayout>
+            android:text="5"
+            android:textSize="16sp"
+            android:textColor="@android:color/black"
+            android:layout_marginTop="4dp" />
     </LinearLayout>
+
+    <!-- 수정 버튼 -->
+    <ImageButton
+        android:id="@+id/btn_edit"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginEnd="8dp"
+        android:background="@android:color/transparent"
+        android:layout_gravity="bottom"
+        app:srcCompat="@drawable/ic_edit"
+        android:contentDescription="Edit Review" />
+
+    <!-- 삭제 버튼 -->
+    <ImageButton
+        android:id="@+id/btn_delete"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="@android:color/transparent"
+        android:layout_gravity="bottom"
+
+        app:srcCompat="@drawable/ic_delete"
+        android:contentDescription="Delete Review" />
 </LinearLayout>

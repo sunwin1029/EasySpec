@@ -15,11 +15,6 @@
         <activity
             android:name=".IntentTest"
             android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".ReviewWriteActivity"
@@ -35,7 +30,7 @@
             android:exported="true" />
         <activity
             android:name=".MyReviewActivity"
-            android:exported="false" />
+            android:exported="true" />
         <activity
             android:name=".StarList"
             android:exported="true" />

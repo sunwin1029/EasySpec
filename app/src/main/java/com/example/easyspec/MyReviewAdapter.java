@@ -1,8 +1,11 @@
 package com.example.easyspec;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -10,56 +13,64 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
-public class MyReviewAdapter extends RecyclerView.Adapter<MyReviewAdapter.ReviewViewHolder> {
+public class MyReviewAdapter extends RecyclerView.Adapter<MyReviewAdapter.ViewHolder> {
+    private List<ReviewItem> reviewItemList;
+    private Context context;
 
-    private final List<ReviewItem> reviewList;
-    private final OnReviewClickListener onReviewClickListener;
-
-    // 클릭 리스너 인터페이스 정의
-    public interface OnReviewClickListener {
-        void onReviewClick(ReviewItem reviewItem);
-    }
-
-    // 생성자
-    public MyReviewAdapter(List<ReviewItem> reviewList, OnReviewClickListener onReviewClickListener) {
-        this.reviewList = reviewList;
-        this.onReviewClickListener = onReviewClickListener;
+    public MyReviewAdapter(List<ReviewItem> reviewItemList, Context context) {
+        this.reviewItemList = reviewItemList;
+        this.context = context;
     }
 
     @NonNull
     @Override
-    public ReviewViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_my_review, parent, false);
-        return new ReviewViewHolder(view);
+        return new ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ReviewViewHolder holder, int position) {
-        ReviewItem reviewItem = reviewList.get(position);
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        ReviewItem reviewItem = reviewItemList.get(position);
 
-        // 데이터 설정
-        holder.productName.setText("Product: " + reviewItem.getKey());
-        holder.batteryReview.setText("Battery Review: " + reviewItem.getBatteryReview());
-        holder.performanceReview.setText("Performance Review: " + reviewItem.getPerformanceReview());
+        // 제품 이미지 설정 (이미지 로딩 라이브러리 사용)
+        holder.productImage.setImageResource(reviewItem.getImageResource());
+        holder.productName.setText(reviewItem.getProductName());
+        holder.reviewText.setText(reviewItem.getReviewText());
+        holder.reviewScore.setText(String.valueOf(reviewItem.getReviewScore()));
 
-        // 클릭 이벤트
-        holder.itemView.setOnClickListener(v -> onReviewClickListener.onReviewClick(reviewItem));
+        // 수정 버튼 클릭 리스너
+        holder.btnEdit.setOnClickListener(v -> {
+            // 수정하기 위한 로직 (예: ReviewEditFragment로 이동)
+            // 예: openEditFragment(reviewItem.getKey());
+        });
+
+        // 삭제 버튼 클릭 리스너
+        holder.btnDelete.setOnClickListener(v -> {
+            // 삭제하기 위한 로직
+            // 예: deleteReview(reviewItem.getKey());
+        });
     }
 
     @Override
     public int getItemCount() {
-        return reviewList.size();
+        return reviewItemList.size();
     }
 
-    // ViewHolder 클래스
-    public static class ReviewViewHolder extends RecyclerView.ViewHolder {
-        TextView productName, batteryReview, performanceReview;
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+        ImageView productImage;
+        TextView productName, reviewText, reviewScore;
+        ImageButton btnEdit, btnDelete;
 
-        public ReviewViewHolder(@NonNull View itemView) {
+        public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            productName = itemView.findViewById(R.id.textProductName);
-            batteryReview = itemView.findViewById(R.id.textBatteryReview);
-            performanceReview = itemView.findViewById(R.id.textPerformanceReview);
+            productImage = itemView.findViewById(R.id.product_image);
+            productName = itemView.findViewById(R.id.product_name);
+            reviewText = itemView.findViewById(R.id.review_text);
+            reviewScore = itemView.findViewById(R.id.review_score);
+            btnEdit = itemView.findViewById(R.id.btn_edit);
+            btnDelete = itemView.findViewById(R.id.btn_delete);
         }
     }
 }
+
