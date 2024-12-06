@@ -1,5 +1,6 @@
 package com.example.easyspec.EachProductPage;
 
+import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -144,13 +145,9 @@ public class EachProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         List<InnerReviewItem> reviewItems = new ArrayList<>();
-                        boolean hasData = false; // 데이터 여부 확인 플래그
-
                         for (DataSnapshot reviewSnapshot : snapshot.getChildren()) {
                             String reviewFeature = reviewSnapshot.child("feature").getValue(String.class);
-
                             if (feature.equals(reviewFeature)) {
-                                hasData = true; // 데이터가 존재
                                 String reviewText = reviewSnapshot.child("reviewText").getValue(String.class);
                                 int likes = reviewSnapshot.child("likes").getValue(Integer.class) != null ?
                                         reviewSnapshot.child("likes").getValue(Integer.class) : 0;
@@ -160,16 +157,20 @@ public class EachProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                             }
                         }
 
-                        if (hasData) {
-                            recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext(), LinearLayoutManager.HORIZONTAL, false));
-                            recyclerView.setAdapter(new InnerReviewAdapter(reviewItems));
-                        } else {
-                            Log.d("setupInnerRecyclerView", "No reviews for feature: " + feature);
-                            recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext(), LinearLayoutManager.HORIZONTAL, false));
+                        // RecyclerView에 데이터 설정
+                        recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext(), LinearLayoutManager.HORIZONTAL, false));
+
+                        // 16dp 간격 추가
+                        int spaceInPixels = dpToPx(16, recyclerView.getContext());
+                        recyclerView.addItemDecoration(new HorizontalSpaceItemDecoration(spaceInPixels));
+
+                        if (reviewItems.isEmpty()) {
                             recyclerView.setAdapter(new EmptyReviewAdapter());
+                        } else {
+                            recyclerView.setAdapter(new InnerReviewAdapter(reviewItems));
                         }
 
-                        recyclerView.requestLayout(); // 레이아웃 강제 갱신
+                        recyclerView.requestLayout(); // 레이아웃 갱신
                     }
 
                     @Override
@@ -181,6 +182,7 @@ public class EachProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                     }
                 });
     }
+
 
 
 
@@ -207,4 +209,10 @@ public class EachProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     interface DepartmentCallback {
         void onDepartmentFetched(String department);
     }
+
+    public static int dpToPx(int dp, Context context) {
+        float density = context.getResources().getDisplayMetrics().density;
+        return Math.round(dp * density);
+    }
+
 }
