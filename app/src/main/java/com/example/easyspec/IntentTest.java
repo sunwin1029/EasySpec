@@ -5,15 +5,20 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.easyspec.Data.ProductItem;
-import com.example.easyspec.Data.Users;
-import com.example.easyspec.EachProductPage.EachProductPage;
-import com.example.easyspec.Firebase.FirebaseHelper;
+import com.example.easyspec.Data.SearchData;
 import com.example.easyspec.databinding.ActivityIntentTestBinding;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class IntentTest extends AppCompatActivity {
+
+    private DatabaseReference userReference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,70 +26,63 @@ public class IntentTest extends AppCompatActivity {
         ActivityIntentTestBinding binding = ActivityIntentTestBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        binding.intentButton.setOnClickListener(new View.OnClickListener() {
+        // Firebase Users 노드 참조
+        userReference = FirebaseDatabase.getInstance().getReference("Users");
+
+        binding.button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // FirebaseHelper를 사용하여 데이터 로드
-                FirebaseHelper.getInstance().fetchAllDataFromFirebase(new FirebaseHelper.FirebaseCallback() {
-                    @Override
-                    public void onSuccess(java.util.List<ProductItem> productItems) {
-                        if (!productItems.isEmpty()) {
-                            // 임의의 ProductItem 선택 (첫 번째 아이템)
-                            ProductItem selectedProduct = productItems.get(0);
+                // 두 번째 유저의 ID를 가져오기
+                fetchSecondUserId(userId -> {
+                    if (userId != null) {
+                        // SearchData 객체 생성
+                        SearchData searchData = new SearchData(
+                                -1,              // 제품 유형: 예시로 "노트북" 설정
+                                null,        // 이름: 예시로 "Galaxy" 설정
+                                1000000,          // 최소 가격
+                                -1,         // 최대 가격
+                                -1                // 회사: 삼성 (1)
+                        );
 
-                            // Intent를 생성하고 ProductItem을 전달
-                            Intent intent = new Intent(IntentTest.this, EachProductPage.class);
-                            intent.putExtra("productName", selectedProduct.getName());
-                            startActivity(intent);
-                        } else {
-                            Toast.makeText(IntentTest.this, "No products available", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Exception e) {
-                        // 데이터 로드 실패 처리
-                        e.printStackTrace();
-                        Toast.makeText(IntentTest.this, "Failed to load product data", Toast.LENGTH_SHORT).show();
+                        // Intent 생성 및 데이터 전달
+                        Intent intent = new Intent(IntentTest.this, InventoryProductPage.class);
+                        intent.putExtra("userId", userId);
+                        intent.putExtra("searchData", searchData);
+                        startActivity(intent);
+                    } else {
+                        Toast.makeText(IntentTest.this, "두 번째 유저를 찾을 수 없습니다.", Toast.LENGTH_SHORT).show();
                     }
                 });
             }
         });
+    }
 
-        binding.inventoryButton.setOnClickListener(new View.OnClickListener() {
+    // 두 번째 유저의 ID를 가져오는 메서드
+    private void fetchSecondUserId(UserIdCallback callback) {
+        userReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onClick(View view) {
-                // FirebaseHelper를 사용하여 유저 데이터를 로드
-                FirebaseHelper.getInstance().fetchAllUsersFromFirebase(new FirebaseHelper.FirebaseUserCallback() {
-                    @Override
-                    public void onSuccess(java.util.List<Users> users) {
-                        if (!users.isEmpty()) {
-                            // 임의의 유저 선택 (첫 번째 유저)
-                            Users selectedUser = users.get(0);
-
-                            // Intent 생성 및 유저 데이터 전달
-                            Intent intent = new Intent(IntentTest.this, InventoryProductPage.class);
-                            intent.putExtra("email", selectedUser.getEmail());
-                            intent.putExtra("university", selectedUser.getUniversity());
-                            intent.putExtra("laptop", selectedUser.getLaptop());
-                            intent.putExtra("tablet", selectedUser.getTablet());
-                            intent.putExtra("phone", selectedUser.getPhone());
-
-                            // InventoryProductPage 시작
-                            startActivity(intent);
-                        } else {
-                            Toast.makeText(IntentTest.this, "No user data found.", Toast.LENGTH_SHORT).show();
-                        }
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                int index = 0;
+                for (DataSnapshot userSnapshot : snapshot.getChildren()) {
+                    if (index == 1) { // 두 번째 유저
+                        String userId = userSnapshot.getKey();
+                        callback.onUserIdFetched(userId);
+                        return;
                     }
+                    index++;
+                }
+                callback.onUserIdFetched(null); // 두 번째 유저가 없는 경우
+            }
 
-                    @Override
-                    public void onFailure(Exception e) {
-                        // 데이터 로드 실패 처리
-                        e.printStackTrace();
-                        Toast.makeText(IntentTest.this, "Failed to load user data: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                });
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                callback.onUserIdFetched(null);
             }
         });
+    }
+
+    // Callback 인터페이스 정의
+    interface UserIdCallback {
+        void onUserIdFetched(String userId);
     }
 }

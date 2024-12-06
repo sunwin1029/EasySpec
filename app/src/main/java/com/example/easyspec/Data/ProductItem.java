@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 public class ProductItem implements Serializable {
-
+    private String id;
     private String name;               // 제품 이름
     private int price;                 // 제품 가격
     private Integer imageResource;     // 이미지 리소스 (null 가능)
@@ -15,7 +15,7 @@ public class ProductItem implements Serializable {
     private double totalRating;        // 총 평점 점수
     private int ratingCount;           // 평점 개수
     private boolean heart;             // 즐겨찾기 여부
-    private Map<String, List<Review>> reviews;  // 리뷰: 카테고리별
+    private Map<String, List<Review>> reviews;// 리뷰: 카테고리별
 
     // 사용자 수 데이터 (기존 UserOfTheProduct 클래스 통합)
     private int IT;
@@ -50,6 +50,15 @@ public class ProductItem implements Serializable {
     }
 
     // Getter와 Setter 메서드들
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
     public String getName() {
         return name;
     }

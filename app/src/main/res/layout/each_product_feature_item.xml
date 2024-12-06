@@ -6,7 +6,6 @@
     android:layout_margin="10dp"
     android:background="@drawable/product_layout_shape">
 
-    <!-- 기본 텍스트 -->
     <TextView
         android:id="@+id/property"
         android:layout_width="0dp"
@@ -20,7 +19,6 @@
         android:gravity="center_vertical"
         android:text="Property Name" />
 
-    <!-- 확장/축소 버튼 -->
     <ImageView
         android:id="@+id/expandButton"
         android:layout_width="50dp"
@@ -31,6 +29,13 @@
         android:layout_marginTop="10dp"
         android:src="@drawable/arrow_down" />
 
-    <!-- 추가 콘텐츠 (숨김 상태로 시작) -->
-
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/expandedRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/property"
+        android:padding="10dp"
+        android:background="@android:color/darker_gray" />
 </androidx.constraintlayout.widget.ConstraintLayout>
