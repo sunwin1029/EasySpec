@@ -15,7 +15,7 @@ public class ProductItem implements Serializable {
     private double totalRating;        // 총 평점 점수
     private int ratingCount;           // 평점 개수
     private boolean heart;             // 즐겨찾기 여부
-    private Map<String, List<Review>> reviews;  // 리뷰: 카테고리별
+    private Map<String, List<Review>> reviews;// 리뷰: 카테고리별
 
     // 사용자 수 데이터 (기존 UserOfTheProduct 클래스 통합)
     private int IT;
