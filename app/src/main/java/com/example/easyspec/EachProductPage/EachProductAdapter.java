@@ -140,47 +140,80 @@ public class EachProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     private void setupInnerRecyclerView(RecyclerView recyclerView, String feature) {
         DatabaseReference reviewsRef = FirebaseDatabase.getInstance().getReference("Reviews");
+        DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("Users");
+
         reviewsRef.orderByChild("productId").equalTo(productId)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         List<InnerReviewItem> reviewItems = new ArrayList<>();
+                        AtomicInteger pendingTasks = new AtomicInteger((int) snapshot.getChildrenCount());
+
                         for (DataSnapshot reviewSnapshot : snapshot.getChildren()) {
                             String reviewFeature = reviewSnapshot.child("feature").getValue(String.class);
+
                             if (feature.equals(reviewFeature)) {
                                 String reviewText = reviewSnapshot.child("reviewText").getValue(String.class);
-                                int likes = reviewSnapshot.child("likes").getValue(Integer.class) != null ?
-                                        reviewSnapshot.child("likes").getValue(Integer.class) : 0;
+                                int likes = reviewSnapshot.child("likes").getValue(Integer.class) != null
+                                        ? reviewSnapshot.child("likes").getValue(Integer.class)
+                                        : 0;
                                 String userId = reviewSnapshot.child("userId").getValue(String.class);
 
-                                reviewItems.add(new InnerReviewItem("Unknown", reviewText, likes));
+                                // userId로부터 university 조회
+                                usersRef.child(userId).child("university")
+                                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(@NonNull DataSnapshot userSnapshot) {
+                                                String department = userSnapshot.getValue(String.class);
+                                                reviewItems.add(new InnerReviewItem(department != null ? department : "Unknown", reviewText, likes));
+
+                                                if (pendingTasks.decrementAndGet() == 0) {
+                                                    setupRecyclerViewWithData(recyclerView, reviewItems);
+                                                }
+                                            }
+
+                                            @Override
+                                            public void onCancelled(@NonNull DatabaseError error) {
+                                                Log.e("setupInnerRecyclerView", "Failed to fetch user data: " + error.getMessage());
+                                                if (pendingTasks.decrementAndGet() == 0) {
+                                                    setupRecyclerViewWithData(recyclerView, reviewItems);
+                                                }
+                                            }
+                                        });
+                            } else {
+                                if (pendingTasks.decrementAndGet() == 0) {
+                                    setupRecyclerViewWithData(recyclerView, reviewItems);
+                                }
                             }
                         }
 
-                        // RecyclerView에 데이터 설정
-                        recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext(), LinearLayoutManager.HORIZONTAL, false));
-
-                        // 16dp 간격 추가
-                        int spaceInPixels = dpToPx(16, recyclerView.getContext());
-                        recyclerView.addItemDecoration(new HorizontalSpaceItemDecoration(spaceInPixels));
-
-                        if (reviewItems.isEmpty()) {
-                            recyclerView.setAdapter(new EmptyReviewAdapter());
-                        } else {
-                            recyclerView.setAdapter(new InnerReviewAdapter(reviewItems));
+                        if (pendingTasks.get() == 0) {
+                            setupRecyclerViewWithData(recyclerView, reviewItems);
                         }
-
-                        recyclerView.requestLayout(); // 레이아웃 갱신
                     }
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {
                         Log.e("setupInnerRecyclerView", "Failed to fetch reviews: " + error.getMessage());
-                        recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext(), LinearLayoutManager.HORIZONTAL, false));
-                        recyclerView.setAdapter(new EmptyReviewAdapter());
-                        recyclerView.requestLayout();
+                        setupRecyclerViewWithData(recyclerView, new ArrayList<>());
                     }
                 });
+    }
+
+    private void setupRecyclerViewWithData(RecyclerView recyclerView, List<InnerReviewItem> reviewItems) {
+        recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext(), LinearLayoutManager.HORIZONTAL, false));
+
+        // 16dp 간격 추가
+        int spaceInPixels = dpToPx(16, recyclerView.getContext());
+        recyclerView.addItemDecoration(new HorizontalSpaceItemDecoration(spaceInPixels));
+
+        if (reviewItems.isEmpty()) {
+            recyclerView.setAdapter(new EmptyReviewAdapter());
+        } else {
+            recyclerView.setAdapter(new InnerReviewAdapter(reviewItems));
+        }
+
+        recyclerView.requestLayout();
     }
 
 
