@@ -170,10 +170,14 @@ public class EachProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                                                         department != null ? department : "Unknown",
                                                         reviewText,
                                                         likes,
-                                                        reviewId // reviewId 추가
+                                                        reviewId,
+                                                        feature,
+                                                        productId// reviewId 추가
                                                 ));
 
                                                 if (pendingTasks.decrementAndGet() == 0) {
+                                                    // **좋아요 순으로 정렬**
+                                                    reviewItems.sort((item1, item2) -> Integer.compare(item2.getGoodCount(), item1.getGoodCount()));
                                                     setupRecyclerViewWithData(recyclerView, reviewItems);
                                                 }
                                             }
@@ -182,18 +186,24 @@ public class EachProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                                             public void onCancelled(@NonNull DatabaseError error) {
                                                 Log.e("setupInnerRecyclerView", "Failed to fetch user data: " + error.getMessage());
                                                 if (pendingTasks.decrementAndGet() == 0) {
+                                                    // **좋아요 순으로 정렬**
+                                                    reviewItems.sort((item1, item2) -> Integer.compare(item2.getGoodCount(), item1.getGoodCount()));
                                                     setupRecyclerViewWithData(recyclerView, reviewItems);
                                                 }
                                             }
                                         });
                             } else {
                                 if (pendingTasks.decrementAndGet() == 0) {
+                                    // **좋아요 순으로 정렬**
+                                    reviewItems.sort((item1, item2) -> Integer.compare(item2.getGoodCount(), item1.getGoodCount()));
                                     setupRecyclerViewWithData(recyclerView, reviewItems);
                                 }
                             }
                         }
 
                         if (pendingTasks.get() == 0) {
+                            // **좋아요 순으로 정렬**
+                            reviewItems.sort((item1, item2) -> Integer.compare(item2.getGoodCount(), item1.getGoodCount()));
                             setupRecyclerViewWithData(recyclerView, reviewItems);
                         }
                     }
@@ -207,13 +217,15 @@ public class EachProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     }
 
 
+
     private void setupRecyclerViewWithData(RecyclerView recyclerView, List<InnerReviewItem> reviewItems) {
         recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext(), LinearLayoutManager.HORIZONTAL, false));
 
         // 16dp 간격 추가
         int spaceInPixels = dpToPx(16, recyclerView.getContext());
-        recyclerView.addItemDecoration(new HorizontalSpaceItemDecoration(spaceInPixels));
-
+        if (recyclerView.getItemDecorationCount() == 0) {
+            recyclerView.addItemDecoration(new HorizontalSpaceItemDecoration(spaceInPixels));
+        }
         if (reviewItems.isEmpty()) {
             recyclerView.setAdapter(new EmptyReviewAdapter());
         } else {

@@ -43,59 +43,57 @@ public class InnerReviewAdapter extends RecyclerView.Adapter<InnerReviewAdapter.
         InnerReviewItem reviewItem = reviewItems.get(position);
 
         holder.department.setText(reviewItem.getDepartment());
-        holder.reviewText.setText(reviewItem.getReviewText());
+        holder.reviewText.setText("리뷰를 보려면 클릭하세요. 1포인트가 소모됩니다(최초 1회만)"); // 리뷰 내용은 기본적으로 숨김
         holder.goodCount.setText(String.valueOf(reviewItem.getGoodCount()));
 
         String reviewId = reviewItem.getReviewId();
-        DatabaseReference reviewRef = FirebaseDatabase.getInstance().getReference("Reviews").child(reviewId);
-        DatabaseReference userLikeRef = reviewRef.child("likedBy").child(userId);
+        String feature = reviewItem.getFeature(); // feature 추가 필요
+        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("Users").child(userId);
+        DatabaseReference productFeatureRef = userRef.child("usedFeatures").child(reviewItem.getProductId()).child(feature);
 
-        // 초기 좋아요 상태 확인
-        userLikeRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                boolean isLiked = snapshot.exists() && snapshot.getValue(Boolean.class);
-                updateLikeButtonState(holder.goodButton, isLiked);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Log.e("InnerReviewAdapter", "Failed to fetch like status", error.toException());
-            }
-        });
-
-        // 좋아요 버튼 클릭 리스너 설정
-        holder.goodButton.setOnClickListener(v -> {
-            userLikeRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        // 리뷰 클릭 리스너
+        holder.itemView.setOnClickListener(v -> {
+            productFeatureRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    boolean isLiked = snapshot.exists() && snapshot.getValue(Boolean.class);
+                    boolean alreadyUsed = snapshot.exists() && snapshot.getValue(Boolean.class);
 
-                    if (isLiked) {
-                        // 좋아요 취소
-                        reviewRef.child("likes").setValue(reviewItem.getGoodCount() - 1);
-                        userLikeRef.removeValue();
-                        reviewItem.decrementGoodCount();
-                        updateLikeButtonState(holder.goodButton, false);
+                    if (alreadyUsed) {
+                        // 이미 포인트를 사용했음: 리뷰 표시
+                        holder.reviewText.setText(reviewItem.getReviewText());
                     } else {
-                        // 좋아요 추가
-                        reviewRef.child("likes").setValue(reviewItem.getGoodCount() + 1);
-                        userLikeRef.setValue(true);
-                        reviewItem.incrementGoodCount();
-                        updateLikeButtonState(holder.goodButton, true);
-                    }
+                        // 포인트 확인 및 차감
+                        userRef.child("point").addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot pointSnapshot) {
+                                Long points = pointSnapshot.getValue(Long.class);
+                                if (points != null && points >= 1) {
+                                    // 포인트 차감 및 기록
+                                    userRef.child("point").setValue(points - 1);
+                                    productFeatureRef.setValue(true);
+                                    holder.reviewText.setText(reviewItem.getReviewText());
+                                } else {
+                                    // 포인트 부족
+                                    holder.reviewText.setText("포인트가 부족합니다.");
+                                }
+                            }
 
-                    // 좋아요 개수 업데이트
-                    holder.goodCount.setText(String.valueOf(reviewItem.getGoodCount()));
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+                                Log.e("InnerReviewAdapter", "Failed to fetch user points", error.toException());
+                            }
+                        });
+                    }
                 }
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) {
-                    Log.e("InnerReviewAdapter", "Failed to update like status", error.toException());
+                    Log.e("InnerReviewAdapter", "Failed to fetch usedFeatures", error.toException());
                 }
             });
         });
     }
+
 
 
 

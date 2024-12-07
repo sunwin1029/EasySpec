@@ -5,12 +5,24 @@ public class InnerReviewItem {
     private String reviewText;
     private int goodCount;
     private String reviewId; // reviewId 필드 추가
+    private String feature;
+    private String productId;
 
-    public InnerReviewItem(String department, String reviewText, int goodCount, String reviewId) {
+    public InnerReviewItem(String department, String reviewText, int goodCount, String reviewId, String feature, String productId) {
         this.department = department;
         this.reviewText = reviewText;
         this.goodCount = goodCount;
-        this.reviewId = reviewId; // 필드 초기화
+        this.reviewId = reviewId;
+        this.feature = feature;
+        this.productId = productId; // 필드 초기화
+    }
+
+    public String getFeature() {
+        return feature;
+    }
+
+    public String getProductId() {
+        return productId;
     }
 
     public String getDepartment() {
