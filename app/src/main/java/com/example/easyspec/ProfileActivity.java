@@ -46,10 +46,11 @@ public class ProfileActivity extends AppCompatActivity {
 
         Button buttonChangeDevice = findViewById(R.id.changeDeviceButton);
         buttonChangeDevice.setOnClickListener(v -> {
-            DeviceChangeFragment deviceChangeFragment = new DeviceChangeFragment();
+            // 현재 대학교 정보를 Fragment에 전달
+            String university = spinnerUniversity.getSelectedItem().toString();
+            DeviceChangeFragment deviceChangeFragment = DeviceChangeFragment.newInstance(university);
             deviceChangeFragment.show(getSupportFragmentManager(), "DeviceChangeFragment");
         });
-
 
         // 스피너 초기화
         setUpSpinners();
