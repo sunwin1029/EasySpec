@@ -150,6 +150,7 @@ public class EachProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                         AtomicInteger pendingTasks = new AtomicInteger((int) snapshot.getChildrenCount());
 
                         for (DataSnapshot reviewSnapshot : snapshot.getChildren()) {
+                            String reviewId = reviewSnapshot.getKey(); // 리뷰 ID 가져오기
                             String reviewFeature = reviewSnapshot.child("feature").getValue(String.class);
 
                             if (feature.equals(reviewFeature)) {
@@ -165,7 +166,12 @@ public class EachProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                                             @Override
                                             public void onDataChange(@NonNull DataSnapshot userSnapshot) {
                                                 String department = userSnapshot.getValue(String.class);
-                                                reviewItems.add(new InnerReviewItem(department != null ? department : "Unknown", reviewText, likes));
+                                                reviewItems.add(new InnerReviewItem(
+                                                        department != null ? department : "Unknown",
+                                                        reviewText,
+                                                        likes,
+                                                        reviewId // reviewId 추가
+                                                ));
 
                                                 if (pendingTasks.decrementAndGet() == 0) {
                                                     setupRecyclerViewWithData(recyclerView, reviewItems);
@@ -200,6 +206,7 @@ public class EachProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 });
     }
 
+
     private void setupRecyclerViewWithData(RecyclerView recyclerView, List<InnerReviewItem> reviewItems) {
         recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext(), LinearLayoutManager.HORIZONTAL, false));
 
@@ -210,7 +217,7 @@ public class EachProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         if (reviewItems.isEmpty()) {
             recyclerView.setAdapter(new EmptyReviewAdapter());
         } else {
-            recyclerView.setAdapter(new InnerReviewAdapter(reviewItems));
+            recyclerView.setAdapter(new InnerReviewAdapter(reviewItems, userId));
         }
 
         recyclerView.requestLayout();
