@@ -23,14 +23,12 @@
         <item>None</item>
     </string-array>
     <string-array name="university_list">
-        <item>인문대학</item>
-        <item>자연과학대학</item>
-        <item>법과대학</item>
-        <item>사회과학대학</item>
-        <item>경제통상대학</item>
-        <item>경영대학</item>
-        <item>공과대학</item>
-        <item>IT대학</item>
+        <item>EconomicsAndTrade</item>
+        <item>English</item>
+        <item>IT</item>
+        <item>Law</item>
+        <item>NaturalScience</item>
+        <item>SocialScience</item>
     </string-array>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

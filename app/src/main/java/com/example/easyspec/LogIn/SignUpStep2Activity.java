@@ -126,6 +126,18 @@ public class SignUpStep2Activity extends AppCompatActivity {
         userDatabase.child(userId).setValue(user).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 Toast.makeText(SignUpStep2Activity.this, "회원가입이 완료되었습니다.", Toast.LENGTH_SHORT).show();
+
+                // 사용자 수 업데이트
+                if (laptop != null) {
+                    updateUserNum(laptop, university); // 스피너에서 선택한 노트북의 UserNum 업데이트
+                }
+                if (tablet != null) {
+                    updateUserNum(tablet, university); // 스피너에서 선택한 태블릿의 UserNum 업데이트
+                }
+                if (phone != null) {
+                    updateUserNum(phone, university); // 스피너에서 선택한 핸드폰의 UserNum 업데이트
+                }
+
                 Intent intent = new Intent(SignUpStep2Activity.this, LoginActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
@@ -136,6 +148,47 @@ public class SignUpStep2Activity extends AppCompatActivity {
             }
         });
     }
+
+
+    private void updateUserNum(String productName, String university) {
+        Log.d(TAG, "업데이트할 제품 이름: " + productName + ", 대학: " + university);
+
+        // productDatabase에서 해당 제품 이름으로 검색합니다
+        productDatabase.orderByChild("name").equalTo(productName).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    for (DataSnapshot productSnapshot : dataSnapshot.getChildren()) {
+                        // 전공별 사용자 수를 가져옵니다
+                        DatabaseReference userNumRef = productSnapshot.child("UserNum").getRef();
+                        Integer currentUserNum = productSnapshot.child("UserNum").child(university).getValue(Integer.class);
+                        if (currentUserNum == null) {
+                            currentUserNum = 0; // 값이 null일 경우 0으로 초기화
+                        }
+
+                        // 사용자 수를 +1 합니다
+                        userNumRef.child(university).setValue(currentUserNum + 1)
+                                .addOnCompleteListener(task -> {
+                                    if (task.isSuccessful()) {
+                                        Log.d(TAG, "사용자 수가 성공적으로 업데이트되었습니다: " + university);
+                                    } else {
+                                        Log.e(TAG, "사용자 수 업데이트 실패: " + task.getException());
+                                    }
+                                });
+                    }
+                } else {
+                    Log.e(TAG, "해당 제품을 찾을 수 없습니다: " + productName);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Toast.makeText(SignUpStep2Activity.this, "사용자 수 업데이트 실패", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+
 
     private String getSelectedItem(Spinner spinner) {
         return spinner.getSelectedItem() != null ? spinner.getSelectedItem().toString() : null;
