@@ -2,14 +2,18 @@ package com.example.easyspec;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.easyspec.Review.ReviewFragment;
+import com.example.easyspec.ReviewItem;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -20,7 +24,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MyReviewActivity extends AppCompatActivity {
+public class MyReviewActivity extends AppCompatActivity{
     private RecyclerView recyclerView;
     private MyReviewAdapter adapter;
     private List<ReviewItem> reviewItemList; // ReviewItem 목록
@@ -55,7 +59,10 @@ public class MyReviewActivity extends AppCompatActivity {
                         reviewItemList.clear(); // 기존 데이터 삭제
                         for (DataSnapshot reviewSnapshot : dataSnapshot.getChildren()) {
                             ReviewItem reviewItem = reviewSnapshot.getValue(ReviewItem.class);
-                            reviewItemList.add(reviewItem);
+                            if (reviewItem != null) {
+                                reviewItem.setKey(reviewSnapshot.getKey()); // 키 설정
+                                reviewItemList.add(reviewItem);
+                            }
                         }
                         adapter.notifyDataSetChanged(); // 어댑터에 데이터 변경 알림
                     }
@@ -66,4 +73,5 @@ public class MyReviewActivity extends AppCompatActivity {
                     }
                 });
     }
+
 }

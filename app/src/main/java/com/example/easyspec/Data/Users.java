@@ -11,7 +11,7 @@ public class Users implements Serializable {
     private String tablet;
     private String phone;
 
-    // 즐겨찾기한 상품 ID를 저장하는 필드 추가
+//     즐겨찾기한 상품 ID를 저장하는 필드 추가
     private Set<String> favoriteProductIds;
 
     public Users() {
@@ -24,7 +24,7 @@ public class Users implements Serializable {
         this.laptop = laptop;
         this.tablet = tablet;
         this.phone = phone;
-        this.favoriteProductIds = new HashSet<>();
+//        this.favoriteProductIds = new HashSet<>();
     }
 
     // Getter & Setter

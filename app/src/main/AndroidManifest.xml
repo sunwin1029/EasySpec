@@ -36,13 +36,13 @@
             android:exported="true" />
         <activity
             android:name=".ProfileActivity"
-            android:exported="false" />
+            android:exported="true" />
         <activity
             android:name=".LogIn.SignUpStep2Activity"
-            android:exported="false" />
+            android:exported="true" />
         <activity
             android:name=".LogIn.SignUpStep1Activity"
-            android:exported="false" />
+            android:exported="true" />
         <activity
             android:name=".MainActivity"
             android:exported="true" />
