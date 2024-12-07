@@ -2,6 +2,7 @@ package com.example.easyspec.EachProductPage;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -77,7 +78,19 @@ public class EachProductPage extends AppCompatActivity {
                     .addToBackStack(null)
                     .commit();
         });
+
+        Button basicInfoButton = findViewById(R.id.BasicInformationInEachProduct);
+        basicInfoButton.setOnClickListener(v -> {
+            DetailInfoFragment fragment = DetailInfoFragment.newInstance(productId);
+
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(android.R.id.content, fragment)
+                    .addToBackStack(null)
+                    .commit();
+        });
     }
+
 
     private void fetchProductItemFromFirebase(String productId) {
         DatabaseReference productRef = FirebaseDatabase.getInstance()
