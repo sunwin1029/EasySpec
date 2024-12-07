@@ -18,6 +18,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -177,9 +178,11 @@ public class ReviewFragment extends Fragment {
 
             // Firebase 데이터베이스에 저장
             reviewRef.child(reviewId).setValue(reviewData)
-                    .addOnSuccessListener(unused ->
-                            Log.d("ReviewFragment", "리뷰 저장 성공!")
-                    )
+                    .addOnSuccessListener(unused -> {
+                        Log.d("ReviewFragment", "리뷰 저장 성공!");
+                        // 포인트 추가 (처음 저장일 때만)
+                        updateUserPoints(10);
+                    })
                     .addOnFailureListener(e ->
                             Log.e("ReviewFragment", "리뷰 저장 실패", e)
                     );
@@ -207,5 +210,40 @@ public class ReviewFragment extends Fragment {
             Log.e("ReviewFragment", "기존 리뷰 ID를 찾을 수 없습니다.");
         }
     }
+
+    private void updateUserPoints(int pointsToAdd) {
+        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("Users").child(userId).child("point");
+
+        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                Long currentPoints = snapshot.getValue(Long.class); // 현재 포인트 값 가져오기
+                if (currentPoints != null) {
+                    userRef.setValue(currentPoints + pointsToAdd) // 포인트 추가
+                            .addOnSuccessListener(unused -> {
+                                Log.d("ReviewFragment", "포인트 업데이트 성공!");
+                            })
+                            .addOnFailureListener(e ->
+                                    Log.e("ReviewFragment", "포인트 업데이트 실패", e)
+                            );
+                } else {
+                    // 포인트 값이 없을 경우 초기화 후 업데이트
+                    userRef.setValue(pointsToAdd)
+                            .addOnSuccessListener(unused -> {
+                                Log.d("ReviewFragment", "포인트 초기화 및 업데이트 성공!");
+                            })
+                            .addOnFailureListener(e ->
+                                    Log.e("ReviewFragment", "포인트 초기화 실패", e)
+                            );
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("ReviewFragment", "포인트 정보 로드 실패", error.toException());
+            }
+        });
+    }
+
 
 }

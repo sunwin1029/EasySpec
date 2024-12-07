@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -227,6 +228,8 @@ public class InventoryProductPage extends AppCompatActivity {
             String productId = productItem.getId();
             String productName = productItem.getName();
 
+            loadProductImage(productId, holder.binding.productImage);
+
             holder.binding.productName.setText(productName);
             holder.binding.productPrice.setText(String.format("₩%,d", productItem.getPrice()));
             holder.binding.ratingText.setText(String.format("%.1f", productItem.getAverageRating()));
@@ -423,5 +426,22 @@ public class InventoryProductPage extends AppCompatActivity {
         return item.getIT() + item.getEnglish() + item.getNaturalScience() +
                 item.getEconomicsAndTrade() + item.getLaw() + item.getSocialScience();
     }
+
+    private void loadProductImage(String productId, ImageView productImage) {
+        String imageName = productId.toLowerCase(); // product1, product2 등
+        int imageResId = productImage.getContext().getResources().getIdentifier(
+                imageName, "drawable", productImage.getContext().getPackageName()
+        );
+
+        Log.d("ProductImage", "ProductId: " + productId + ", ImageName: " + imageName + ", ResId: " + imageResId);
+
+        if (imageResId != 0) {
+            productImage.setImageResource(imageResId);
+        } else {
+            productImage.setImageResource(R.drawable.iphone15_promax);
+        }
+    }
+
+
 
 }

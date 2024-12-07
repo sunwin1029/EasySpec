@@ -43,26 +43,28 @@ public class InnerReviewAdapter extends RecyclerView.Adapter<InnerReviewAdapter.
         InnerReviewItem reviewItem = reviewItems.get(position);
 
         holder.department.setText(reviewItem.getDepartment());
-        holder.reviewText.setText("리뷰를 보려면 클릭하세요. 1포인트가 소모됩니다(최초 1회만)"); // 리뷰 내용은 기본적으로 숨김
         holder.goodCount.setText(String.valueOf(reviewItem.getGoodCount()));
 
-        String reviewId = reviewItem.getReviewId();
-        String feature = reviewItem.getFeature(); // feature 추가 필요
+        String feature = reviewItem.getFeature(); // 해당 리뷰의 feature
+        String productId = reviewItem.getProductId(); // 제품 ID
         DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("Users").child(userId);
-        DatabaseReference productFeatureRef = userRef.child("usedFeatures").child(reviewItem.getProductId()).child(feature);
+        DatabaseReference productFeatureRef = userRef.child("usedFeatures").child(productId).child(feature);
 
-        // 리뷰 클릭 리스너
-        holder.itemView.setOnClickListener(v -> {
-            productFeatureRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    boolean alreadyUsed = snapshot.exists() && snapshot.getValue(Boolean.class);
+        // 초기화: 포인트 사용 여부 확인
+        productFeatureRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                boolean alreadyUsed = snapshot.exists() && snapshot.getValue(Boolean.class);
 
-                    if (alreadyUsed) {
-                        // 이미 포인트를 사용했음: 리뷰 표시
-                        holder.reviewText.setText(reviewItem.getReviewText());
-                    } else {
-                        // 포인트 확인 및 차감
+                if (alreadyUsed) {
+                    // 포인트가 이미 사용된 경우: 리뷰 내용을 바로 표시
+                    holder.reviewText.setText(reviewItem.getReviewText());
+                } else {
+                    // 포인트가 사용되지 않은 경우: 안내 텍스트 표시
+                    holder.reviewText.setText("리뷰를 보려면 클릭하세요. 1포인트가 소모됩니다(최초 1회만)");
+
+                    // 클릭 리스너 설정
+                    holder.itemView.setOnClickListener(v -> {
                         userRef.child("point").addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot pointSnapshot) {
@@ -70,10 +72,10 @@ public class InnerReviewAdapter extends RecyclerView.Adapter<InnerReviewAdapter.
                                 if (points != null && points >= 1) {
                                     // 포인트 차감 및 기록
                                     userRef.child("point").setValue(points - 1);
-                                    productFeatureRef.setValue(true);
+                                    productFeatureRef.setValue(true); // 사용 기록 저장
                                     holder.reviewText.setText(reviewItem.getReviewText());
                                 } else {
-                                    // 포인트 부족
+                                    // 포인트 부족 시 메시지 표시
                                     holder.reviewText.setText("포인트가 부족합니다.");
                                 }
                             }
@@ -83,19 +85,16 @@ public class InnerReviewAdapter extends RecyclerView.Adapter<InnerReviewAdapter.
                                 Log.e("InnerReviewAdapter", "Failed to fetch user points", error.toException());
                             }
                         });
-                    }
+                    });
                 }
+            }
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    Log.e("InnerReviewAdapter", "Failed to fetch usedFeatures", error.toException());
-                }
-            });
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("InnerReviewAdapter", "Failed to fetch usedFeatures", error.toException());
+            }
         });
     }
-
-
-
 
     @Override
     public int getItemCount() {
@@ -121,5 +120,4 @@ public class InnerReviewAdapter extends RecyclerView.Adapter<InnerReviewAdapter.
                 : ContextCompat.getColor(button.getContext(), R.color.black); // 기본 상태일 때 검정색
         button.setColorFilter(color);
     }
-
 }

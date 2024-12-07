@@ -2,6 +2,7 @@ package com.example.easyspec.EachProductPage;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -136,8 +137,7 @@ public class EachProductPage extends AppCompatActivity {
         binding.NameInEachProduct.setText(item.getName());
         binding.PriceInEachProduct.setText(String.format("₩%,d", item.getPrice()));
         binding.ratingInEachProduct.setText(String.format("%.1f", item.getAverageRating()));
-        binding.ImageInEachProduct.setImageResource(item.getImageResource() != null ?
-                item.getImageResource() : R.drawable.iphone15_promax);
+        loadProductImage(item.getId(), binding.ImageInEachProduct);
     }
 
     private void setupRecyclerView() {
@@ -168,6 +168,22 @@ public class EachProductPage extends AppCompatActivity {
                     .getReference("ProductItems")
                     .child(productItem.getId());
             productRef.removeEventListener(productListener);
+        }
+    }
+
+    private void loadProductImage(String productId, ImageView productImage) {
+        // productId를 기반으로 drawable 리소스 이름 생성
+        String imageName = productId.toLowerCase(); // 예: product1
+        int imageResId = productImage.getContext().getResources().getIdentifier(
+                imageName, "drawable", productImage.getContext().getPackageName()
+        );
+
+        if (imageResId != 0) {
+            // 유효한 이미지가 있는 경우 설정
+            productImage.setImageResource(imageResId);
+        } else {
+            // 유효한 이미지가 없는 경우 기본 이미지 설정
+            productImage.setImageResource(R.drawable.iphone15_promax);
         }
     }
 }
