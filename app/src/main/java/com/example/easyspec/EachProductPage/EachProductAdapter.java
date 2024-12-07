@@ -1,5 +1,6 @@
 package com.example.easyspec.EachProductPage;
 
+import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -139,51 +140,102 @@ public class EachProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     private void setupInnerRecyclerView(RecyclerView recyclerView, String feature) {
         DatabaseReference reviewsRef = FirebaseDatabase.getInstance().getReference("Reviews");
+        DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("Users");
+
         reviewsRef.orderByChild("productId").equalTo(productId)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         List<InnerReviewItem> reviewItems = new ArrayList<>();
-                        AtomicInteger pendingCallbacks = new AtomicInteger((int) snapshot.getChildrenCount());
-
-                        if (pendingCallbacks.get() == 0) {
-                            // 데이터가 없을 경우 처리
-                            recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext()));
-                            recyclerView.setAdapter(new InnerReviewAdapter(reviewItems));
-                            return;
-                        }
+                        AtomicInteger pendingTasks = new AtomicInteger((int) snapshot.getChildrenCount());
 
                         for (DataSnapshot reviewSnapshot : snapshot.getChildren()) {
+                            String reviewId = reviewSnapshot.getKey(); // 리뷰 ID 가져오기
                             String reviewFeature = reviewSnapshot.child("feature").getValue(String.class);
+
                             if (feature.equals(reviewFeature)) {
                                 String reviewText = reviewSnapshot.child("reviewText").getValue(String.class);
-                                int likes = reviewSnapshot.child("likes").getValue(Integer.class) != null ?
-                                        reviewSnapshot.child("likes").getValue(Integer.class) : 0;
+                                int likes = reviewSnapshot.child("likes").getValue(Integer.class) != null
+                                        ? reviewSnapshot.child("likes").getValue(Integer.class)
+                                        : 0;
                                 String userId = reviewSnapshot.child("userId").getValue(String.class);
 
-                                fetchUserDepartment(userId, department -> {
-                                    reviewItems.add(new InnerReviewItem(department, reviewText, likes));
-                                    if (pendingCallbacks.decrementAndGet() == 0) {
-                                        // 모든 데이터가 준비된 후 어댑터 설정
-                                        recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext(), LinearLayoutManager.HORIZONTAL, false));
-                                        recyclerView.setAdapter(new InnerReviewAdapter(reviewItems));
-                                    }
-                                });
+                                // userId로부터 university 조회
+                                usersRef.child(userId).child("university")
+                                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(@NonNull DataSnapshot userSnapshot) {
+                                                String department = userSnapshot.getValue(String.class);
+                                                reviewItems.add(new InnerReviewItem(
+                                                        department != null ? department : "Unknown",
+                                                        reviewText,
+                                                        likes,
+                                                        reviewId,
+                                                        feature,
+                                                        productId// reviewId 추가
+                                                ));
+
+                                                if (pendingTasks.decrementAndGet() == 0) {
+                                                    // **좋아요 순으로 정렬**
+                                                    reviewItems.sort((item1, item2) -> Integer.compare(item2.getGoodCount(), item1.getGoodCount()));
+                                                    setupRecyclerViewWithData(recyclerView, reviewItems);
+                                                }
+                                            }
+
+                                            @Override
+                                            public void onCancelled(@NonNull DatabaseError error) {
+                                                Log.e("setupInnerRecyclerView", "Failed to fetch user data: " + error.getMessage());
+                                                if (pendingTasks.decrementAndGet() == 0) {
+                                                    // **좋아요 순으로 정렬**
+                                                    reviewItems.sort((item1, item2) -> Integer.compare(item2.getGoodCount(), item1.getGoodCount()));
+                                                    setupRecyclerViewWithData(recyclerView, reviewItems);
+                                                }
+                                            }
+                                        });
                             } else {
-                                if (pendingCallbacks.decrementAndGet() == 0) {
-                                    recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext(), LinearLayoutManager.HORIZONTAL, false));
-                                    recyclerView.setAdapter(new InnerReviewAdapter(reviewItems));
+                                if (pendingTasks.decrementAndGet() == 0) {
+                                    // **좋아요 순으로 정렬**
+                                    reviewItems.sort((item1, item2) -> Integer.compare(item2.getGoodCount(), item1.getGoodCount()));
+                                    setupRecyclerViewWithData(recyclerView, reviewItems);
                                 }
                             }
+                        }
+
+                        if (pendingTasks.get() == 0) {
+                            // **좋아요 순으로 정렬**
+                            reviewItems.sort((item1, item2) -> Integer.compare(item2.getGoodCount(), item1.getGoodCount()));
+                            setupRecyclerViewWithData(recyclerView, reviewItems);
                         }
                     }
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {
-                        Log.e("EachProductAdapter", "리뷰 데이터를 가져오는 중 오류 발생: " + error.getMessage());
+                        Log.e("setupInnerRecyclerView", "Failed to fetch reviews: " + error.getMessage());
+                        setupRecyclerViewWithData(recyclerView, new ArrayList<>());
                     }
                 });
     }
+
+
+
+    private void setupRecyclerViewWithData(RecyclerView recyclerView, List<InnerReviewItem> reviewItems) {
+        recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext(), LinearLayoutManager.HORIZONTAL, false));
+
+        // 16dp 간격 추가
+        int spaceInPixels = dpToPx(16, recyclerView.getContext());
+        if (recyclerView.getItemDecorationCount() == 0) {
+            recyclerView.addItemDecoration(new HorizontalSpaceItemDecoration(spaceInPixels));
+        }
+        if (reviewItems.isEmpty()) {
+            recyclerView.setAdapter(new EmptyReviewAdapter());
+        } else {
+            recyclerView.setAdapter(new InnerReviewAdapter(reviewItems, userId));
+        }
+
+        recyclerView.requestLayout();
+    }
+
+
 
 
 
@@ -209,4 +261,10 @@ public class EachProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     interface DepartmentCallback {
         void onDepartmentFetched(String department);
     }
+
+    public static int dpToPx(int dp, Context context) {
+        float density = context.getResources().getDisplayMetrics().density;
+        return Math.round(dp * density);
+    }
+
 }

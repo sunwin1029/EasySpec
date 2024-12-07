@@ -39,7 +39,7 @@ public class IntentTest extends AppCompatActivity {
                         SearchData searchData = new SearchData(
                                 -1,              // 제품 유형: 예시로 "노트북" 설정
                                 null,        // 이름: 예시로 "Galaxy" 설정
-                                1000000,          // 최소 가격
+                                -1,          // 최소 가격
                                 -1,         // 최대 가격
                                 -1                // 회사: 삼성 (1)
                         );
