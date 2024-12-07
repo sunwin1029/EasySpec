@@ -58,5 +58,11 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
+        binding.button5.setOnClickListener(v -> {
+            // LogoutFragment 띄우기
+            LogoutFragment logoutFragment = new LogoutFragment();
+            logoutFragment.show(getSupportFragmentManager(), "logoutFragment");
+        });
+
     }
 }

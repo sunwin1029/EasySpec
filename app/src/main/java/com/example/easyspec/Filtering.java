@@ -1,5 +1,6 @@
 package com.example.easyspec;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -15,6 +16,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.easyspec.Data.SearchData;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -196,18 +198,20 @@ public class Filtering extends AppCompatActivity {
         int minPrice = minPriceEditText.getText().toString().isEmpty() ? -1 : Integer.parseInt(minPriceEditText.getText().toString());
         int maxPrice = maxPriceEditText.getText().toString().isEmpty() ? -1 : Integer.parseInt(maxPriceEditText.getText().toString());
         int deviceType = deviceTypeSpinner.getSelectedItemPosition(); // None: -1, laptops: 1, phones: 2, tablets: 3
-
-        // 제조사 미선택 상태는 -1로 처리
         int manufacturer = selectedManufacturerIndex;
 
-        Log.d("FILTER_RESULT", String.format(
-                "Product Name: %s, Device Type: %d, Manufacturer: %d, Min Price: %d, Max Price: %d",
-                productName.isEmpty() ? null : productName, // 제품명 없으면 -1
-                deviceType == 0 ? -1 : deviceType, // 기기 종류 인덱스 출력
-                manufacturer, // 제조사 숫자 출력
-                minPrice, // 최소 가격 출력
-                maxPrice  // 최대 가격 출력
-        ));
-    }
+        // SearchData 객체 생성
+        SearchData searchData = new SearchData(
+                deviceType == 0 ? -1 : deviceType, // Spinner의 선택값 (-1이면 선택 안 함)
+                productName.isEmpty() ? null : productName, // 제품명 없으면 null
+                minPrice,
+                maxPrice,
+                manufacturer
+        );
 
+        // Intent에 SearchData 추가
+//        Intent intent = new Intent(this, ResultActivity.class);
+//        intent.putExtra("searchData", searchData);
+//        startActivity(intent);
+    }
 }
