@@ -30,7 +30,6 @@ public class MyReviewAdapter extends RecyclerView.Adapter<MyReviewAdapter.ViewHo
         this.context = context;
     }
 
-
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -66,8 +65,8 @@ public class MyReviewAdapter extends RecyclerView.Adapter<MyReviewAdapter.ViewHo
         });
 
         // 삭제 버튼 클릭 리스너
+        // 삭제 버튼 클릭 리스너
         holder.btnDelete.setOnClickListener(v -> {
-            // 삭제하기 위한 로직
             String reviewKey = reviewItem.getKey(); // 리뷰의 고유 키 가져오기
             if (reviewKey != null && !reviewKey.isEmpty()) {
                 DatabaseReference databaseReference = FirebaseDatabase.getInstance()
@@ -77,9 +76,19 @@ public class MyReviewAdapter extends RecyclerView.Adapter<MyReviewAdapter.ViewHo
                 databaseReference.removeValue().addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         // Firebase에서 성공적으로 삭제된 경우
-                        reviewItemList.remove(holder.getAdapterPosition()); // 해당 아이템 리스트에서 삭제
-                        notifyItemRemoved(holder.getAdapterPosition()); // RecyclerView 갱신
-                        Toast.makeText(context, "리뷰가 삭제되었습니다.", Toast.LENGTH_SHORT).show();
+                        int position2 = holder.getAdapterPosition();
+                        if (position2 != RecyclerView.NO_POSITION) {
+                            reviewItemList.remove(position2); // 해당 아이템 리스트에서 삭제
+                            notifyItemRemoved(position2); // RecyclerView 갱신
+
+                            // 리뷰가 삭제되었음을 사용자에게 알림
+                            Toast.makeText(context, "리뷰가 삭제되었습니다.", Toast.LENGTH_SHORT).show();
+
+                            // 리뷰 리스트 새로 고침
+                            if (context instanceof MyReviewActivity) {
+                                ((MyReviewActivity) context).reloadReviews();
+                            }
+                        }
                     } else {
                         // 삭제 실패 시 처리
                         Toast.makeText(context, "리뷰 삭제에 실패했습니다: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
@@ -89,8 +98,8 @@ public class MyReviewAdapter extends RecyclerView.Adapter<MyReviewAdapter.ViewHo
                 Toast.makeText(context, "리뷰 키가 유효하지 않습니다.", Toast.LENGTH_SHORT).show();
             }
         });
-    }
 
+    }
 
     @Override
     public int getItemCount() {
