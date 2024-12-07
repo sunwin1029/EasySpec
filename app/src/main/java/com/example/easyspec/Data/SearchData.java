@@ -1,6 +1,8 @@
 package com.example.easyspec.Data;
 
-public class SearchData {
+import java.io.Serializable;
+
+public class SearchData implements Serializable {
 
     private int productType;
     private String name;
@@ -14,7 +16,7 @@ public class SearchData {
         this.name = name;
         this.minimumPrice = minimumPrice;
         this.maxPrice = maxPrice;
-        this.company=company;
+        this.company = company;
     }
 
     public int getProductType() {
@@ -33,5 +35,7 @@ public class SearchData {
         return minimumPrice;
     }
 
-    public int getCompany(){return company;}
+    public int getCompany() {
+        return company;
+    }
 }

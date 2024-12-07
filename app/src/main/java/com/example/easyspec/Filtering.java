@@ -210,8 +210,8 @@ public class Filtering extends AppCompatActivity {
         );
 
         // Intent에 SearchData 추가
-//        Intent intent = new Intent(this, ResultActivity.class);
-//        intent.putExtra("searchData", searchData);
-//        startActivity(intent);
+        Intent intent = new Intent(this, InventoryProductPage.class);
+        intent.putExtra("searchData", searchData);
+        startActivity(intent);
     }
 }

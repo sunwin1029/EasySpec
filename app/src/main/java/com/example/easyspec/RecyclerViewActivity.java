@@ -9,9 +9,9 @@ import java.util.List;
 
 public class RecyclerViewActivity extends AppCompatActivity {
 
-    private int[] imageResIds = {
+    private final int[] imageResIds = {
             R.drawable.cpu,
-            R.drawable.ssd, // no error
+            R.drawable.ssd,
             R.drawable.gpu,
             R.drawable.ram,
             R.drawable.port,
