@@ -64,7 +64,7 @@ public class IntentTest extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 int index = 0;
                 for (DataSnapshot userSnapshot : snapshot.getChildren()) {
-                    if (index == 1) { // 두 번째 유저
+                    if (index == 0) { // 두 번째 유저
                         String userId = userSnapshot.getKey();
                         callback.onUserIdFetched(userId);
                         return;
