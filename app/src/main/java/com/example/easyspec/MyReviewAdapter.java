@@ -21,10 +21,12 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.List;
 
+// 리뷰 항목을 RecyclerView에 표시하는 어댑터 클래스
 public class MyReviewAdapter extends RecyclerView.Adapter<MyReviewAdapter.ViewHolder> {
-    private List<ReviewItem> reviewItemList;
-    private Context context;
+    private List<ReviewItem> reviewItemList; // 리뷰 데이터를 담는 리스트
+    private Context context; // 현재 액티비티 또는 프래그먼트의 컨텍스트
 
+    // 생성자: 리뷰 데이터와 컨텍스트를 초기화
     public MyReviewAdapter(List<ReviewItem> reviewItemList, Context context) {
         this.reviewItemList = reviewItemList;
         this.context = context;
@@ -33,68 +35,74 @@ public class MyReviewAdapter extends RecyclerView.Adapter<MyReviewAdapter.ViewHo
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        // XML 레이아웃을 View 객체로 변환 (item_my_review 레이아웃 사용)
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_my_review, parent, false);
-        return new ViewHolder(view);
+        return new ViewHolder(view); // 뷰 홀더 생성
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        // 현재 위치의 리뷰 데이터 가져오기
         ReviewItem reviewItem = reviewItemList.get(position);
 
         // 제품 이미지 설정
         holder.productImage.setImageResource(reviewItem.getImageResource());
+        // 제품명 설정
         holder.productName.setText(reviewItem.getProductId());
-        holder.reviewText.setText(reviewItem.getReviewText()); // 리뷰 내용 설정
-        holder.reviewScore.setText(String.valueOf(reviewItem.getlikes())); // 리뷰 점수 설정
+        // 리뷰 내용 설정
+        holder.reviewText.setText(reviewItem.getReviewText());
+        // 좋아요 점수 설정
+        holder.reviewScore.setText(String.valueOf(reviewItem.getlikes()));
 
-        // 수정 버튼 클릭 리스너
+        // 수정 버튼 클릭 리스너 설정
         holder.btnEdit.setOnClickListener(v -> {
-            // 수정하기 위한 로직 (ReviewFragment로 이동)
+            // 수정 기능: ReviewFragment로 이동
             ReviewFragment reviewFragment = ReviewFragment.newInstance(
                     reviewItem.getProductId(),
-                    reviewItem.getFeature(), // Assuming ReviewItem has a getFeature method
-                    reviewItem.getUserId() // Assuming ReviewItem has a getUserId method
+                    reviewItem.getFeature(), // 리뷰의 기능 정보
+                    reviewItem.getUserId() // 리뷰 작성자 정보
             );
 
-            // Navigate to the ReviewFragment
+            // ReviewFragment로 화면 전환
             FragmentManager fragmentManager = ((AppCompatActivity) context).getSupportFragmentManager();
             fragmentManager.beginTransaction()
-                    .replace(R.id.fragmentContainer, reviewFragment) // Ensure you have the correct container ID
-                    .addToBackStack(null) // Allows users to navigate back
+                    .replace(R.id.fragmentContainer, reviewFragment) // 프래그먼트를 삽입할 컨테이너 ID
+                    .addToBackStack(null) // 뒤로가기 스택 추가
                     .commit();
         });
 
-        // 삭제 버튼 클릭 리스너
-        // 삭제 버튼 클릭 리스너
+        // 삭제 버튼 클릭 리스너 설정
         holder.btnDelete.setOnClickListener(v -> {
+            // Firebase에서 리뷰 데이터를 삭제
             String reviewKey = reviewItem.getKey(); // 리뷰의 고유 키 가져오기
             if (reviewKey != null && !reviewKey.isEmpty()) {
                 DatabaseReference databaseReference = FirebaseDatabase.getInstance()
-                        .getReference("Reviews") // 리뷰 데이터 경로
-                        .child(reviewKey); // 리뷰의 고유 키
+                        .getReference("Reviews") // Firebase 경로: "Reviews"
+                        .child(reviewKey); // 리뷰 고유 키를 경로로 설정
 
                 databaseReference.removeValue().addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        // Firebase에서 성공적으로 삭제된 경우
-                        int position2 = holder.getAdapterPosition();
+                        // Firebase에서 삭제 성공 시
+                        int position2 = holder.getAdapterPosition(); // 현재 아이템 위치
                         if (position2 != RecyclerView.NO_POSITION) {
-                            reviewItemList.remove(position2); // 해당 아이템 리스트에서 삭제
+                            reviewItemList.remove(position2); // 리스트에서 해당 리뷰 삭제
                             notifyItemRemoved(position2); // RecyclerView 갱신
 
-                            // 리뷰가 삭제되었음을 사용자에게 알림
+                            // 삭제 완료 메시지 표시
                             Toast.makeText(context, "리뷰가 삭제되었습니다.", Toast.LENGTH_SHORT).show();
 
-                            // 리뷰 리스트 새로 고침
+                            // 리뷰 목록 새로고침 (MyReviewActivity가 컨텍스트일 경우)
                             if (context instanceof MyReviewActivity) {
-                                ((MyReviewActivity) context).reloadReviews();
+                                ((MyReviewActivity) context).reloadReviews(); // 새로고침 메서드 호출
                             }
                         }
                     } else {
-                        // 삭제 실패 시 처리
+                        // Firebase 삭제 실패 시 에러 메시지 표시
                         Toast.makeText(context, "리뷰 삭제에 실패했습니다: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
             } else {
+                // 리뷰 키가 유효하지 않은 경우
                 Toast.makeText(context, "리뷰 키가 유효하지 않습니다.", Toast.LENGTH_SHORT).show();
             }
         });
@@ -103,22 +111,25 @@ public class MyReviewAdapter extends RecyclerView.Adapter<MyReviewAdapter.ViewHo
 
     @Override
     public int getItemCount() {
+        // 리뷰 리스트 크기 반환
         return reviewItemList.size();
     }
 
+    // RecyclerView 아이템의 뷰를 관리하는 ViewHolder 클래스
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        ImageView productImage;
-        TextView productName, reviewText, reviewScore;
-        ImageButton btnEdit, btnDelete;
+        ImageView productImage; // 제품 이미지
+        TextView productName, reviewText, reviewScore; // 제품명, 리뷰 내용, 리뷰 점수
+        ImageButton btnEdit, btnDelete; // 수정 버튼, 삭제 버튼
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            productImage = itemView.findViewById(R.id.product_image); // XML에서 이미지뷰 ID
-            productName = itemView.findViewById(R.id.product_name); // 제품명 TextView
-            reviewText = itemView.findViewById(R.id.review_text); // 리뷰 내용 TextView
-            reviewScore = itemView.findViewById(R.id.review_score); // 리뷰 점수 TextView
-            btnEdit = itemView.findViewById(R.id.btn_edit); // 수정 버튼 ID
-            btnDelete = itemView.findViewById(R.id.btn_delete); // 삭제 버튼 ID
+            // XML에서 뷰 초기화
+            productImage = itemView.findViewById(R.id.product_image);
+            productName = itemView.findViewById(R.id.product_name);
+            reviewText = itemView.findViewById(R.id.review_text);
+            reviewScore = itemView.findViewById(R.id.review_score);
+            btnEdit = itemView.findViewById(R.id.btn_edit);
+            btnDelete = itemView.findViewById(R.id.btn_delete);
         }
     }
 }

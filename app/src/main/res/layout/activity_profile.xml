@@ -5,29 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- 기본 이미지 아이콘: 중앙 상단에 위치 -->
-    <ImageView
-        android:id="@+id/profileImageView"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:src="@drawable/baseline_person_24"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="16dp" />
-
-    <!-- 프로필 변경 버튼 -->
-    <Button
-        android:id="@+id/changeProfileButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="프로필 변경"
-        android:backgroundTint="#87CEEB"
-        app:layout_constraintTop_toBottomOf="@id/profileImageView"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="8dp" />
-
     <!-- 회원 아이디 텍스트 -->
     <TextView
         android:id="@+id/userIdText"
@@ -35,12 +12,13 @@
         android:layout_height="wrap_content"
         android:text="회원 아이디"
         android:textSize="16sp"
-        app:layout_constraintTop_toBottomOf="@id/changeProfileButton"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="16dp"
         android:layout_marginStart="8dp" />
 
+    <!-- 회원 아이디 아래 정보 -->
     <TextView
         android:id="@+id/newTextBelowUserId"
         android:layout_width="0dp"
