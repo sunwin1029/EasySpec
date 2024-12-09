@@ -17,6 +17,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.easyspec.Data.SearchData;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -193,6 +194,16 @@ public class Filtering extends AppCompatActivity {
     }
 
     private void fetchFilteredProducts() {
+        // Firebase Authentication을 통해 현재 사용자 UID 가져오기
+        String userId;
+        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+            userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        } else {
+            // 로그인하지 않은 상태 처리
+            Toast.makeText(this, "로그인 후 이용 가능합니다.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         // 입력값 가져오기
         String productName = productNameEditText.getText().toString();
         int minPrice = minPriceEditText.getText().toString().isEmpty() ? -1 : Integer.parseInt(minPriceEditText.getText().toString());
@@ -209,12 +220,11 @@ public class Filtering extends AppCompatActivity {
                 manufacturer
         );
 
-        String userId="exampleUserId";
-
         // Intent에 SearchData 추가
         Intent intent = new Intent(this, InventoryProductPage.class);
         intent.putExtra("searchData", searchData);
         intent.putExtra("userId", userId);
         startActivity(intent);
     }
+
 }
