@@ -19,6 +19,7 @@ import com.example.easyspec.Data.SearchData;
 import com.example.easyspec.EachProductPage.EachProductPage;
 import com.example.easyspec.databinding.ActivityInventoryProductPageBinding;
 import com.example.easyspec.databinding.InventoryProductPageLayoutBinding;
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -48,6 +49,11 @@ public class InventoryProductPage extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityInventoryProductPageBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        // Firebase 초기화 (이미 초기화되지 않았다면)
+        if (FirebaseApp.getApps(this).isEmpty()) {
+            FirebaseApp.initializeApp(this);  // Firebase 초기화
+        }
 
         // Firebase 참조 초기화
         databaseReference = FirebaseDatabase.getInstance().getReference("ProductItems");

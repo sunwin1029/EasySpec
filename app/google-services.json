@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "815075916673",
+    "firebase_url": "https://easyspec-default-rtdb.firebaseio.com",
     "project_id": "easyspec",
     "storage_bucket": "easyspec.firebasestorage.app"
   },

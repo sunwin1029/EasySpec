@@ -209,9 +209,12 @@ public class Filtering extends AppCompatActivity {
                 manufacturer
         );
 
+        String userId="exampleUserId";
+
         // Intent에 SearchData 추가
         Intent intent = new Intent(this, InventoryProductPage.class);
         intent.putExtra("searchData", searchData);
+        intent.putExtra("userId", userId);
         startActivity(intent);
     }
 }
