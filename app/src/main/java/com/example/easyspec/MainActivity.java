@@ -1,8 +1,11 @@
 package com.example.easyspec;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Gravity;
+import android.view.inputmethod.InputMethodManager;
+
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.easyspec.databinding.ActivityMainBinding;
 import androidx.appcompat.widget.SearchView;
@@ -21,8 +24,12 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        // SearchView 초기화 메서드 호출
-        initSearchView();
+        // 서치버튼 클릭 시 필터링 화면으로 이동
+        binding.searchButton.setOnClickListener(v -> {
+            // 필터링 화면으로 이동
+            Intent intent = new Intent(MainActivity.this, Filtering.class);
+            startActivity(intent);
+        });
 
         // 사이드바 열기 버튼 클릭 시 사이드바 열기
         binding.openSidebarButton.setOnClickListener(v -> {
@@ -45,23 +52,17 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(MainActivity.this,MyReviewActivity.class);
             startActivity(intent);
         });
-    }
 
-    private void initSearchView() {
-        // SearchView 초기화
-        binding.search.setSubmitButtonEnabled(true);
-        binding.search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                // @TODO
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                // @TODO
-                return true;
-            }
+        binding.button4.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, RecyclerViewActivity.class);
+            startActivity(intent);
         });
+
+        binding.button5.setOnClickListener(v -> {
+            // LogoutFragment 띄우기
+            LogoutFragment logoutFragment = new LogoutFragment();
+            logoutFragment.show(getSupportFragmentManager(), "logoutFragment");
+        });
+
     }
 }
