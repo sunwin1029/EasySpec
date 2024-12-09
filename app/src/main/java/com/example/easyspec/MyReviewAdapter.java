@@ -1,6 +1,7 @@
 package com.example.easyspec;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,9 +47,10 @@ public class MyReviewAdapter extends RecyclerView.Adapter<MyReviewAdapter.ViewHo
         ReviewItem reviewItem = reviewItemList.get(position);
 
         // 제품 이미지 설정
-        holder.productImage.setImageResource(reviewItem.getImageResource());
+        loadProductImage(reviewItem.getProductId(), holder.productImage);
+
         // 제품명 설정
-        holder.productName.setText(reviewItem.getProductId());
+        holder.productName.setText(reviewItem.getName());
         // 리뷰 내용 설정
         holder.reviewText.setText(reviewItem.getReviewText());
         // 좋아요 점수 설정
@@ -106,7 +108,21 @@ public class MyReviewAdapter extends RecyclerView.Adapter<MyReviewAdapter.ViewHo
                 Toast.makeText(context, "리뷰 키가 유효하지 않습니다.", Toast.LENGTH_SHORT).show();
             }
         });
+    }
 
+    private void loadProductImage(String productId, ImageView productImage) {
+        String imageName = productId.toLowerCase(); // product1, product2 등
+        int imageResId = productImage.getContext().getResources().getIdentifier(
+                imageName, "drawable", productImage.getContext().getPackageName()
+        );
+
+        Log.d("ProductImage", "ProductId: " + productId + ", ImageName: " + imageName + ", ResId: " + imageResId);
+
+        if (imageResId != 0) {
+            productImage.setImageResource(imageResId);
+        } else {
+            productImage.setImageResource(R.drawable.iphone15_promax);
+        }
     }
 
     @Override
