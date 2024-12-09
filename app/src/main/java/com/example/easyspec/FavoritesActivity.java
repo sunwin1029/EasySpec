@@ -3,14 +3,15 @@ package com.example.easyspec;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.easyspec.Data.ProductItem;
 import com.example.easyspec.EachProductPage.EachProductPage;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -23,22 +24,27 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FavoritesActivity extends AppCompatActivity {
+public class FavoritesActivity extends AppCompatActivity implements FavoritesAdapter.OnProductClickListener {
 
     private static final String TAG = "FavoriteProductsActivity";
 
-    private ListView favoritesListView;
+    private RecyclerView favoritesRecyclerView;
     private DatabaseReference usersRef;
     private String userId; // 현재 로그인한 사용자 ID
-    private List<String> favoriteProductIds = new ArrayList<>();
-    private List<String> favoriteProductNames = new ArrayList<>(); // 제품 이름 목록
+    private List<ProductItem> favoriteProducts = new ArrayList<>(); // 제품 목록
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_favorites);
 
-        favoritesListView = findViewById(R.id.favoritesListView);
+        favoritesRecyclerView = findViewById(R.id.favoritesRecyclerView);
+        favoritesRecyclerView.setLayoutManager(new LinearLayoutManager(this)); // 수직 레이아웃 설정
+
+        // DividerItemDecoration 추가
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(favoritesRecyclerView.getContext(),
+                LinearLayoutManager.VERTICAL);
+        favoritesRecyclerView.addItemDecoration(dividerItemDecoration);
 
         // Firebase Authentication을 통해 현재 사용자 ID 가져오기
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -68,12 +74,14 @@ public class FavoritesActivity extends AppCompatActivity {
                     String productId = productSnapshot.getKey();
                     String productName = productSnapshot.getValue(String.class);
                     if (productId != null && productName != null) {
-                        favoriteProductIds.add(productId);
-                        favoriteProductNames.add(productName);
+                        // 제품 정보 생성
+                        ProductItem productItem = new ProductItem(productName, 0, null, 0, "", "", 0, 0, false, null, 0, 0, 0, 0, 0, 0);
+                        productItem.setId(productId); // 제품 ID 설정
+                        favoriteProducts.add(productItem);
                     }
                 }
 
-                setupListView();
+                setupRecyclerView();
             }
 
             @Override
@@ -83,14 +91,14 @@ public class FavoritesActivity extends AppCompatActivity {
         });
     }
 
+    private void setupRecyclerView() {
+        FavoritesAdapter adapter = new FavoritesAdapter(favoriteProducts, this, this);
+        favoritesRecyclerView.setAdapter(adapter);
+    }
 
-    private void setupListView() {
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, favoriteProductNames);
-        favoritesListView.setAdapter(adapter);
-        favoritesListView.setOnItemClickListener((AdapterView<?> parent, android.view.View view, int position, long id) -> {
-            String selectedProductId = favoriteProductIds.get(position);
-            showProductDetails(selectedProductId);
-        });
+    @Override
+    public void onProductSelected(ProductItem productItem) {
+        showProductDetails(productItem.getId());
     }
 
     private void showProductDetails(String productId) {

@@ -22,9 +22,6 @@
             android:name=".EachProductPage.EachProductPage"
             android:exported="true" />
         <activity
-            android:name=".Firebase.FirebaseTestActivity"
-            android:exported="true" />
-        <activity
             android:name=".MyReviewActivity"
             android:exported="false" />
         <activity
