@@ -1,16 +1,12 @@
 package com.example.easyspec;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.Gravity;
-import android.view.inputmethod.InputMethodManager;
 
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.easyspec.databinding.ActivityMainBinding;
-import androidx.appcompat.widget.SearchView;
+
 import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -44,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         binding.button2.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this,StarList.class);
+            Intent intent = new Intent(MainActivity.this, FavoritesActivity.class);
             startActivity(intent);
         });
 
