@@ -2,6 +2,7 @@ package com.example.easyspec;
 
 import static android.content.ContentValues.TAG;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ArrayAdapter;
@@ -123,6 +124,10 @@ public class ProfileActivity extends AppCompatActivity {
                     updateUserNum(userId, currentUniversity, university);
                 }
                 Toast.makeText(ProfileActivity.this, "회원정보가 성공적으로 수정되었습니다.", Toast.LENGTH_SHORT).show();
+
+                startActivity(new Intent(ProfileActivity.this, MainActivity.class));
+                finish();
+
             } else {
                 Toast.makeText(ProfileActivity.this, "회원정보 수정 실패: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
             }

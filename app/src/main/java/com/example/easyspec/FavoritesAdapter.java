@@ -46,6 +46,9 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.View
         ProductItem productItem = favoritesList.get(position);
         holder.productName.setText(productItem.getName());
 
+        // 제품 가격 설정
+        holder.productPrice.setText(String.format("₩%d", productItem.getPrice())); // 가격을 문자열로 변환하여 설정
+
         // 제품 이미지 설정
         loadProductImage(productItem.getId(), holder.productImage);
 
@@ -75,12 +78,14 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.View
         TextView productName;
         ImageView productImage;
         ImageButton btnFavorite;
+        TextView productPrice;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             productName = itemView.findViewById(R.id.product_name);
             productImage = itemView.findViewById(R.id.product_image); // XML에서 제품 이미지 뷰 초기화
             btnFavorite = itemView.findViewById(R.id.btn_favorite); // 즐겨찾기 버튼 초기화
+            productPrice = itemView.findViewById(R.id.product_price);
         }
     }
 

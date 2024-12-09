@@ -72,16 +72,31 @@ public class FavoritesActivity extends AppCompatActivity implements FavoritesAda
                 // 즐겨찾기 제품 ID 및 이름을 가져오기
                 for (DataSnapshot productSnapshot : snapshot.getChildren()) {
                     String productId = productSnapshot.getKey();
-                    String productName = productSnapshot.getValue(String.class);
-                    if (productId != null && productName != null) {
-                        // 제품 정보 생성
-                        ProductItem productItem = new ProductItem(productName, 0, null, 0, "", "", 0, 0, false, null, 0, 0, 0, 0, 0, 0);
-                        productItem.setId(productId); // 제품 ID 설정
-                        favoriteProducts.add(productItem);
+                    if (productId != null) {
+                        // productId로 ProductItems에서 제품 정보를 가져오기
+                        DatabaseReference productRef = FirebaseDatabase.getInstance().getReference("ProductItems").child(productId);
+                        productRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot productSnapshot) {
+                                String productName = productSnapshot.child("name").getValue(String.class);
+                                Integer productPrice = productSnapshot.child("price").getValue(Integer.class); // 가격 정보 가져오기
+
+                                if (productName != null && productPrice != null) {
+                                    // 제품 정보 생성
+                                    ProductItem productItem = new ProductItem(productName, productPrice, null, 0, "", "", 0, 0, false, null, 0, 0, 0, 0, 0, 0);
+                                    productItem.setId(productId); // 제품 ID 설정
+                                    favoriteProducts.add(productItem);
+                                    setupRecyclerView(); // RecyclerView 업데이트
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+                                Log.e(TAG, "제품 데이터 로드 실패: " + error.getMessage());
+                            }
+                        });
                     }
                 }
-
-                setupRecyclerView();
             }
 
             @Override
@@ -90,6 +105,7 @@ public class FavoritesActivity extends AppCompatActivity implements FavoritesAda
             }
         });
     }
+
 
     private void setupRecyclerView() {
         FavoritesAdapter adapter = new FavoritesAdapter(favoriteProducts, this, this);
