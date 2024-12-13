@@ -1,0 +1,162 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@android:color/white">
+
+    <!-- 검색창 (최상단에 위치) -->
+    <EditText
+        android:id="@+id/productNameEditText"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:hint="제품명을 입력하세요"
+        android:inputType="text"
+        android:layout_marginTop="16dp"/>
+
+    <!-- 기기 종류 -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="기기 종류"
+        android:textSize="16sp" />
+
+    <Spinner
+        android:id="@+id/device_type_spinner"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginTop="8dp"
+        android:background="@android:drawable/editbox_background" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginVertical="16dp"
+        android:background="@android:color/darker_gray" />
+
+    <!-- 제조사 -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="제조사"
+        android:textSize="16sp" />
+
+    <GridLayout
+        android:id="@+id/manufacturer_radio_group"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:columnCount="3"
+        android:rowCount="2"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/radio_samsung"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Samsung" />
+
+        <RadioButton
+            android:id="@+id/radio_apple"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Apple" />
+
+        <RadioButton
+            android:id="@+id/radio_lg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="LG" />
+
+        <RadioButton
+            android:id="@+id/radio_xiaomi"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Xiaomi" />
+
+        <RadioButton
+            android:id="@+id/radio_lenovo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Lenovo" />
+
+        <RadioButton
+            android:id="@+id/radio_asus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Asus" />
+    </GridLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginVertical="16dp"
+        android:background="@android:color/darker_gray" />
+
+    <!-- 가격 필터 -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="가격"
+        android:textSize="16sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="8dp">
+
+        <EditText
+            android:id="@+id/min_price"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:hint="Minimum"
+            android:inputType="number"
+            android:background="@android:drawable/editbox_background" />
+
+        <EditText
+            android:id="@+id/max_price"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:hint="Maximum"
+            android:inputType="number"
+            android:background="@android:drawable/editbox_background"
+            android:layout_marginStart="8dp" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginVertical="16dp"
+        android:background="@android:color/darker_gray" />
+
+    <!-- 버튼 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginTop="16dp">
+
+        <Button
+            android:id="@+id/back_button"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:backgroundTint="#A9A9A9"
+            android:textColor="@android:color/white"
+            android:text="뒤로가기" />
+
+        <Button
+            android:id="@+id/search_button"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:layout_marginStart="16dp"
+            android:backgroundTint="#87CEEB"
+            android:textColor="@android:color/white"
+            android:text="검색" />
+    </LinearLayout>
+</LinearLayout>
