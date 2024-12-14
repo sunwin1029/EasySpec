@@ -60,7 +60,7 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.View
         });
 
         // 즐겨찾기 버튼 클릭 리스너 설정
-        holder.btnFavorite.setImageResource(R.drawable.ic_yellow_star); // 기본적으로 노란색 별로 설정
+        holder.btnFavorite.setImageResource(R.drawable.heart); // 기본적으로 노란색 별로 설정
         holder.btnFavorite.setOnClickListener(v -> {
             // 즐겨찾기에서 삭제
             removeFromFavorites(productItem.getId());

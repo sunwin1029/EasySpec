@@ -41,10 +41,6 @@ public class FavoritesActivity extends AppCompatActivity implements FavoritesAda
         favoritesRecyclerView = findViewById(R.id.favoritesRecyclerView);
         favoritesRecyclerView.setLayoutManager(new LinearLayoutManager(this)); // 수직 레이아웃 설정
 
-        // DividerItemDecoration 추가
-        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(favoritesRecyclerView.getContext(),
-                LinearLayoutManager.VERTICAL);
-        favoritesRecyclerView.addItemDecoration(dividerItemDecoration);
 
         // Firebase Authentication을 통해 현재 사용자 ID 가져오기
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();

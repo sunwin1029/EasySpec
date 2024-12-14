@@ -8,12 +8,16 @@
         <TextView
             android:id="@+id/property"
             android:layout_width="0dp"
+            android:gravity="center"
+            android:textSize="15sp"
             app:layout_constraintWidth_percent="0.6"
             android:layout_height="50dp"
+            android:text="category"
+            android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             android:layout_marginStart="5dp"
             app:layout_constraintTop_toTopOf="parent"
-            android:layout_marginTop="15dp"
+            android:layout_marginTop="10dp"
             />
         <ImageView
             android:id="@+id/expandButton"
@@ -26,12 +30,13 @@
             android:src="@drawable/arrow_down"/>
         <Button
             android:id="@+id/reviewButton"
-            android:text="리뷰"
-            android:layout_width="80dp"
+            android:text="리뷰작성"
+            android:layout_width="wrap_content"
             android:layout_height="48dp"
             app:layout_constraintEnd_toStartOf="@+id/expandButton"
             app:layout_constraintTop_toTopOf="parent"
             android:layout_marginTop="15dp"
+            android:backgroundTint="#87CEEB"
             />
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/expandedRecyclerView"

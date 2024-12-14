@@ -13,9 +13,6 @@
         android:theme="@style/Theme.EasySpec"
         tools:targetApi="31" >
         <activity
-            android:name=".ReviewWriteActivity"
-            android:exported="false" />
-        <activity
             android:name=".InventoryProductPage"
             android:exported="true" />
         <activity

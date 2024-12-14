@@ -9,6 +9,7 @@
     <!-- 회원 아이디 텍스트 -->
     <TextView
         android:id="@+id/userIdText"
+        android:textStyle="bold"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="회원 아이디"
@@ -24,7 +25,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="12345678"
-        android:background="#D3D3D3"
+        android:background="@drawable/corners"
         android:padding="12dp"
         android:textSize="14sp"
         app:layout_constraintTop_toBottomOf="@id/userIdText"
@@ -38,6 +39,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="대학"
+        android:textStyle="bold"
         android:textSize="16sp"
         app:layout_constraintTop_toBottomOf="@id/newTextBelowUserId"
         app:layout_constraintStart_toStartOf="parent"
@@ -46,14 +48,13 @@
     <!-- 대학 종류 선택 드롭다운 (Spinner) -->
     <Spinner
         android:id="@+id/universitySpinner"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/universityText"
-        android:layout_marginTop="8dp" />
+        android:layout_marginTop="8dp"
+        android:background="@drawable/spinner_background"/>
 
     <!-- 보유 포인트 텍스트 -->
     <TextView
@@ -61,6 +62,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="보유 포인트"
+        android:textStyle="bold"
         android:textSize="16sp"
         app:layout_constraintTop_toBottomOf="@id/universitySpinner"
         app:layout_constraintStart_toStartOf="parent"
@@ -72,7 +74,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="100 포인트"
-        android:background="#D3D3D3"
+        android:background="@drawable/corners"
         android:padding="12dp"
         android:textSize="14sp"
         app:layout_constraintTop_toBottomOf="@id/pointsText"
@@ -113,7 +115,6 @@
 
     </LinearLayout>
 
-
     <!-- 설정 저장하기 버튼 -->
     <Button
         android:id="@+id/saveButton"
@@ -126,7 +127,6 @@
         app:layout_constraintTop_toBottomOf="@id/buttonLinear"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="16dp"
-        app:layout_constraintBottom_toBottomOf="parent" />
+        android:layout_marginTop="10dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

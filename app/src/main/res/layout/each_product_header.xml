@@ -46,6 +46,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginEnd="20dp"
         android:text="평가"
+        android:backgroundTint="#87CEEB"
         />
     <Button
         android:id="@+id/BasicInformationInEachProduct"
@@ -55,6 +56,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginEnd="20dp"
         android:text="기본정보"
+        android:backgroundTint="#87CEEB"
         />
     <TextView
         android:id="@+id/PriceInEachProduct"
