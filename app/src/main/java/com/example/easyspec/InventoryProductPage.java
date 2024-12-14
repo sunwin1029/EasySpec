@@ -314,9 +314,11 @@ public class InventoryProductPage extends AppCompatActivity {
                                     .addOnSuccessListener(aVoid -> {
                                         isFavorite[0] = false; // 상태 업데이트
                                         updateFavoriteIcon(holder, false); // UI 업데이트
-                                        Toast.makeText(holder.itemView.getContext(),
+                                        /*Toast.makeText(holder.itemView.getContext(),
                                                 productName + " removed from favorites.",
                                                 Toast.LENGTH_SHORT).show();
+
+                                         */
                                     })
                                     .addOnFailureListener(e -> Log.e("Favorites", "Failed to remove favorite", e));
                         } else {
@@ -325,9 +327,12 @@ public class InventoryProductPage extends AppCompatActivity {
                                     .addOnSuccessListener(aVoid -> {
                                         isFavorite[0] = true; // 상태 업데이트
                                         updateFavoriteIcon(holder, true); // UI 업데이트
+                                        /*
                                         Toast.makeText(holder.itemView.getContext(),
                                                 productName + " added to favorites.",
                                                 Toast.LENGTH_SHORT).show();
+
+                                         */
                                     })
                                     .addOnFailureListener(e -> Log.e("Favorites", "Failed to add favorite", e));
                         }

@@ -52,7 +52,6 @@
         app:layout_constraintStart_toEndOf="@id/productImage"
         app:layout_constraintTop_toBottomOf="@id/productPrice"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginStart="5dp"
         android:src="@drawable/rating_star"/>
 
     <TextView
@@ -74,10 +73,18 @@
         android:textSize="25sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginEnd="20dp"
-        android:layout_marginBottom="15dp"
+        android:layout_marginBottom="10dp"
+        android:layout_marginEnd="10dp"
         android:gravity="center"
         android:text="OO명"/>
+    
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@id/reviewCount"
+        app:layout_constraintEnd_toEndOf="@+id/reviewCount"
+        android:layout_marginTop="3dp"
+        android:text="단과대에" />
 
     <ImageView
         android:id="@+id/heartIcon"
@@ -86,7 +93,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/productName"
         android:layout_marginTop="10dp"
-        android:layout_marginEnd="20dp"
+        android:layout_marginEnd="10dp"
         android:src="@drawable/heart"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
