@@ -18,12 +18,16 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class InnerReviewAdapter extends RecyclerView.Adapter<InnerReviewAdapter.InnerReviewViewHolder> {
 
     private List<InnerReviewItem> reviewItems;
     private String userId;
+    private Map<String, Boolean> featureUsageMap = new HashMap<>(); // feature별 포인트 사용 여부
+
 
     public InnerReviewAdapter(List<InnerReviewItem> reviewItems, String userId) {
         this.reviewItems = reviewItems;
@@ -53,61 +57,54 @@ public class InnerReviewAdapter extends RecyclerView.Adapter<InnerReviewAdapter.
         // Firebase 참조
         String feature = reviewItem.getFeature();
         String productId = reviewItem.getProductId();
-        String reviewId = reviewItem.getReviewId();
         DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("Users").child(userId);
         DatabaseReference productFeatureRef = userRef.child("usedFeatures").child(productId).child(feature);
-        DatabaseReference reviewRef = FirebaseDatabase.getInstance().getReference("Reviews").child(reviewId);
-        DatabaseReference userLikeRef = reviewRef.child("likedBy").child(userId);
 
-        // 1. 좋아요 상태 확인
-        userLikeRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                boolean isLiked = snapshot.exists() && snapshot.getValue(Boolean.class);
-                updateLikeButtonState(holder.goodButton, isLiked);
-            }
+        // 포인트 사용 여부 확인
+        if (featureUsageMap.containsKey(feature) && featureUsageMap.get(feature)) {
+            // 이미 포인트가 사용된 feature
+            holder.reviewText.setText(reviewItem.getReviewText());
+        } else {
+            // 포인트가 사용되지 않은 feature
+            productFeatureRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    boolean alreadyUsed = snapshot.exists() && snapshot.getValue(Boolean.class);
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Log.e("InnerReviewAdapter", "Failed to fetch like status", error.toException());
-            }
-        });
-
-        // 2. 포인트 사용 여부 확인
-        productFeatureRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                boolean alreadyUsed = snapshot.exists() && snapshot.getValue(Boolean.class);
-
-                if (alreadyUsed) {
-                    // 포인트가 사용된 경우
-                    holder.reviewText.setText(reviewItem.getReviewText());
-                } else {
-                    // 포인트가 사용되지 않은 경우
-                    holder.reviewText.setText("리뷰를 보려면 클릭하세요. 1포인트가 소모됩니다.");
-                    holder.itemView.setOnClickListener(v -> {
-                        deductPointsAndShowReview(userRef, productFeatureRef, holder, reviewItem);
-                    });
+                    if (alreadyUsed) {
+                        // 포인트가 이미 사용된 경우
+                        featureUsageMap.put(feature, true);
+                        holder.reviewText.setText(reviewItem.getReviewText());
+                    } else {
+                        // 포인트가 사용되지 않은 경우
+                        holder.reviewText.setText("리뷰를 보려면 클릭하세요. 1포인트가 소모됩니다.");
+                        holder.itemView.setOnClickListener(v -> {
+                            deductPointsAndShowReviews(userRef, productFeatureRef, feature);
+                        });
+                    }
                 }
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Log.e("InnerReviewAdapter", "Failed to fetch usedFeatures", error.toException());
-            }
-        });
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Log.e("InnerReviewAdapter", "Failed to fetch usedFeatures", error.toException());
+                }
+            });
+        }
 
-        // 3. 좋아요 버튼 클릭 리스너
-        holder.goodButton.setOnClickListener(v -> handleLikeButtonClick(userLikeRef, reviewRef, holder, reviewItem));
+        // 좋아요 버튼 클릭 리스너
+        holder.goodButton.setOnClickListener(v -> handleLikeButtonClick(
+                FirebaseDatabase.getInstance().getReference("Reviews").child(reviewItem.getReviewId()).child("likedBy").child(userId),
+                FirebaseDatabase.getInstance().getReference("Reviews").child(reviewItem.getReviewId()),
+                holder, reviewItem));
     }
+
 
     @Override
     public int getItemCount() {
         return reviewItems.size();
     }
 
-    private void deductPointsAndShowReview(DatabaseReference userRef, DatabaseReference productFeatureRef,
-                                           InnerReviewViewHolder holder, InnerReviewItem reviewItem) {
+    private void deductPointsAndShowReviews(DatabaseReference userRef, DatabaseReference productFeatureRef, String feature) {
         userRef.child("point").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -115,10 +112,19 @@ public class InnerReviewAdapter extends RecyclerView.Adapter<InnerReviewAdapter.
                 if (points != null && points >= 1) {
                     // 포인트 차감
                     userRef.child("point").setValue(points - 1);
-                    productFeatureRef.setValue(true);
-                    holder.reviewText.setText(reviewItem.getReviewText());
+                    productFeatureRef.setValue(true); // Firebase에 포인트 사용 상태 업데이트
+
+                    // 로컬 상태 업데이트
+                    featureUsageMap.put(feature, true);
+
+                    // RecyclerView 갱신
+                    for (int i = 0; i < reviewItems.size(); i++) {
+                        if (reviewItems.get(i).getFeature().equals(feature)) {
+                            notifyItemChanged(i); // 해당 feature의 모든 리뷰를 갱신
+                        }
+                    }
                 } else {
-                    holder.reviewText.setText("포인트가 부족합니다.");
+                    Log.e("InnerReviewAdapter", "포인트가 부족합니다.");
                 }
             }
 
@@ -128,6 +134,7 @@ public class InnerReviewAdapter extends RecyclerView.Adapter<InnerReviewAdapter.
             }
         });
     }
+
 
     private void handleLikeButtonClick(DatabaseReference userLikeRef, DatabaseReference reviewRef,
                                        InnerReviewViewHolder holder, InnerReviewItem reviewItem) {
