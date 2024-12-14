@@ -60,6 +60,25 @@ public class InnerReviewAdapter extends RecyclerView.Adapter<InnerReviewAdapter.
         DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("Users").child(userId);
         DatabaseReference productFeatureRef = userRef.child("usedFeatures").child(productId).child(feature);
 
+        DatabaseReference userLikeRef = FirebaseDatabase.getInstance()
+                .getReference("Reviews")
+                .child(reviewItem.getReviewId())
+                .child("likedBy")
+                .child(userId);
+
+        userLikeRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                boolean isLiked = snapshot.exists() && snapshot.getValue(Boolean.class);
+                updateLikeButtonState(holder.goodButton, isLiked);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("InnerReviewAdapter", "Failed to fetch like status", error.toException());
+            }
+        });
+
         // 포인트 사용 여부 확인
         if (featureUsageMap.containsKey(feature) && featureUsageMap.get(feature)) {
             // 이미 포인트가 사용된 feature
