@@ -74,7 +74,7 @@ public class ReviewFragment extends Fragment {
         loadExistingReview(reviewText);
 
         // formerButton 클릭 시 복귀
-        formerButton.setOnClickListener(v -> requireActivity().onBackPressed());
+        formerButton.setOnClickListener(v -> restartEachProductPage());
 
         // nextButton 클릭 시 리뷰 저장 또는 업데이트
         nextButton.setOnClickListener(v -> {
@@ -85,7 +85,7 @@ public class ReviewFragment extends Fragment {
                 } else {
                     saveNewReviewToDatabase(reviewContent);
                 }
-                requireActivity().onBackPressed(); // 이전 화면으로 복귀
+                restartEachProductPage(); // 리뷰 저장/수정 후 EachProductPage 재시작
             } else {
                 Toast.makeText(requireContext(), "리뷰를 입력해주세요.", Toast.LENGTH_SHORT).show();
             }
@@ -167,7 +167,6 @@ public class ReviewFragment extends Fragment {
         String reviewId = reviewRef.push().getKey(); // 새로운 리뷰 ID 생성
 
         if (reviewId != null) {
-            // 리뷰 데이터를 담을 Map 생성
             Map<String, Object> reviewData = new HashMap<>();
             reviewData.put("reviewText", reviewContent);
             reviewData.put("feature", feature);
@@ -176,16 +175,15 @@ public class ReviewFragment extends Fragment {
             reviewData.put("likes", 0);
             reviewData.put("timestamp", System.currentTimeMillis());
 
-            // Firebase 데이터베이스에 저장
             reviewRef.child(reviewId).setValue(reviewData)
                     .addOnSuccessListener(unused -> {
                         Log.d("ReviewFragment", "리뷰 저장 성공!");
-                        // 포인트 추가 (처음 저장일 때만)
                         updateUserPoints(10);
+
+                        // EachProductPage 재시작
+                        restartEachProductPage();
                     })
-                    .addOnFailureListener(e ->
-                            Log.e("ReviewFragment", "리뷰 저장 실패", e)
-                    );
+                    .addOnFailureListener(e -> Log.e("ReviewFragment", "리뷰 저장 실패", e));
         } else {
             Log.e("ReviewFragment", "리뷰 ID 생성 실패");
         }
@@ -196,16 +194,16 @@ public class ReviewFragment extends Fragment {
         if (existingReviewId != null) {
             Map<String, Object> updatedData = new HashMap<>();
             updatedData.put("reviewText", reviewContent);
-            updatedData.put("timestamp", System.currentTimeMillis()); // 업데이트 시간 추가
+            updatedData.put("timestamp", System.currentTimeMillis());
 
-            // Firebase 업데이트 호출
             reviewRef.child(existingReviewId).updateChildren(updatedData)
                     .addOnSuccessListener(unused -> {
                         Log.d("ReviewFragment", "리뷰 업데이트 성공!");
+
+                        // EachProductPage 재시작
+                        restartEachProductPage();
                     })
-                    .addOnFailureListener(e -> {
-                        Log.e("ReviewFragment", "리뷰 업데이트 실패", e);
-                    });
+                    .addOnFailureListener(e -> Log.e("ReviewFragment", "리뷰 업데이트 실패", e));
         } else {
             Log.e("ReviewFragment", "기존 리뷰 ID를 찾을 수 없습니다.");
         }
@@ -244,6 +242,17 @@ public class ReviewFragment extends Fragment {
             }
         });
     }
+
+
+    private void restartEachProductPage() {
+        if (isAdded()) {
+            requireActivity().finish();
+            requireActivity().overridePendingTransition(0, 0); // 종료 애니메이션 제거
+            requireActivity().startActivity(requireActivity().getIntent());
+            requireActivity().overridePendingTransition(0, 0); // 시작 애니메이션 제거
+        }
+    }
+
 
 
 }
