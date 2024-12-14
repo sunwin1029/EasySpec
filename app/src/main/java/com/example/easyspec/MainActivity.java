@@ -5,13 +5,18 @@ import android.os.Bundle;
 import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.easyspec.LogIn.LoginActivity;
 import com.example.easyspec.databinding.ActivityMainBinding;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import androidx.core.view.GravityCompat;
 
 public class MainActivity extends AppCompatActivity {
 
     private ActivityMainBinding binding;
+    private FirebaseAuth mAuth; //FirebaseAuth 인스턴스 추가
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,5 +90,28 @@ public class MainActivity extends AppCompatActivity {
             logoutFragment.show(getSupportFragmentManager(), "logoutFragment");
         });
 
+        // Firebase Authentication 인스턴스 초기화
+        mAuth = FirebaseAuth.getInstance();
+
+        // 로그인 상태 확인
+        checkLoginStatus();
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // 로그인 상태를 다시 확인할 수 있습니다.
+        checkLoginStatus();
+    }
+
+    private void checkLoginStatus() {
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser == null) {
+            // 사용자가 로그인하지 않은 경우 로그인 화면으로 이동
+            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+            startActivity(intent);
+            finish(); // MainActivity 종료
+        }
+    }
+
 }
