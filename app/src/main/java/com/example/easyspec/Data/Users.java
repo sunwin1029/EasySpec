@@ -10,20 +10,23 @@ public class Users implements Serializable {
     private String laptop;
     private String tablet;
     private String phone;
+    private int point;
 
 //     즐겨찾기한 상품 ID를 저장하는 필드 추가
     private Set<String> favoriteProductIds;
 
     public Users() {
-        favoriteProductIds = new HashSet<>(); // 초기화
+        favoriteProductIds = new HashSet<>();
+        this.point = 0;// 초기화
     }
 
-    public Users(String email, String university, String laptop, String tablet, String phone) {
+    public Users(String email, String university, String laptop, String tablet, String phone, int point) {
         this.email = email;
         this.university = university;
         this.laptop = laptop;
         this.tablet = tablet;
         this.phone = phone;
+        this.point = point;
 //        this.favoriteProductIds = new HashSet<>();
     }
 
@@ -47,6 +50,8 @@ public class Users implements Serializable {
     public String getPhone() {
         return phone;
     }
+
+    public int getPoint(){return point;}
 
     public Set<String> getFavoriteProductIds() {
         return favoriteProductIds;

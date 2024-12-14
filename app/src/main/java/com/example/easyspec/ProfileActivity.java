@@ -31,6 +31,7 @@ public class ProfileActivity extends AppCompatActivity {
     private Button buttonUpdate;
     private TextView textViewUserEmail;
     private String currentUniversity; // 현재 대학 정보를 저장할 변수
+    private TextView pointValue;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +45,7 @@ public class ProfileActivity extends AppCompatActivity {
         spinnerUniversity = findViewById(R.id.universitySpinner);
         buttonUpdate = findViewById(R.id.saveButton);
         textViewUserEmail = findViewById(R.id.newTextBelowUserId);
+        pointValue =findViewById(R.id.pointsValue);
 
         Button buttonChangePassword = findViewById(R.id.changePasswordButton);
         buttonChangePassword.setOnClickListener(v -> {
@@ -92,6 +94,8 @@ public class ProfileActivity extends AppCompatActivity {
                         // 현재 대학교 정보 저장
                         currentUniversity = user.getUniversity();
                         setSpinnerValue(spinnerUniversity, currentUniversity);
+
+                        pointValue.setText(Integer.toString(user.getPoint()));
                     }
                 }
             }
