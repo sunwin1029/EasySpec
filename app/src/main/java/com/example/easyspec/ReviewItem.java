@@ -5,7 +5,7 @@ public class ReviewItem {
     private String userId;      // 리뷰 작성자 ID
     private String productId;   // 리뷰가 작성된 제품 ID
     private String reviewText;  // 리뷰 내용
-    private double likes;       // 리뷰 점수
+    private int likes;       // 리뷰 점수
     private int imageResource;  // 제품 이미지 리소스 ID
     private String name;  // 제품 이름
     private String feature;      // 리뷰의 특징 (예: 카메라, 배터리 등)
@@ -15,7 +15,7 @@ public class ReviewItem {
     }
 
     // 모든 필드를 초기화하는 생성자
-    public ReviewItem(String key, String userId, String productId, String reviewText, double likes, int imageResource, String name, String feature) {
+    public ReviewItem(String key, String userId, String productId, String reviewText, int likes, int imageResource, String name, String feature) {
         this.key = key; // 리뷰 고유 키 초기화
         this.userId = userId;
         this.productId = productId;
@@ -43,7 +43,7 @@ public class ReviewItem {
         return reviewText;
     }
 
-    public double getlikes() {
+    public int getlikes() {
         return likes;
     }
 
