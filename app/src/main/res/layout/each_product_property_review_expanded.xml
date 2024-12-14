@@ -43,6 +43,7 @@
         android:id="@+id/InEachProductReviewReviewText"
         android:layout_width="match_parent"
         android:layout_height="100dp"
+        android:paddingStart="17dp"
         android:layout_margin="10dp"
         android:text="review"
         app:layout_constraintStart_toStartOf="parent"
