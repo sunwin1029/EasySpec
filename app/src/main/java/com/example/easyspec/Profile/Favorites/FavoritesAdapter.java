@@ -1,4 +1,4 @@
-package com.example.easyspec;
+package com.example.easyspec.Profile.Favorites;
 
 import android.content.Context;
 import android.util.Log;
@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.easyspec.Data.ProductItem;
+import com.example.easyspec.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;

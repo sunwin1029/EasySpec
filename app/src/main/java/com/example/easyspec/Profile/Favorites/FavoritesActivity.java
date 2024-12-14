@@ -1,4 +1,4 @@
-package com.example.easyspec;
+package com.example.easyspec.Profile.Favorites;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.easyspec.Data.ProductItem;
 import com.example.easyspec.EachProductPage.EachProductPage;
+import com.example.easyspec.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;

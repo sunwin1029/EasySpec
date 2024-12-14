@@ -1,4 +1,4 @@
-package com.example.easyspec;
+package com.example.easyspec.Profile.MyReview;
 
 import android.content.Context;
 import android.util.Log;
@@ -15,8 +15,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.easyspec.Review.ReviewFragment;
-import com.example.easyspec.ReviewItem;
+import com.example.easyspec.R;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -59,18 +58,15 @@ public class MyReviewAdapter extends RecyclerView.Adapter<MyReviewAdapter.ViewHo
         // 수정 버튼 클릭 리스너 설정
         holder.btnEdit.setOnClickListener(v -> {
             // 수정 기능: ReviewFragment로 이동
-            ReviewFragment reviewFragment = ReviewFragment.newInstance(
+            MyReviewFragment reviewFragment = MyReviewFragment.newInstance(
                     reviewItem.getProductId(),
                     reviewItem.getFeature(), // 리뷰의 기능 정보
                     reviewItem.getUserId() // 리뷰 작성자 정보
             );
 
-            // ReviewFragment로 화면 전환
+            // 다이얼로그 프래그먼트 표시
             FragmentManager fragmentManager = ((AppCompatActivity) context).getSupportFragmentManager();
-            fragmentManager.beginTransaction()
-                    .replace(R.id.fragmentContainer, reviewFragment) // 프래그먼트를 삽입할 컨테이너 ID
-                    .addToBackStack(null) // 뒤로가기 스택 추가
-                    .commit();
+            reviewFragment.show(fragmentManager, "ReviewDialog");
         });
 
         // 삭제 버튼 클릭 리스너 설정

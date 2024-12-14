@@ -1,4 +1,4 @@
-package com.example.easyspec.LogIn;
+package com.example.easyspec.Profile;
 
 import android.os.Bundle;
 import android.text.TextUtils;

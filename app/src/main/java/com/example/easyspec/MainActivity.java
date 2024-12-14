@@ -7,6 +7,10 @@ import android.view.View;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.easyspec.LogIn.LoginActivity;
+import com.example.easyspec.LogIn.LogoutFragment;
+import com.example.easyspec.Profile.MyReview.MyReviewActivity;
+import com.example.easyspec.Profile.Favorites.FavoritesActivity;
+import com.example.easyspec.Profile.ProfileActivity;
 import com.example.easyspec.databinding.ActivityMainBinding;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -55,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
 
         // 각 버튼 클릭 시 이벤트 설정
         binding.button1.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this,ProfileActivity.class);
+            Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
             startActivity(intent);
         });
 
@@ -65,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         binding.button3.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this,MyReviewActivity.class);
+            Intent intent = new Intent(MainActivity.this, MyReviewActivity.class);
             startActivity(intent);
         });
 

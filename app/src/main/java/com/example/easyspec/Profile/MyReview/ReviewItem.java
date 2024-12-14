@@ -1,4 +1,4 @@
-package com.example.easyspec;
+package com.example.easyspec.Profile.MyReview;
 
 public class ReviewItem {
     private String key;          // 리뷰 고유 키

@@ -19,13 +19,13 @@
             android:name=".EachProductPage.EachProductPage"
             android:exported="true" />
         <activity
-            android:name=".MyReviewActivity"
+            android:name=".Profile.MyReview.MyReviewActivity"
             android:exported="false" />
         <activity
-            android:name=".FavoritesActivity"
+            android:name=".Profile.Favorites.FavoritesActivity"
             android:exported="true" />
         <activity
-            android:name=".ProfileActivity"
+            android:name=".Profile.ProfileActivity"
             android:exported="false" />
         <activity
             android:name=".LogIn.SignUpStep2Activity"
