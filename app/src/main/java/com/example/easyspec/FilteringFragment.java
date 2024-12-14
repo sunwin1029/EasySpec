@@ -1,63 +1,60 @@
 package com.example.easyspec;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridLayout;
 import android.widget.RadioButton;
 import android.widget.Spinner;
-
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
 import com.example.easyspec.Data.SearchData;
 
-public class Filtering extends AppCompatActivity {
+public class FilteringFragment extends Fragment {
 
     private static final String TAG = "Search_Filter";
-
     private Spinner deviceTypeSpinner;
     private EditText productNameEditText, minPriceEditText, maxPriceEditText;
     private GridLayout manufacturerGrid;
-    private String selectedDeviceType = ""; // Spinner에서 선택된 기기 종류
-    private boolean isFilterConditionActive = false; // 필터 조건 활성화 여부
-    private int selectedManufacturerIndex = -1; // 제조사 선택 상태 (-1: 미선택)
+    private String selectedDeviceType = "";
+    private boolean isFilterConditionActive = false;
+    private int selectedManufacturerIndex = -1;
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_filtering, container, false);
+    }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.fragment_filtering);
-
-        Button button=findViewById(R.id.back_button);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(Filtering.this, MainActivity.class);
-                startActivity(intent);
-            }
-        });
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
         // UI 요소 초기화
-        deviceTypeSpinner = findViewById(R.id.device_type_spinner);
-        productNameEditText = findViewById(R.id.productNameEditText);
-        minPriceEditText = findViewById(R.id.min_price);
-        maxPriceEditText = findViewById(R.id.max_price);
-        manufacturerGrid = findViewById(R.id.manufacturer_radio_group);
+        deviceTypeSpinner = view.findViewById(R.id.device_type_spinner);
+        productNameEditText = view.findViewById(R.id.productNameEditText);
+        minPriceEditText = view.findViewById(R.id.min_price);
+        maxPriceEditText = view.findViewById(R.id.max_price);
+        manufacturerGrid = view.findViewById(R.id.manufacturer_radio_group);
 
-        findViewById(R.id.search_button).setOnClickListener(v -> fetchFilteredProducts());
+        view.findViewById(R.id.search_button).setOnClickListener(v -> fetchFilteredProducts());
+        view.findViewById(R.id.back_button).setOnClickListener(v -> navigateToMainScreen());
 
-        // Spinner 설정
+        // 초기화 메서드 호출
         setupDeviceTypeSpinner();
-
-        // 제조사 Grid 설정
         setupManufacturerGrid();
+        setupFilterListeners();
 
-        // 제품명 검색창 TextWatcher 추가
+        // 검색창 텍스트 변경 이벤트 설정
         productNameEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -70,33 +67,18 @@ public class Filtering extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable s) {}
         });
-
-        // Spinner, RadioGroup, 가격 필터에 대한 이벤트 추가
-        setupFilterListeners();
     }
 
     private void setupDeviceTypeSpinner() {
-        // Spinner 데이터 설정
         String[] deviceTypes = getResources().getStringArray(R.array.device_types);
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(
-                this,
-                android.R.layout.simple_spinner_item,
-                deviceTypes
-        );
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, deviceTypes);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         deviceTypeSpinner.setAdapter(adapter);
 
-        // Spinner 선택 리스너
         deviceTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                // None 선택 여부에 따라 조건 활성화
-                if (position == 0) {
-                    selectedDeviceType = "";
-                } else {
-                    selectedDeviceType = parent.getItemAtPosition(position).toString();
-                }
+                selectedDeviceType = (position == 0) ? "" : parent.getItemAtPosition(position).toString();
                 toggleProductNameBasedOnFilters();
             }
 
@@ -105,19 +87,15 @@ public class Filtering extends AppCompatActivity {
         });
     }
 
-
     private void setupManufacturerGrid() {
         for (int i = 0; i < manufacturerGrid.getChildCount(); i++) {
             RadioButton radioButton = (RadioButton) manufacturerGrid.getChildAt(i);
-            int index = i + 1; // 1부터 시작 (Samsung: 1, Apple: 2, ...)
-
+            int index = i + 1;
             radioButton.setOnClickListener(v -> {
                 if (selectedManufacturerIndex == index) {
-                    // 이미 선택된 상태에서 다시 클릭 시 미선택으로 변경
                     radioButton.setChecked(false);
                     selectedManufacturerIndex = -1;
                 } else {
-                    // 선택된 제조사를 변경
                     selectedManufacturerIndex = index;
                     clearOtherRadioButtons(index);
                 }
@@ -125,20 +103,16 @@ public class Filtering extends AppCompatActivity {
         }
     }
 
-    // 다른 라디오 버튼들의 선택을 해제
     private void clearOtherRadioButtons(int exceptIndex) {
         for (int i = 0; i < manufacturerGrid.getChildCount(); i++) {
             RadioButton radioButton = (RadioButton) manufacturerGrid.getChildAt(i);
-            int index = i + 1;
-            if (index != exceptIndex) {
+            if (i + 1 != exceptIndex) {
                 radioButton.setChecked(false);
             }
         }
     }
 
-
     private void setupFilterListeners() {
-        // 최소 가격 EditText
         minPriceEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -152,7 +126,6 @@ public class Filtering extends AppCompatActivity {
             public void afterTextChanged(Editable s) {}
         });
 
-        // 최대 가격 EditText
         maxPriceEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -168,7 +141,6 @@ public class Filtering extends AppCompatActivity {
     }
 
     private void toggleFiltersBasedOnProductName(boolean isProductNameEntered) {
-        // 제품명 검색창 입력 여부에 따라 나머지 필터 비활성화
         isFilterConditionActive = isProductNameEntered;
 
         deviceTypeSpinner.setEnabled(!isProductNameEntered);
@@ -182,7 +154,6 @@ public class Filtering extends AppCompatActivity {
     }
 
     private void toggleProductNameBasedOnFilters() {
-        // 필터 조건이 하나라도 활성화되면 제품명 검색창 비활성화
         boolean isAnyFilterActive = deviceTypeSpinner.getSelectedItemPosition() != 0 ||
                 !minPriceEditText.getText().toString().trim().isEmpty() ||
                 !maxPriceEditText.getText().toString().trim().isEmpty();
@@ -199,28 +170,29 @@ public class Filtering extends AppCompatActivity {
     }
 
     private void fetchFilteredProducts() {
-        // 입력값 가져오기
         String productName = productNameEditText.getText().toString();
         int minPrice = minPriceEditText.getText().toString().isEmpty() ? -1 : Integer.parseInt(minPriceEditText.getText().toString());
         int maxPrice = maxPriceEditText.getText().toString().isEmpty() ? -1 : Integer.parseInt(maxPriceEditText.getText().toString());
-        int deviceType = deviceTypeSpinner.getSelectedItemPosition(); // None: -1, laptops: 1, phones: 2, tablets: 3
+        int deviceType = deviceTypeSpinner.getSelectedItemPosition();
         int manufacturer = selectedManufacturerIndex;
 
-        // SearchData 객체 생성
         SearchData searchData = new SearchData(
-                deviceType == 0 ? -1 : deviceType, // Spinner의 선택값 (-1이면 선택 안 함)
-                productName.isEmpty() ? null : productName, // 제품명 없으면 null
+                deviceType == 0 ? -1 : deviceType,
+                productName.isEmpty() ? null : productName,
                 minPrice,
                 maxPrice,
                 manufacturer
         );
 
-        String userId="exampleUserId";
+        Log.d(TAG, "SearchData: " + searchData.toString());
+    }
 
-        // Intent에 SearchData 추가
-        Intent intent = new Intent(this, InventoryProductPage.class);
-        intent.putExtra("searchData", searchData);
-        intent.putExtra("userId", userId);
-        startActivity(intent);
+    private void navigateToMainScreen() {
+        if (getActivity() != null) {
+            // 현재 프래그먼트를 스택에서 제거하고 Activity를 종료
+            getActivity().getSupportFragmentManager().popBackStack();
+        } else {
+            Log.e(TAG, "Activity가 null 상태입니다. Navigation 실패.");
+        }
     }
 }

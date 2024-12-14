@@ -26,10 +26,14 @@ public class MainActivity extends AppCompatActivity {
 
         // 서치버튼 클릭 시 필터링 화면으로 이동
         binding.searchButton.setOnClickListener(v -> {
-            // 필터링 화면으로 이동
-            Intent intent = new Intent(MainActivity.this, Filtering.class);
-            startActivity(intent);
+            FilteringFragment filteringFragment = new FilteringFragment();
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.fragment_container, filteringFragment)
+                    .addToBackStack(null)
+                    .commit();
         });
+
 
         // 사이드바 열기 버튼 클릭 시 사이드바 열기
         binding.openSidebarButton.setOnClickListener(v -> {
@@ -54,9 +58,13 @@ public class MainActivity extends AppCompatActivity {
         });
 
         binding.button4.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, RecyclerViewActivity.class);
-            startActivity(intent);
+            WordExplainFragment fragment = new WordExplainFragment();
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container, fragment)
+                    .addToBackStack(null)
+                    .commit();
         });
+
 
         binding.button5.setOnClickListener(v -> {
             // LogoutFragment 띄우기
