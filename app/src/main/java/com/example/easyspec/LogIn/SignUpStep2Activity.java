@@ -119,7 +119,8 @@ public class SignUpStep2Activity extends AppCompatActivity {
             return; // 기기를 선택하지 않았으면 메서드 종료
         }
 
-        Users user = new Users(email, university, laptop, tablet, phone);
+        int initialPoint = 0;
+        Users user = new Users(email, university, laptop, tablet, phone, initialPoint);
 
         Log.d(TAG, "Saving user info for userId: " + userId);
 

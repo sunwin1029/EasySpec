@@ -60,10 +60,29 @@ public class MyReviewActivity extends AppCompatActivity {
                             ReviewItem reviewItem = reviewSnapshot.getValue(ReviewItem.class);
                             if (reviewItem != null) {
                                 reviewItem.setKey(reviewSnapshot.getKey()); // 키 설정
-                                reviewItemList.add(reviewItem);
+
+                                // ProductItems에서 제품 이름 가져오기
+                                String productId = reviewItem.getProductId();
+                                DatabaseReference productRef = FirebaseDatabase.getInstance()
+                                        .getReference("ProductItems").child(productId);
+
+                                productRef.child("name").addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot productSnapshot) {
+                                        String productName = productSnapshot.getValue(String.class);
+                                        reviewItem.setName(productName); // 리뷰 항목에 제품 이름 설정
+
+                                        reviewItemList.add(reviewItem); // 리뷰 리스트에 추가
+                                        adapter.notifyDataSetChanged(); // 어댑터에 데이터 변경 알림
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                                        Log.e("MyReviewActivity", "Error fetching product name: " + databaseError.getMessage());
+                                    }
+                                });
                             }
                         }
-                        adapter.notifyDataSetChanged(); // 어댑터에 데이터 변경 알림
                         isFetchingReviews = false; // 데이터 요청 완료
                     }
 
@@ -74,6 +93,7 @@ public class MyReviewActivity extends AppCompatActivity {
                     }
                 });
     }
+
 
 
     public void reloadReviews() {

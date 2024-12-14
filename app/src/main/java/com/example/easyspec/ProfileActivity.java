@@ -2,6 +2,7 @@ package com.example.easyspec;
 
 import static android.content.ContentValues.TAG;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ArrayAdapter;
@@ -30,6 +31,7 @@ public class ProfileActivity extends AppCompatActivity {
     private Button buttonUpdate;
     private TextView textViewUserEmail;
     private String currentUniversity; // 현재 대학 정보를 저장할 변수
+    private TextView pointValue;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +45,7 @@ public class ProfileActivity extends AppCompatActivity {
         spinnerUniversity = findViewById(R.id.universitySpinner);
         buttonUpdate = findViewById(R.id.saveButton);
         textViewUserEmail = findViewById(R.id.newTextBelowUserId);
+        pointValue =findViewById(R.id.pointsValue);
 
         Button buttonChangePassword = findViewById(R.id.changePasswordButton);
         buttonChangePassword.setOnClickListener(v -> {
@@ -91,6 +94,8 @@ public class ProfileActivity extends AppCompatActivity {
                         // 현재 대학교 정보 저장
                         currentUniversity = user.getUniversity();
                         setSpinnerValue(spinnerUniversity, currentUniversity);
+
+                        pointValue.setText(Integer.toString(user.getPoint()));
                     }
                 }
             }
@@ -123,6 +128,10 @@ public class ProfileActivity extends AppCompatActivity {
                     updateUserNum(userId, currentUniversity, university);
                 }
                 Toast.makeText(ProfileActivity.this, "회원정보가 성공적으로 수정되었습니다.", Toast.LENGTH_SHORT).show();
+
+                startActivity(new Intent(ProfileActivity.this, MainActivity.class));
+                finish();
+
             } else {
                 Toast.makeText(ProfileActivity.this, "회원정보 수정 실패: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
             }

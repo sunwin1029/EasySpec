@@ -3,7 +3,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:padding="16dp">
 
     <!-- 회원 아이디 텍스트 -->
     <TextView
@@ -15,8 +16,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="16dp"
-        android:layout_marginStart="8dp" />
+        android:layout_marginTop="16dp" />
 
     <!-- 회원 아이디 아래 정보 -->
     <TextView
@@ -25,13 +25,12 @@
         android:layout_height="wrap_content"
         android:text="12345678"
         android:background="#D3D3D3"
-        android:padding="8dp"
+        android:padding="12dp"
         android:textSize="14sp"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
         app:layout_constraintTop_toBottomOf="@id/userIdText"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="8dp" />
 
     <!-- 대학 텍스트 -->
     <TextView
@@ -42,19 +41,19 @@
         android:textSize="16sp"
         app:layout_constraintTop_toBottomOf="@id/newTextBelowUserId"
         app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginTop="8dp"
-        android:layout_marginStart="8dp" />
+        android:layout_marginTop="16dp" />
 
     <!-- 대학 종류 선택 드롭다운 (Spinner) -->
     <Spinner
         android:id="@+id/universitySpinner"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/universityText" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/universityText"
+        android:layout_marginTop="8dp" />
 
     <!-- 보유 포인트 텍스트 -->
     <TextView
@@ -65,7 +64,7 @@
         android:textSize="16sp"
         app:layout_constraintTop_toBottomOf="@id/universitySpinner"
         app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginTop="8dp" />
+        android:layout_marginTop="16dp" />
 
     <!-- 보유 포인트 값 -->
     <TextView
@@ -74,52 +73,60 @@
         android:layout_height="wrap_content"
         android:text="100 포인트"
         android:background="#D3D3D3"
-        android:padding="8dp"
+        android:padding="12dp"
         android:textSize="14sp"
         app:layout_constraintTop_toBottomOf="@id/pointsText"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp" />
+        android:layout_marginTop="8dp" />
 
-    <!-- 기기 변경 버튼 -->
-    <Button
-        android:id="@+id/changeDeviceButton"
-        android:layout_width="wrap_content"
+    <!-- 버튼들 -->
+    <LinearLayout
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="기기 변경"
-        android:backgroundTint="#87CEEB"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginTop="16dp"
+        android:id="@+id/buttonLinear"
         app:layout_constraintTop_toBottomOf="@id/pointsValue"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="8dp" />
+        app:layout_constraintEnd_toEndOf="parent">
 
-    <!-- 비밀번호 변경 버튼 -->
-    <Button
-        android:id="@+id/changePasswordButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="비밀번호 변경"
-        android:backgroundTint="#87CEEB"
-        android:textColor="#FFFFFF"
-        android:textSize="14sp"
-        app:layout_constraintTop_toBottomOf="@id/changeDeviceButton"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="8dp" />
+        <Button
+            android:id="@+id/changeDeviceButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="기기 변경"
+            android:backgroundTint="#87CEEB"
+            android:textColor="#FFFFFF"
+            android:layout_marginEnd="8dp" />
+
+        <Button
+            android:id="@+id/changePasswordButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="비밀번호 변경"
+            android:backgroundTint="#87CEEB"
+            android:textColor="#FFFFFF" />
+
+    </LinearLayout>
+
 
     <!-- 설정 저장하기 버튼 -->
     <Button
         android:id="@+id/saveButton"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="저장"
         android:backgroundTint="#87CEEB"
         android:textColor="#FFFFFF"
         android:textSize="14sp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/buttonLinear"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginBottom="16dp" />
+        android:layout_marginTop="16dp"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

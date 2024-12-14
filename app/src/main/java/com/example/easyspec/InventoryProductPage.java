@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -11,6 +12,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -76,6 +78,30 @@ public class InventoryProductPage extends AppCompatActivity {
         });
 
         binding.check.setOnClickListener(view -> showSortDialog());
+
+        binding.searchBar.setOnClickListener(view -> {
+            // 상단 바와 RecyclerView 숨기기
+            binding.topBar.setVisibility(View.GONE);
+            binding.productRecyclerView.setVisibility(View.GONE);
+
+            // FragmentContainerView를 표시
+            binding.fragmentContainer.setVisibility(View.VISIBLE);
+
+            // FilteringFragment 추가
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container, new FilteringFragment())
+                    .addToBackStack(null) // 뒤로가기 지원
+                    .commit();
+        });
+
+        binding.homeInInventory.setOnClickListener(view -> {
+            Intent intent = new Intent(InventoryProductPage.this, MainActivity.class);
+            startActivity(intent);
+            finish(); // 현재 액티비티를 종료하여 메모리 절약
+        });
+
+
+
     }
 
 
@@ -445,6 +471,27 @@ public class InventoryProductPage extends AppCompatActivity {
             productImage.setImageResource(imageResId);
         } else {
             productImage.setImageResource(R.drawable.iphone15_promax);
+        }
+    }
+
+
+    @Override
+    public void onBackPressed() {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+
+        if (fragmentManager.getBackStackEntryCount() > 0) {
+            // Fragment가 백 스택에 있으면 제거
+            fragmentManager.popBackStack();
+
+            // 상단 바와 RecyclerView 다시 표시
+            binding.topBar.setVisibility(View.VISIBLE);
+            binding.productRecyclerView.setVisibility(View.VISIBLE);
+
+            // FragmentContainerView 숨기기
+            binding.fragmentContainer.setVisibility(View.GONE);
+        } else {
+            // 기본 동작 수행 (앱 종료 또는 이전 액티비티로 이동)
+            super.onBackPressed();
         }
     }
 
