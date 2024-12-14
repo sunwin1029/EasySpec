@@ -78,6 +78,7 @@ public class MyReviewAdapter extends RecyclerView.Adapter<MyReviewAdapter.ViewHo
                         .getReference("Reviews") // Firebase 경로: "Reviews"
                         .child(reviewKey); // 리뷰 고유 키를 경로로 설정
 
+                // Firebase에서 리뷰 삭제
                 databaseReference.removeValue().addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         // Firebase에서 삭제 성공 시
@@ -87,7 +88,7 @@ public class MyReviewAdapter extends RecyclerView.Adapter<MyReviewAdapter.ViewHo
                             notifyItemRemoved(position2); // RecyclerView 갱신
 
                             // 삭제 완료 메시지 표시
-                            Toast.makeText(context, "리뷰가 삭제되었습니다.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(context, "Review has been deleted.", Toast.LENGTH_SHORT).show();
 
                             // 리뷰 목록 새로고침 (MyReviewActivity가 컨텍스트일 경우)
                             if (context instanceof MyReviewActivity) {
@@ -96,12 +97,12 @@ public class MyReviewAdapter extends RecyclerView.Adapter<MyReviewAdapter.ViewHo
                         }
                     } else {
                         // Firebase 삭제 실패 시 에러 메시지 표시
-                        Toast.makeText(context, "리뷰 삭제에 실패했습니다: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, "Failed to delete review: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
             } else {
                 // 리뷰 키가 유효하지 않은 경우
-                Toast.makeText(context, "리뷰 키가 유효하지 않습니다.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Invalid review key.", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -112,12 +113,12 @@ public class MyReviewAdapter extends RecyclerView.Adapter<MyReviewAdapter.ViewHo
                 imageName, "drawable", productImage.getContext().getPackageName()
         );
 
-        Log.d("ProductImage", "ProductId: " + productId + ", ImageName: " + imageName + ", ResId: " + imageResId);
+        Log.d("EasySpec", "ProductId: " + productId + ", ImageName: " + imageName + ", ResId: " + imageResId); // Log added
 
         if (imageResId != 0) {
-            productImage.setImageResource(imageResId);
+            productImage.setImageResource(imageResId); // 이미지 설정
         } else {
-            productImage.setImageResource(R.drawable.iphone15_promax);
+            productImage.setImageResource(R.drawable.iphone15_promax); // 기본 이미지 설정
         }
     }
 

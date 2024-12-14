@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SignUpStep2Activity extends AppCompatActivity {
-    private static final String TAG = "SignUpStep2Activity";
+    private static final String TAG = "SignUpStep2Activity"; // 로그 태그
     private DatabaseReference productDatabase;
     private DatabaseReference userDatabase;
     private Spinner spinnerLaptop, spinnerTablet, spinnerPhone;
@@ -36,23 +36,27 @@ public class SignUpStep2Activity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up_step2);
 
+        // Firebase 데이터베이스 참조 초기화
         productDatabase = FirebaseDatabase.getInstance().getReference("ProductItems");
         userDatabase = FirebaseDatabase.getInstance().getReference("Users");
 
-        initializeUI();
-        loadProductData();
+        initializeUI(); // UI 초기화
+        loadProductData(); // 제품 데이터 로드
     }
 
     private void initializeUI() {
+        // UI 요소 연결
         spinnerLaptop = findViewById(R.id.spinnerLaptop);
         spinnerTablet = findViewById(R.id.spinnerTablet);
         spinnerPhone = findViewById(R.id.spinnerPhone);
         buttonFinish = findViewById(R.id.buttonFinish);
 
+        // 버튼 클릭 시 registerUser 메서드 호출
         buttonFinish.setOnClickListener(v -> registerUser());
     }
 
     private void loadProductData() {
+        // 제품 데이터 로드
         productDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -60,6 +64,7 @@ public class SignUpStep2Activity extends AppCompatActivity {
                 tabletList.clear();
                 phoneList.clear();
 
+                // 제품 정보를 가져와서 리스트에 추가
                 for (DataSnapshot productSnapshot : dataSnapshot.getChildren()) {
                     String name = productSnapshot.child("name").getValue(String.class);
                     int productType = productSnapshot.child("productType").getValue(Integer.class);
@@ -77,6 +82,7 @@ public class SignUpStep2Activity extends AppCompatActivity {
                     }
                 }
 
+                // 스피너에 데이터 설정
                 setSpinnerData(spinnerLaptop, laptopList);
                 setSpinnerData(spinnerTablet, tabletList);
                 setSpinnerData(spinnerPhone, phoneList);
@@ -84,23 +90,25 @@ public class SignUpStep2Activity extends AppCompatActivity {
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                Toast.makeText(SignUpStep2Activity.this, "데이터를 불러오는 데 실패했습니다.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(SignUpStep2Activity.this, "Failed to load data.", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
     private void setSpinnerData(Spinner spinner, List<String> dataList) {
+        // 스피너에 어댑터 설정
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, dataList);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
     }
 
     private void registerUser() {
+        // 인텐트에서 사용자 ID와 이메일 가져오기
         String userId = getIntent().getStringExtra("userId"); // UID 받기
         String email = getIntent().getStringExtra("email");
 
         if (userId == null || email == null) {
-            Toast.makeText(this, "이메일 또는 사용자 ID가 없습니다.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Email or user ID is missing.", Toast.LENGTH_SHORT).show();
             return; // 이메일이나 사용자 ID가 없으면 메서드 종료
         }
 
@@ -109,24 +117,25 @@ public class SignUpStep2Activity extends AppCompatActivity {
     }
 
     private void saveUserInfo(String userId, String email) {
+        // 선택한 대학과 기기 정보 가져오기
         String university = getIntent().getStringExtra("university");
         String laptop = getSelectedItem(spinnerLaptop);
         String tablet = getSelectedItem(spinnerTablet);
         String phone = getSelectedItem(spinnerPhone);
 
         if (laptop == null && tablet == null && phone == null) {
-            Toast.makeText(this, "최소 하나의 기기를 선택해야 합니다.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "At least one device must be selected.", Toast.LENGTH_SHORT).show();
             return; // 기기를 선택하지 않았으면 메서드 종료
         }
 
         int initialPoint = 0;
         Users user = new Users(email, university, laptop, tablet, phone, initialPoint);
 
-        Log.d(TAG, "Saving user info for userId: " + userId);
+        Log.d("EasySpec", "Saving user information: userId = " + userId); // 사용자 정보 저장 로그
 
         userDatabase.child(userId).setValue(user).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
-                Toast.makeText(SignUpStep2Activity.this, "회원가입이 완료되었습니다.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(SignUpStep2Activity.this, "Sign up completed.", Toast.LENGTH_SHORT).show();
 
                 // 사용자 수 업데이트
                 if (laptop != null) {
@@ -144,15 +153,14 @@ public class SignUpStep2Activity extends AppCompatActivity {
                 startActivity(intent);
                 finish();
             } else {
-                Log.e(TAG, "Failed to save user info", task.getException());
-                Toast.makeText(SignUpStep2Activity.this, "회원정보 저장 실패: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                Log.e("EasySpec", "Failed to save user information", task.getException()); // 실패 로그
+                Toast.makeText(SignUpStep2Activity.this, "Failed to save user information: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
             }
         });
     }
 
-
     private void updateUserNum(String productName, String university) {
-        Log.d(TAG, "업데이트할 제품 이름: " + productName + ", 대학: " + university);
+        Log.d("EasySpec", "Product to update: " + productName + ", University: " + university); // 업데이트할 제품 로그
 
         // productDatabase에서 해당 제품 이름으로 검색합니다
         productDatabase.orderByChild("name").equalTo(productName).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -171,27 +179,26 @@ public class SignUpStep2Activity extends AppCompatActivity {
                         userNumRef.child(university).setValue(currentUserNum + 1)
                                 .addOnCompleteListener(task -> {
                                     if (task.isSuccessful()) {
-                                        Log.d(TAG, "사용자 수가 성공적으로 업데이트되었습니다: " + university);
+                                        Log.d("EasySpec", "User count successfully updated: " + university); // 성공 로그
                                     } else {
-                                        Log.e(TAG, "사용자 수 업데이트 실패: " + task.getException());
+                                        Log.e("EasySpec", "Failed to update user count: " + task.getException()); // 실패 로그
                                     }
                                 });
                     }
                 } else {
-                    Log.e(TAG, "해당 제품을 찾을 수 없습니다: " + productName);
+                    Log.e("EasySpec", "Product not found: " + productName); // 제품 미발견 로그
                 }
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                Toast.makeText(SignUpStep2Activity.this, "사용자 수 업데이트 실패", Toast.LENGTH_SHORT).show();
+                Toast.makeText(SignUpStep2Activity.this, "Failed to update user count.", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-
-
     private String getSelectedItem(Spinner spinner) {
+        // 선택된 아이템 반환
         return spinner.getSelectedItem() != null ? spinner.getSelectedItem().toString() : null;
     }
 }

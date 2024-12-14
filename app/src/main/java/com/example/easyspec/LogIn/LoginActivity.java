@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.easyspec.MainActivity;
 import com.example.easyspec.R;
 import com.google.firebase.auth.FirebaseAuth;
+import android.util.Log; // Log 클래스를 사용하기 위해 추가
 
 // 로그인 액티비티: 사용자 이메일과 비밀번호를 사용하여 Firebase Authentication을 통한 로그인 기능을 제공
 public class LoginActivity extends AppCompatActivity {
@@ -41,6 +42,7 @@ public class LoginActivity extends AppCompatActivity {
         buttonSignup.setOnClickListener(v -> {
             Intent intent = new Intent(LoginActivity.this, SignUpStep1Activity.class);
             startActivity(intent); // SignUpStep1Activity로 이동
+            Log.d("EasySpec", "Sign up button clicked: Navigating to SignUpStep1Activity"); // 로그 추가
         });
     }
 
@@ -49,10 +51,12 @@ public class LoginActivity extends AppCompatActivity {
         // 입력된 이메일과 비밀번호 가져오기
         String email = editTextEmail.getText().toString().trim();
         String password = editTextPassword.getText().toString().trim();
+        Log.d("EasySpec", "Login attempt: Email = " + email); // 로그 추가
 
         // 입력값이 비어 있는지 확인
         if (email.isEmpty() || password.isEmpty()) {
-            Toast.makeText(this, "모든 필드를 입력하세요.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Please fill in all fields.", Toast.LENGTH_SHORT).show();
+            Log.d("EasySpec", "Login failed: Not all fields are filled"); // 로그 추가
             return; // 입력값이 비어있다면 로그인 진행 중단
         }
 
@@ -61,13 +65,15 @@ public class LoginActivity extends AppCompatActivity {
                 .addOnCompleteListener(this, task -> {
                     // 로그인 성공 시
                     if (task.isSuccessful()) {
-                        Toast.makeText(LoginActivity.this, "로그인 성공", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(LoginActivity.this, "Login successful", Toast.LENGTH_SHORT).show();
+                        Log.d("EasySpec", "Login successful: Navigating to MainActivity"); // 로그 추가
                         // MainActivity로 이동 (로그인 후 메인 화면)
                         startActivity(new Intent(LoginActivity.this, MainActivity.class));
                         finish(); // 현재 액티비티 종료
                     } else {
                         // 로그인 실패 시 실패 메시지 표시
-                        Toast.makeText(LoginActivity.this, "로그인 실패: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(LoginActivity.this, "Login failed: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                        Log.d("EasySpec", "Login failed: " + task.getException().getMessage()); // 로그 추가
                     }
                 });
     }

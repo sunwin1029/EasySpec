@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.easyspec.R;
 import com.google.firebase.auth.FirebaseAuth;
+import android.util.Log; // Log 클래스를 사용하기 위해 추가
 
 public class SignUpStep1Activity extends AppCompatActivity {
     private FirebaseAuth mAuth;
@@ -25,20 +26,20 @@ public class SignUpStep1Activity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_sign_up_step1);
+        setContentView(R.layout.activity_sign_up_step1); // 레이아웃 설정
 
         mAuth = FirebaseAuth.getInstance();
-        editTextEmail = findViewById(R.id.editTextEmail);
-        editTextPassword = findViewById(R.id.editTextPassword);
-        spinnerUniversity = findViewById(R.id.spinnerUniversity);
-        buttonNext = findViewById(R.id.buttonNext);
+        editTextEmail = findViewById(R.id.editTextEmail); // 이메일 입력 필드
+        editTextPassword = findViewById(R.id.editTextPassword); // 비밀번호 입력 필드
+        spinnerUniversity = findViewById(R.id.spinnerUniversity); // 대학 선택 스피너
+        buttonNext = findViewById(R.id.buttonNext); // 다음 단계 버튼
 
         // 스피너 설정
         setUpSpinners();
 
+        // 다음 단계 버튼 클릭 시 goToNextStep 메서드 호출
         buttonNext.setOnClickListener(v -> goToNextStep());
     }
-
 
     private void setUpSpinners() {
         // 대학 목록 배열 가져오기
@@ -56,6 +57,7 @@ public class SignUpStep1Activity extends AppCompatActivity {
                 // 선택된 아이템이 null이 아니고 유효한지 확인
                 if (position != AdapterView.INVALID_POSITION) {
                     selectedUniversity = parentView.getItemAtPosition(position).toString();
+                    Log.d("EasySpec", "Selected university: " + selectedUniversity); // 선택된 대학 로그 추가
                 }
             }
 
@@ -67,13 +69,14 @@ public class SignUpStep1Activity extends AppCompatActivity {
         });
     }
 
-
     private void goToNextStep() {
         String email = editTextEmail.getText().toString().trim();
         String password = editTextPassword.getText().toString().trim();
 
+        // 필드 유효성 검사
         if (email.isEmpty() || password.isEmpty() || selectedUniversity == null || selectedUniversity.isEmpty()) {
-            Toast.makeText(this, "모든 필드를 입력하세요.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Please fill in all fields.", Toast.LENGTH_SHORT).show();
+            Log.d("EasySpec", "Sign up failed: Not all fields are filled."); // 로그 추가
             return;
         }
 
@@ -83,6 +86,7 @@ public class SignUpStep1Activity extends AppCompatActivity {
                     if (task.isSuccessful()) {
                         // 사용자 등록 성공
                         String userId = mAuth.getCurrentUser().getUid();
+                        Log.d("EasySpec", "Sign up successful: User ID = " + userId); // 로그 추가
                         // 다음 화면으로 이동하면서 데이터 전달
                         Intent intent = new Intent(SignUpStep1Activity.this, SignUpStep2Activity.class);
                         intent.putExtra("userId", userId); // UID 전달
@@ -90,10 +94,9 @@ public class SignUpStep1Activity extends AppCompatActivity {
                         intent.putExtra("university", selectedUniversity);
                         startActivity(intent);
                     } else {
-                        Toast.makeText(SignUpStep1Activity.this, "회원가입 실패: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(SignUpStep1Activity.this, "Sign up failed: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                        Log.d("EasySpec", "Sign up failed: " + task.getException().getMessage()); // 로그 추가
                     }
                 });
     }
-
-
 }
