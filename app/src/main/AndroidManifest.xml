@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
-
-    <!-- 필요한 퍼미션 추가 -->
-    <!-- <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" /> -->
+    xmlns:tools="http://schemas.android.com/tools" >
 
     <application
         android:allowBackup="true"
@@ -14,27 +11,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.EasySpec"
-        tools:targetApi="31">
-
-        <!-- MainActivity는 하나만 남기고 나머지 액티비티들은 그대로 추가 -->
-        <activity
-            android:name=".MainActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-
-        <activity
-            android:name=".IntentTest"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-
+        tools:targetApi="31" >
         <activity
             android:name=".ReviewWriteActivity"
             android:exported="false" />
@@ -45,22 +22,11 @@
             android:name=".EachProductPage.EachProductPage"
             android:exported="true" />
         <activity
-            android:name=".Firebase.FirebaseTestActivity"
-            android:exported="true" />
-        <activity
             android:name=".MyReviewActivity"
             android:exported="false" />
         <activity
-            android:name=".RecyclerViewActivity"
-            android:exported="false" />
-        <activity
-            android:name=".StarList"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+            android:name=".FavoritesActivity"
+            android:exported="true" />
         <activity
             android:name=".ProfileActivity"
             android:exported="false" />
@@ -71,22 +37,23 @@
             android:name=".LogIn.SignUpStep1Activity"
             android:exported="false" />
         <activity
+            android:name=".MainActivity"
+            android:exported="true" />
+        <activity
             android:name=".LogIn.LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
             android:name=".Filtering"
             android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
-
+        <activity android:name=".RecyclerViewActivity"
+            android:exported="true"/>
     </application>
 
 </manifest>

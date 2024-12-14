@@ -1,16 +1,13 @@
 package com.example.easyspec;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.Gravity;
-import android.view.inputmethod.InputMethodManager;
+import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.easyspec.databinding.ActivityMainBinding;
-import androidx.appcompat.widget.SearchView;
+
 import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -26,12 +23,32 @@ public class MainActivity extends AppCompatActivity {
 
         // 서치버튼 클릭 시 필터링 화면으로 이동
         binding.searchButton.setOnClickListener(v -> {
+<<<<<<< HEAD
             FilteringFragment filteringFragment = new FilteringFragment();
             getSupportFragmentManager()
                     .beginTransaction()
                     .replace(R.id.fragment_container, filteringFragment)
                     .addToBackStack(null)
                     .commit();
+=======
+            // 메인 레이아웃 숨기기
+            binding.mainLayout.setVisibility(View.GONE);
+
+            // FragmentContainer에 FilteringFragment 추가
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.fragment_container, new FilteringFragment())
+                    .addToBackStack(null) // 뒤로가기 지원
+                    .commit();
+        });
+
+        // 뒤로가기 시 메인 레이아웃 복구
+        getSupportFragmentManager().addOnBackStackChangedListener(() -> {
+            if (getSupportFragmentManager().getBackStackEntryCount() == 0) {
+                // 메인 레이아웃 다시 표시
+                binding.mainLayout.setVisibility(View.VISIBLE);
+            }
+>>>>>>> 622f22c46438c090fef4008a5ef14d81a18df945
         });
 
 
@@ -48,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         binding.button2.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this,StarList.class);
+            Intent intent = new Intent(MainActivity.this, FavoritesActivity.class);
             startActivity(intent);
         });
 
@@ -58,10 +75,24 @@ public class MainActivity extends AppCompatActivity {
         });
 
         binding.button4.setOnClickListener(v -> {
+<<<<<<< HEAD
             WordExplainFragment fragment = new WordExplainFragment();
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.fragment_container, fragment)
                     .addToBackStack(null)
+=======
+            if (binding.drawerLayout.isDrawerOpen(GravityCompat.END)) {
+                binding.drawerLayout.closeDrawer(GravityCompat.END);
+            }
+
+            binding.mainLayout.setVisibility(View.GONE);
+
+            // WordExplainFragment를 호출하여 프래그먼트로 이동
+            WordExplainFragment fragment = new WordExplainFragment();
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container, fragment) // 프래그먼트를 추가할 컨테이너 ID
+                    .addToBackStack(null) // 백스택에 추가
+>>>>>>> 622f22c46438c090fef4008a5ef14d81a18df945
                     .commit();
         });
 

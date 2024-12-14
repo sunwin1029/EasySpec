@@ -7,8 +7,14 @@
     android:layout_height="match_parent"
     android:background="#FFFFFF">
 
+    <FrameLayout
+        android:id="@+id/fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
     <!-- 메인 화면 레이아웃 (메인 콘텐츠) -->
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/main_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -106,5 +112,6 @@
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+
 
 </androidx.drawerlayout.widget.DrawerLayout>

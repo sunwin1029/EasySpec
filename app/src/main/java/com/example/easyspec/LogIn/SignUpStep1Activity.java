@@ -77,12 +77,16 @@ public class SignUpStep1Activity extends AppCompatActivity {
             return;
         }
 
-        // Firebase에 유저 생성 및 첫 번째 회원가입 단계 데이터 저장
+        // Firebase에 유저 생성
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
+                        // 사용자 등록 성공
+                        String userId = mAuth.getCurrentUser().getUid();
                         // 다음 화면으로 이동하면서 데이터 전달
                         Intent intent = new Intent(SignUpStep1Activity.this, SignUpStep2Activity.class);
+                        intent.putExtra("userId", userId); // UID 전달
+                        intent.putExtra("email", email);
                         intent.putExtra("university", selectedUniversity);
                         startActivity(intent);
                     } else {
@@ -90,4 +94,6 @@ public class SignUpStep1Activity extends AppCompatActivity {
                     }
                 });
     }
+
+
 }
