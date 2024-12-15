@@ -47,6 +47,10 @@ public class ReviewItem {
         return likes;
     }
 
+    public String getReviewFeature(){
+        return feature;
+    }
+
     public int getImageResource() {
         return imageResource;
     }

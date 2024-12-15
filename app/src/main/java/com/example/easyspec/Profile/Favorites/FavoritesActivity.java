@@ -60,9 +60,12 @@ public class FavoritesActivity extends AppCompatActivity implements FavoritesAda
     }
 
     private void fetchFavoritesFromFirebase() {
-        usersRef.child("favorites").addListenerForSingleValueEvent(new ValueEventListener() {
+        usersRef.child("favorites").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                favoriteProducts.clear();
+
                 if (!snapshot.exists()) {
                     showEmptyState(); // 즐겨찾기 제품이 없을 때 빈 상태 표시
                     return;

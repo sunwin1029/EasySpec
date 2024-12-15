@@ -2,6 +2,8 @@ package com.example.easyspec.Profile.MyReview;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -25,6 +27,7 @@ public class MyReviewActivity extends AppCompatActivity {
     private List<ReviewItem> reviewItemList; // ReviewItem 목록
     private FirebaseAuth firebaseAuth; // Firebase 인증
     private DatabaseReference reviewsRef; // 리뷰 데이터베이스 참조
+    private TextView emptyView; // 리뷰가 없을 때 표시할 TextView
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +37,7 @@ public class MyReviewActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerView); // RecyclerView 초기화
         recyclerView.setLayoutManager(new LinearLayoutManager(this)); // 레이아웃 매니저 설정
 
+        emptyView = findViewById(R.id.emptyView);
         reviewItemList = new ArrayList<>(); // 리뷰 목록 초기화
         adapter = new MyReviewAdapter(reviewItemList, this); // 어댑터 초기화
         recyclerView.setAdapter(adapter); // RecyclerView에 어댑터 설정
@@ -54,7 +58,7 @@ public class MyReviewActivity extends AppCompatActivity {
 
         // 사용자 ID에 해당하는 리뷰 가져오기
         reviewsRef.orderByChild("userId").equalTo(userId)
-                .addValueEventListener(new ValueEventListener() {
+                .addListenerForSingleValueEvent((new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         reviewItemList.clear(); // 기존 데이터 삭제
@@ -76,6 +80,10 @@ public class MyReviewActivity extends AppCompatActivity {
 
                                         reviewItemList.add(reviewItem); // 리뷰 리스트에 추가
                                         adapter.notifyDataSetChanged(); // 어댑터에 데이터 변경 알림
+
+
+                                        // 데이터가 있는 경우 emptyView 숨기기
+                                        toggleEmptyView();
                                     }
 
                                     @Override
@@ -85,6 +93,9 @@ public class MyReviewActivity extends AppCompatActivity {
                                 });
                             }
                         }
+
+                        // 리뷰 데이터가 없는 경우 emptyView 표시
+                        toggleEmptyView();
                         isFetchingReviews = false; // 데이터 요청 완료
                     }
 
@@ -93,11 +104,24 @@ public class MyReviewActivity extends AppCompatActivity {
                         Log.e("EasySpec", "Error fetching reviews: " + databaseError.getMessage()); // Error fetching reviews log
                         isFetchingReviews = false; // 오류 발생 시에도 요청 완료 상태로 변경
                     }
-                });
+                }));
     }
 
     public void reloadReviews() {
         String userId = firebaseAuth.getCurrentUser().getUid(); // 현재 로그인된 사용자 ID 가져오기
         fetchUserReviews(userId); // 리뷰 새로 고침
+    }
+
+
+    private void toggleEmptyView() {
+        runOnUiThread(() -> {
+            if (reviewItemList.isEmpty()) {
+                emptyView.setVisibility(View.VISIBLE); // 리뷰가 없을 때 메시지 표시
+                recyclerView.setVisibility(View.GONE); // RecyclerView 숨기기
+            } else {
+                emptyView.setVisibility(View.GONE); // 메시지 숨기기
+                recyclerView.setVisibility(View.VISIBLE); // RecyclerView 표시
+            }
+        });
     }
 }
