@@ -13,6 +13,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.easyspec.R;
+import com.google.firebase.auth.FirebaseAuth;
+
 import android.util.Log; // Log 클래스를 사용하기 위해 추가
 
 /**
@@ -43,6 +45,10 @@ public class LogoutFragment extends DialogFragment {
         // 네 버튼 클릭 시 로그인 화면으로 이동
         view.findViewById(R.id.button_yes).setOnClickListener(v -> {
             Log.d("EasySpec", "Logout confirmed: Navigating to login screen"); // 로그 추가
+
+            // Firebase에서 로그아웃
+            FirebaseAuth.getInstance().signOut();
+
             // 로그인 화면으로 이동
             Intent intent = new Intent(requireActivity(), LoginActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
