@@ -490,20 +490,21 @@ public class InventoryProductPage extends AppCompatActivity {
         FragmentManager fragmentManager = getSupportFragmentManager();
 
         if (fragmentManager.getBackStackEntryCount() > 0) {
-            // Fragment가 백 스택에 있으면 제거
+            // 프래그먼트 제거
             fragmentManager.popBackStack();
 
-            // 상단 바와 RecyclerView 다시 표시
+            // TopBar와 RecyclerView 다시 표시
             binding.topBar.setVisibility(View.VISIBLE);
             binding.productRecyclerView.setVisibility(View.VISIBLE);
 
-            // FragmentContainerView 숨기기
+            // FragmentContainer 숨기기
             binding.fragmentContainer.setVisibility(View.GONE);
         } else {
             // 기본 동작 수행 (앱 종료 또는 이전 액티비티로 이동)
             super.onBackPressed();
         }
     }
+
 
     private void updateRecyclerViewVisibility() {
         if (filteredList.isEmpty()) {

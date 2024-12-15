@@ -78,8 +78,7 @@ public class FilteringFragment extends Fragment {
         // 뒤로가기 버튼 초기화 및 클릭 리스너 설정
         Button backButton = view.findViewById(R.id.back_button);
         backButton.setOnClickListener(v -> {
-            // 프래그먼트를 백 스택에서 제거
-            requireActivity().getSupportFragmentManager().popBackStack();
+            requireActivity().onBackPressed(); // 부모 액티비티의 onBackPressed 호출
         });
     }
 
