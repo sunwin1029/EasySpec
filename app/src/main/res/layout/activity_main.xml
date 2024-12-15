@@ -7,10 +7,16 @@
     android:layout_height="match_parent"
     android:background="#FFFFFF">
 
+
+    <!-- 프래그먼트 컨테이너 -->
     <FrameLayout
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        app:layout_constraintTop_toBottomOf="@id/imageView"
+        app:layout_constraintBottom_toTopOf="@id/open_sidebar_button"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <!-- 메인 화면 레이아웃 (메인 콘텐츠) -->
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -43,19 +49,17 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-
         <!-- 사이드바 열기 버튼 (오른쪽 상단에 배치) -->
-        <Button
+        <ImageView
             android:id="@+id/open_sidebar_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="open"
+            android:layout_width="64dp"
+            android:layout_height="48dp"
+            android:src="@drawable/baseline_menu_24"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
-            android:backgroundTint="#87CEEB"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent">
-        </Button>
+        </ImageView>
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -70,44 +74,141 @@
         android:padding="16dp"
         android:gravity="top">
 
-        <!-- 사이드바 버튼 3개 -->
-        <Button
+        <!-- 회원정보 수정 버튼 -->
+        <LinearLayout
             android:id="@+id/button1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:backgroundTint="#87CEEB"
-            android:text="회원정보 수정"/>
+            android:orientation="horizontal"
+            android:padding="12dp"
+            android:gravity="center_vertical"
+            android:background="?android:attr/selectableItemBackground">
 
-        <Button
+            <ImageView
+                android:id="@+id/user_info_icon"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/baseline_person_24"
+                android:layout_marginEnd="16dp" />
+
+            <TextView
+                android:id="@+id/user_info_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="회원정보 수정"
+                android:textSize="16sp"
+                android:textColor="#333333"
+                android:fontFamily="sans-serif-medium" />
+        </LinearLayout>
+
+        <!-- 즐겨찾기 목록 버튼 -->
+        <LinearLayout
             android:id="@+id/button2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:backgroundTint="#87CEEB"
-            android:text="즐겨찾기 목록"/>
+            android:orientation="horizontal"
+            android:padding="12dp"
+            android:gravity="center_vertical"
+            android:background="?android:attr/selectableItemBackground">
 
-        <Button
+            <ImageView
+                android:id="@+id/favorites_icon"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/baseline_favorite_24"
+                android:layout_marginEnd="16dp" />
+
+            <TextView
+                android:id="@+id/favorites_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="즐겨찾기 목록"
+                android:textSize="16sp"
+                android:textColor="#333333"
+                android:fontFamily="sans-serif-medium" />
+        </LinearLayout>
+
+        <!-- 내가 남긴 리뷰 버튼 -->
+        <LinearLayout
             android:id="@+id/button3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:backgroundTint="#87CEEB"
-            android:text="내가 남긴 리뷰"/>
+            android:orientation="horizontal"
+            android:padding="12dp"
+            android:gravity="center_vertical"
+            android:background="?android:attr/selectableItemBackground">
 
-        <Button
+            <ImageView
+                android:id="@+id/reviews_icon"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/baseline_border_color_24"
+                android:layout_marginEnd="16dp" />
+
+            <TextView
+                android:id="@+id/reviews_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="내가 남긴 리뷰"
+                android:textSize="16sp"
+                android:textColor="#333333"
+                android:fontFamily="sans-serif-medium" />
+        </LinearLayout>
+
+        <!-- 용어 정리 버튼 -->
+        <LinearLayout
             android:id="@+id/button4"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:backgroundTint="#87CEEB"
-            android:text="용어 정리"/>
+            android:orientation="horizontal"
+            android:padding="12dp"
+            android:gravity="center_vertical"
+            android:background="?android:attr/selectableItemBackground">
 
-        <Button
+            <ImageView
+                android:id="@+id/terms_icon"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/baseline_book_24"
+                android:layout_marginEnd="16dp" />
+
+            <TextView
+                android:id="@+id/terms_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="용어 정리"
+                android:textSize="16sp"
+                android:textColor="#333333"
+                android:fontFamily="sans-serif-medium" />
+        </LinearLayout>
+
+        <!-- 로그아웃 버튼 -->
+        <LinearLayout
             android:id="@+id/button5"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:backgroundTint="#87CEEB"
-            android:text="로그아웃"/>
+            android:orientation="horizontal"
+            android:padding="12dp"
+            android:gravity="center_vertical"
+            android:background="?android:attr/selectableItemBackground">
+
+            <ImageView
+                android:id="@+id/logout_icon"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/baseline_exit_to_app_24"
+                android:layout_marginEnd="16dp" />
+
+            <TextView
+                android:id="@+id/logout_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="로그아웃"
+                android:textSize="16sp"
+                android:textColor="#333333"
+                android:fontFamily="sans-serif-medium" />
+        </LinearLayout>
 
     </LinearLayout>
-
-
 
 </androidx.drawerlayout.widget.DrawerLayout>
