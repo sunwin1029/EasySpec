@@ -23,6 +23,14 @@ public class DetailFragment extends DialogFragment {
     }
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        // 다이얼로그가 설명 닫기 버튼을 통해서만 닫히도록 설정
+        setCancelable(false);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // ViewBinding 초기화
@@ -60,7 +68,6 @@ public class DetailFragment extends DialogFragment {
 
         // 다이얼로그의 스타일을 변경 (필요시 추가)
         setStyle(DialogFragment.STYLE_NO_TITLE, android.R.style.Theme_DeviceDefault_Dialog);
-
         // 다이얼로그의 크기 조정 (가로폭을 80%로 설정)
         if (getDialog() != null && getDialog().getWindow() != null) {
             Window window = getDialog().getWindow();
@@ -72,5 +79,4 @@ public class DetailFragment extends DialogFragment {
             window.setAttributes(params);  // 적용
         }
     }
-
 }
