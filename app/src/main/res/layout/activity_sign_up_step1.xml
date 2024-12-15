@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:text="회원가입"
         android:textAlignment="center"
-        android:textSize="30dp"
+        android:textSize="30sp"
         android:textStyle="bold" />
 
     <EditText
@@ -37,7 +37,8 @@
         android:layout_marginTop="10dp"
         android:id="@+id/spinnerUniversity"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:background="@drawable/spinner_background"/>
 
     <Button
         android:layout_marginTop="10dp"

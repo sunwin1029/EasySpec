@@ -26,6 +26,9 @@
         <TextView
             android:id="@+id/NameInEachProduct"
             android:layout_width="250dp"
+            android:text="productName"
+            android:textStyle="bold"
+            android:textSize="15sp"
             android:layout_height="40dp"
             app:layout_constraintTop_toBottomOf="@+id/ImageInEachProduct"
             app:layout_constraintStart_toStartOf="parent"
@@ -36,19 +39,22 @@
             android:id="@+id/StarImageInEachProduct"
             android:layout_width="30dp"
             android:layout_height="30dp"
+            app:layout_goneMarginTop="5dp"
             app:layout_constraintTop_toBottomOf="@id/NameInEachProduct"
             app:layout_constraintStart_toStartOf="parent"
             android:layout_marginStart="20dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="0dp"
             android:src="@drawable/rating_star" />
 
         <TextView
             android:id="@+id/ratingInEachProduct"
             android:layout_width="50dp"
-            android:layout_height="30dp"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="10dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="5dp"
+            android:text="rating"
             app:layout_constraintStart_toEndOf="@id/StarImageInEachProduct"
+            app:layout_constraintTop_toTopOf="@id/StarImageInEachProduct"
             app:layout_constraintTop_toBottomOf="@id/NameInEachProduct" />
 
         <Button
@@ -58,7 +64,8 @@
             app:layout_constraintTop_toTopOf="@+id/NameInEachProduct"
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginEnd="20dp"
-            android:text="평가" />
+            android:text="평점작성"
+            android:backgroundTint="#87CEEB"/>
 
         <Button
             android:id="@+id/BasicInformationInEachProduct"
@@ -67,13 +74,15 @@
             app:layout_constraintTop_toBottomOf="@+id/EvaluationInEachProduct"
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginEnd="20dp"
-            android:text="기본정보" />
+            android:text="기본정보"
+            android:backgroundTint="#87CEEB"/>
 
         <TextView
             android:id="@+id/PriceInEachProduct"
             android:layout_width="150dp"
             android:layout_height="30dp"
-            android:layout_marginTop="5dp"
+            android:layout_marginTop="10dp"
+            android:text="price"
             app:layout_constraintTop_toBottomOf="@id/StarImageInEachProduct"
             app:layout_constraintStart_toStartOf="@id/StarImageInEachProduct" />
     </androidx.constraintlayout.widget.ConstraintLayout>

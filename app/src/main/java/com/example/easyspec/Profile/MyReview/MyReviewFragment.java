@@ -1,4 +1,4 @@
-package com.example.easyspec.Review;
+package com.example.easyspec.Profile.MyReview;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -11,7 +11,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
+import androidx.fragment.app.DialogFragment;
 
 import com.example.easyspec.R;
 import com.google.firebase.database.DataSnapshot;
@@ -23,20 +23,22 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ReviewFragment extends Fragment {
+// 리뷰를 작성하거나 수정하는 다이얼로그 프래그먼트
+public class MyReviewFragment extends DialogFragment {
 
-    private static final String ARG_PRODUCT_ID = "productId";
-    private static final String ARG_FEATURE = "feature";
-    private static final String ARG_USER_ID = "userId";
+    private static final String ARG_PRODUCT_ID = "productId"; // 제품 ID
+    private static final String ARG_FEATURE = "feature"; // 리뷰 기능
+    private static final String ARG_USER_ID = "userId"; // 사용자 ID
 
-    private String productId;
-    private String feature;
-    private String userId;
+    private String productId; // 제품 ID
+    private String feature; // 리뷰 기능
+    private String userId; // 사용자 ID
     private String existingReviewId; // 기존 리뷰 ID
-    private DatabaseReference reviewRef;
+    private DatabaseReference reviewRef; // 리뷰 데이터베이스 참조
 
-    public static ReviewFragment newInstance(String productId, String feature, String userId) {
-        ReviewFragment fragment = new ReviewFragment();
+    // 새로운 인스턴스 생성
+    public static MyReviewFragment newInstance(String productId, String feature, String userId) {
+        MyReviewFragment fragment = new MyReviewFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PRODUCT_ID, productId);
         args.putString(ARG_FEATURE, feature);
@@ -46,8 +48,20 @@ public class ReviewFragment extends Fragment {
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        // 다이얼로그 크기 조정
+        if (getDialog() != null && getDialog().getWindow() != null) {
+            int width = (int) (400 * getResources().getDisplayMetrics().density);
+            int height = (int) (700 * getResources().getDisplayMetrics().density);
+            getDialog().getWindow().setLayout(width, height);
+        }
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // 전달받은 인자 초기화
         if (getArguments() != null) {
             productId = getArguments().getString(ARG_PRODUCT_ID);
             feature = getArguments().getString(ARG_FEATURE);
@@ -60,32 +74,36 @@ public class ReviewFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_review, container, false);
 
+        // UI 요소 초기화
         ImageView featureImage = view.findViewById(R.id.featureImage);
         TextView textFeatureReview = view.findViewById(R.id.textFeatureReview);
         TextView reviewText = view.findViewById(R.id.reviewText);
         ImageView nextButton = view.findViewById(R.id.nextButton);
         ImageView formerButton = view.findViewById(R.id.formerButton);
 
-        reviewRef = FirebaseDatabase.getInstance().getReference("Reviews");
+        reviewRef = FirebaseDatabase.getInstance().getReference("Reviews"); // 리뷰 데이터베이스 참조
 
+        // 기능에 맞는 내용 설정
         setFeatureContent(feature, featureImage, textFeatureReview);
 
-        // 기존 리뷰 확인 및 로드
+        // 기존 리뷰 로드
         loadExistingReview(reviewText);
 
-        // formerButton 클릭 시 복귀
-        formerButton.setOnClickListener(v -> restartEachProductPage());
+        // 이전 버튼 클릭 시 다이얼로그 닫기
+        formerButton.setOnClickListener(v -> {
+            dismiss();
+        });
 
-        // nextButton 클릭 시 리뷰 저장 또는 업데이트
+        // 다음 버튼 클릭 시 리뷰 저장 또는 업데이트
         nextButton.setOnClickListener(v -> {
             String reviewContent = reviewText.getText().toString().trim();
             if (!reviewContent.isEmpty()) {
                 if (existingReviewId != null) {
-                    updateReviewInDatabase(reviewContent);
+                    updateReviewInDatabase(reviewContent); // 기존 리뷰 업데이트
                 } else {
-                    saveNewReviewToDatabase(reviewContent);
+                    saveNewReviewToDatabase(reviewContent); // 새로운 리뷰 저장
                 }
-                restartEachProductPage(); // 리뷰 저장/수정 후 EachProductPage 재시작
+                dismiss(); // 다이얼로그 닫기
             } else {
                 Toast.makeText(requireContext(), "리뷰를 입력해주세요.", Toast.LENGTH_SHORT).show();
             }
@@ -94,6 +112,7 @@ public class ReviewFragment extends Fragment {
         return view;
     }
 
+    // 기능에 따른 이미지 및 질문 텍스트 설정
     private void setFeatureContent(String feature, ImageView featureImage, TextView textFeatureReview) {
         int imageRes;
         String reviewQuestion;
@@ -145,6 +164,7 @@ public class ReviewFragment extends Fragment {
         textFeatureReview.setText(reviewQuestion);
     }
 
+    // 기존 리뷰 로드
     private void loadExistingReview(TextView reviewText) {
         reviewRef.orderByChild("userId").equalTo(userId)
                 .get()
@@ -153,16 +173,18 @@ public class ReviewFragment extends Fragment {
                         String product = child.child("productId").getValue(String.class);
                         String featureName = child.child("feature").getValue(String.class);
                         if (productId.equals(product) && feature.equals(featureName)) {
-                            existingReviewId = child.getKey();
+                            existingReviewId = child.getKey(); // 기존 리뷰 ID 저장
                             String existingContent = child.child("reviewText").getValue(String.class);
-                            reviewText.setText(existingContent);
+                            reviewText.setText(existingContent); // 리뷰 내용 설정
+                            Log.d("EasySpec", "Successfully loaded existing review: " + existingContent);
                             break;
                         }
                     }
                 })
-                .addOnFailureListener(e -> Log.e("ReviewFragment", "Failed to load review", e));
+                .addOnFailureListener(e -> Log.e("EasySpec", "Failed to load review", e));
     }
 
+    // 새로운 리뷰를 데이터베이스에 저장
     private void saveNewReviewToDatabase(String reviewContent) {
         String reviewId = reviewRef.push().getKey(); // 새로운 리뷰 ID 생성
 
@@ -177,38 +199,31 @@ public class ReviewFragment extends Fragment {
 
             reviewRef.child(reviewId).setValue(reviewData)
                     .addOnSuccessListener(unused -> {
-                        Log.d("ReviewFragment", "리뷰 저장 성공!");
-                        updateUserPoints(10);
-
-                        // EachProductPage 재시작
-                        restartEachProductPage();
+                        Log.d("EasySpec", "Review saved successfully!");
+                        updateUserPoints(10); // 포인트 업데이트
                     })
-                    .addOnFailureListener(e -> Log.e("ReviewFragment", "리뷰 저장 실패", e));
+                    .addOnFailureListener(e -> Log.e("EasySpec", "Failed to save review", e));
         } else {
-            Log.e("ReviewFragment", "리뷰 ID 생성 실패");
+            Log.e("EasySpec", "Failed to generate review ID");
         }
     }
 
-
+    // 기존 리뷰를 업데이트
     private void updateReviewInDatabase(String reviewContent) {
         if (existingReviewId != null) {
             Map<String, Object> updatedData = new HashMap<>();
             updatedData.put("reviewText", reviewContent);
-            updatedData.put("timestamp", System.currentTimeMillis());
+            updatedData.put("timestamp", System.currentTimeMillis()); // 업데이트 시간 추가
 
             reviewRef.child(existingReviewId).updateChildren(updatedData)
-                    .addOnSuccessListener(unused -> {
-                        Log.d("ReviewFragment", "리뷰 업데이트 성공!");
-
-                        // EachProductPage 재시작
-                        restartEachProductPage();
-                    })
-                    .addOnFailureListener(e -> Log.e("ReviewFragment", "리뷰 업데이트 실패", e));
+                    .addOnSuccessListener(unused -> Log.d("EasySpec", "Review updated successfully!"))
+                    .addOnFailureListener(e -> Log.e("EasySpec", "Failed to update review", e));
         } else {
-            Log.e("ReviewFragment", "기존 리뷰 ID를 찾을 수 없습니다.");
+            Log.e("EasySpec", "Could not find existing review ID.");
         }
     }
 
+    // 사용자 포인트 업데이트
     private void updateUserPoints(int pointsToAdd) {
         DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("Users").child(userId).child("point");
 
@@ -218,41 +233,19 @@ public class ReviewFragment extends Fragment {
                 Long currentPoints = snapshot.getValue(Long.class); // 현재 포인트 값 가져오기
                 if (currentPoints != null) {
                     userRef.setValue(currentPoints + pointsToAdd) // 포인트 추가
-                            .addOnSuccessListener(unused -> {
-                                Log.d("ReviewFragment", "포인트 업데이트 성공!");
-                            })
-                            .addOnFailureListener(e ->
-                                    Log.e("ReviewFragment", "포인트 업데이트 실패", e)
-                            );
+                            .addOnSuccessListener(unused -> Log.d("EasySpec", "Points updated successfully!"))
+                            .addOnFailureListener(e -> Log.e("EasySpec", "Failed to update points", e));
                 } else {
-                    // 포인트 값이 없을 경우 초기화 후 업데이트
                     userRef.setValue(pointsToAdd)
-                            .addOnSuccessListener(unused -> {
-                                Log.d("ReviewFragment", "포인트 초기화 및 업데이트 성공!");
-                            })
-                            .addOnFailureListener(e ->
-                                    Log.e("ReviewFragment", "포인트 초기화 실패", e)
-                            );
+                            .addOnSuccessListener(unused -> Log.d("EasySpec", "Points initialized and updated successfully!"))
+                            .addOnFailureListener(e -> Log.e("EasySpec", "Failed to initialize points", e));
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Log.e("ReviewFragment", "포인트 정보 로드 실패", error.toException());
+                Log.e("EasySpec", "Failed to load points information", error.toException());
             }
         });
     }
-
-
-    private void restartEachProductPage() {
-        if (isAdded()) {
-            requireActivity().finish();
-            requireActivity().overridePendingTransition(0, 0); // 종료 애니메이션 제거
-            requireActivity().startActivity(requireActivity().getIntent());
-            requireActivity().overridePendingTransition(0, 0); // 시작 애니메이션 제거
-        }
-    }
-
-
-
 }

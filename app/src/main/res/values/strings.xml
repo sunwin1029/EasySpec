@@ -151,8 +151,8 @@
     <string-array name="device_types">
         <item>None</item>
         <item>laptops</item>
-        <item>phones</item>
         <item>tablets</item>
+        <item>phones</item>
     </string-array>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

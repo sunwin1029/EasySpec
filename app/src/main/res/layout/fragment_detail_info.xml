@@ -51,13 +51,15 @@
                 android:layout_marginBottom="10dp"
                 android:layout_marginHorizontal="10dp" />
             <Button
+                android:id="@+id/easyView"
                 android:text="쉽게보기"
                 android:textSize="12sp"
                 android:layout_width="100dp"
                 android:layout_height="50dp"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                android:layout_margin="10dp" />
+                android:layout_margin="10dp"
+                android:backgroundTint="#87CEEB"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>

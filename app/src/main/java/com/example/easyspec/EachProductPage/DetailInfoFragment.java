@@ -1,9 +1,11 @@
 package com.example.easyspec.EachProductPage;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -12,6 +14,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.easyspec.R;
+import com.example.easyspec.RecyclerViewActivity;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -42,6 +45,8 @@ public class DetailInfoFragment extends Fragment {
         // UI 요소 초기화
         ImageView productImage = view.findViewById(R.id.productImageInDetail);
         TextView detailText = view.findViewById(R.id.detailText);
+        ImageView formerButton = view.findViewById(R.id.formerButton);
+        Button easyViewButton = view.findViewById(R.id.easyView);
 
         // Firebase에서 세부 정보 가져오기
         DatabaseReference productRef = FirebaseDatabase.getInstance().getReference("ProductItems").child(productId);
@@ -66,6 +71,18 @@ public class DetailInfoFragment extends Fragment {
         } else {
             productImage.setImageResource(R.drawable.iphone15_promax); // 기본 이미지 설정
         }
+
+        // 이전 버튼 클릭 시 프래그먼트 종료
+        formerButton.setOnClickListener(v -> {
+            requireActivity().getSupportFragmentManager().popBackStack();
+        });
+
+        // 쉽게 보기 버튼 클릭 시 RecyclerViewActivity 실행
+        easyViewButton.setOnClickListener(v -> {
+            Intent intent = new Intent(requireContext(), RecyclerViewActivity.class);
+            intent.putExtra("productId", productId); // 필요하면 데이터 전달
+            startActivity(intent);
+        });
 
         return view;
     }

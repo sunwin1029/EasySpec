@@ -1,4 +1,4 @@
-package com.example.easyspec;
+package com.example.easyspec.Profile.MyReview;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.easyspec.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -19,27 +20,27 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MyReviewActivity extends AppCompatActivity {
-    private RecyclerView recyclerView;
-    private MyReviewAdapter adapter;
+    private RecyclerView recyclerView; // RecyclerView
+    private MyReviewAdapter adapter; // 리뷰 어댑터
     private List<ReviewItem> reviewItemList; // ReviewItem 목록
-    private FirebaseAuth firebaseAuth;
-    private DatabaseReference reviewsRef;
+    private FirebaseAuth firebaseAuth; // Firebase 인증
+    private DatabaseReference reviewsRef; // 리뷰 데이터베이스 참조
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_review);
 
-        recyclerView = findViewById(R.id.recyclerView);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView = findViewById(R.id.recyclerView); // RecyclerView 초기화
+        recyclerView.setLayoutManager(new LinearLayoutManager(this)); // 레이아웃 매니저 설정
 
-        reviewItemList = new ArrayList<>();
-        adapter = new MyReviewAdapter(reviewItemList, this);
-        recyclerView.setAdapter(adapter);
+        reviewItemList = new ArrayList<>(); // 리뷰 목록 초기화
+        adapter = new MyReviewAdapter(reviewItemList, this); // 어댑터 초기화
+        recyclerView.setAdapter(adapter); // RecyclerView에 어댑터 설정
 
-        firebaseAuth = FirebaseAuth.getInstance();
-        String userId = firebaseAuth.getCurrentUser().getUid();
-        reviewsRef = FirebaseDatabase.getInstance().getReference("Reviews");
+        firebaseAuth = FirebaseAuth.getInstance(); // Firebase 인증 인스턴스 가져오기
+        String userId = firebaseAuth.getCurrentUser().getUid(); // 현재 로그인된 사용자 ID 가져오기
+        reviewsRef = FirebaseDatabase.getInstance().getReference("Reviews"); // 리뷰 데이터베이스 참조 설정
 
         // 현재 로그인된 사용자의 리뷰 가져오기
         fetchUserReviews(userId);
@@ -51,15 +52,16 @@ public class MyReviewActivity extends AppCompatActivity {
         if (isFetchingReviews) return; // 이미 데이터 요청 중이면 리턴
         isFetchingReviews = true; // 데이터 요청 시작
 
+        // 사용자 ID에 해당하는 리뷰 가져오기
         reviewsRef.orderByChild("userId").equalTo(userId)
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         reviewItemList.clear(); // 기존 데이터 삭제
                         for (DataSnapshot reviewSnapshot : dataSnapshot.getChildren()) {
-                            ReviewItem reviewItem = reviewSnapshot.getValue(ReviewItem.class);
+                            ReviewItem reviewItem = reviewSnapshot.getValue(ReviewItem.class); // 리뷰 항목 가져오기
                             if (reviewItem != null) {
-                                reviewItem.setKey(reviewSnapshot.getKey()); // 키 설정
+                                reviewItem.setKey(reviewSnapshot.getKey()); // 리뷰 항목에 키 설정
 
                                 // ProductItems에서 제품 이름 가져오기
                                 String productId = reviewItem.getProductId();
@@ -69,7 +71,7 @@ public class MyReviewActivity extends AppCompatActivity {
                                 productRef.child("name").addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot productSnapshot) {
-                                        String productName = productSnapshot.getValue(String.class);
+                                        String productName = productSnapshot.getValue(String.class); // 제품 이름 가져오기
                                         reviewItem.setName(productName); // 리뷰 항목에 제품 이름 설정
 
                                         reviewItemList.add(reviewItem); // 리뷰 리스트에 추가
@@ -78,7 +80,7 @@ public class MyReviewActivity extends AppCompatActivity {
 
                                     @Override
                                     public void onCancelled(@NonNull DatabaseError databaseError) {
-                                        Log.e("MyReviewActivity", "Error fetching product name: " + databaseError.getMessage());
+                                        Log.e("EasySpec", "Error fetching product name: " + databaseError.getMessage()); // Error fetching product name log
                                     }
                                 });
                             }
@@ -88,16 +90,14 @@ public class MyReviewActivity extends AppCompatActivity {
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
-                        Log.e("MyReviewActivity", "Error fetching reviews: " + databaseError.getMessage());
+                        Log.e("EasySpec", "Error fetching reviews: " + databaseError.getMessage()); // Error fetching reviews log
                         isFetchingReviews = false; // 오류 발생 시에도 요청 완료 상태로 변경
                     }
                 });
     }
 
-
-
     public void reloadReviews() {
-        String userId = firebaseAuth.getCurrentUser().getUid();
-        fetchUserReviews(userId);
+        String userId = firebaseAuth.getCurrentUser().getUid(); // 현재 로그인된 사용자 ID 가져오기
+        fetchUserReviews(userId); // 리뷰 새로 고침
     }
 }

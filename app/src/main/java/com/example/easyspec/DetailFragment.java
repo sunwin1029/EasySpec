@@ -68,7 +68,6 @@ public class DetailFragment extends DialogFragment {
 
         // 다이얼로그의 스타일을 변경 (필요시 추가)
         setStyle(DialogFragment.STYLE_NO_TITLE, android.R.style.Theme_DeviceDefault_Dialog);
-
         // 다이얼로그의 크기 조정 (가로폭을 80%로 설정)
         if (getDialog() != null && getDialog().getWindow() != null) {
             Window window = getDialog().getWindow();

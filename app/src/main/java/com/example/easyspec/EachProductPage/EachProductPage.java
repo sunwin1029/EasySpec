@@ -166,9 +166,9 @@ public class EachProductPage extends AppCompatActivity {
 
     private String getProductTypeName(int productType) {
         switch (productType) {
-            case 3: return "핸드폰";
-            case 1: return "노트북";
             case 2: return "태블릿";
+            case 1: return "노트북";
+            case 3: return "핸드폰";
             default: return "기타";
         }
     }

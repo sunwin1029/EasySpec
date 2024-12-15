@@ -257,10 +257,10 @@ public class EachProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                     }
                 });
     }
-
     interface DepartmentCallback {
         void onDepartmentFetched(String department);
     }
+
 
     public static int dpToPx(int dp, Context context) {
         float density = context.getResources().getDisplayMetrics().density;
