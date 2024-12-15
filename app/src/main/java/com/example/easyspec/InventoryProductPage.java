@@ -124,6 +124,9 @@ public class InventoryProductPage extends AppCompatActivity {
 
                 // 필터링 적용
                 applyFilters();
+
+                // RecyclerView와 빈 뷰 상태 업데이트
+                updateRecyclerViewVisibility();
             }
 
             @Override
@@ -167,16 +170,15 @@ public class InventoryProductPage extends AppCompatActivity {
     }
 
     private void applyFilters() {
+        filteredList.clear();
+
         if (searchData == null || (searchData.getName() == null
                 && searchData.getMinimumPrice() == -1
                 && searchData.getMaxPrice() == -1
                 && searchData.getProductType() == -1
                 && searchData.getCompany() == -1)) {
-            filteredList.clear();
             filteredList.addAll(productList); // 모든 데이터를 표시
         } else {
-            filteredList.clear();
-
             for (ProductItem product : productList) {
                 boolean matches = true;
 
@@ -208,6 +210,9 @@ public class InventoryProductPage extends AppCompatActivity {
                 }
             }
         }
+
+        // RecyclerView와 빈 뷰 상태 업데이트
+        updateRecyclerViewVisibility();
 
         adapter.notifyDataSetChanged();
     }
@@ -500,6 +505,17 @@ public class InventoryProductPage extends AppCompatActivity {
         }
     }
 
+    private void updateRecyclerViewVisibility() {
+        if (filteredList.isEmpty()) {
+            // 데이터가 없을 때 RecyclerView 숨기고, 빈 뷰 표시
+            binding.productRecyclerView.setVisibility(View.GONE);
+            binding.emptyView.setVisibility(View.VISIBLE);
+        } else {
+            // 데이터가 있을 때 RecyclerView 표시하고, 빈 뷰 숨김
+            binding.productRecyclerView.setVisibility(View.VISIBLE);
+            binding.emptyView.setVisibility(View.GONE);
+        }
+    }
 
 
 }

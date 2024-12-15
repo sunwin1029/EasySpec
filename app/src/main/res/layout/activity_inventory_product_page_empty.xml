@@ -46,31 +46,4 @@
             android:contentDescription="click" />
     </LinearLayout>
 
-    <!-- RecyclerView -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/productRecyclerView"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:layout_margin="10dp" />
-
-    <!-- FragmentContainerView -->
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/fragment_container"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone" />
-
-    <TextView
-        android:id="@+id/emptyView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:gravity="center"
-        android:visibility="gone"
-        android:text="조건에 맞는 상품이 없습니다"
-        android:textSize="20sp"
-        android:textColor="@android:color/darker_gray"
-        android:layout_marginTop="250dp"
-        android:padding="16dp" />
 </LinearLayout>
