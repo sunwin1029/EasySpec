@@ -54,6 +54,7 @@ public class MyReviewAdapter extends RecyclerView.Adapter<MyReviewAdapter.ViewHo
         holder.reviewText.setText(reviewItem.getReviewText());
         // 좋아요 점수 설정
         holder.reviewScore.setText(String.valueOf(reviewItem.getlikes()));
+        holder.reviewFeature.setText(reviewItem.getReviewFeature());
 
         // 수정 버튼 클릭 리스너 설정
         holder.btnEdit.setOnClickListener(v -> {
@@ -131,7 +132,7 @@ public class MyReviewAdapter extends RecyclerView.Adapter<MyReviewAdapter.ViewHo
     // RecyclerView 아이템의 뷰를 관리하는 ViewHolder 클래스
     public static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView productImage; // 제품 이미지
-        TextView productName, reviewText, reviewScore; // 제품명, 리뷰 내용, 리뷰 점수
+        TextView productName, reviewText, reviewScore, reviewFeature; // 제품명, 리뷰 내용, 리뷰 점수
         ImageButton btnEdit, btnDelete; // 수정 버튼, 삭제 버튼
 
         public ViewHolder(@NonNull View itemView) {
@@ -143,6 +144,7 @@ public class MyReviewAdapter extends RecyclerView.Adapter<MyReviewAdapter.ViewHo
             reviewScore = itemView.findViewById(R.id.review_score);
             btnEdit = itemView.findViewById(R.id.btn_edit);
             btnDelete = itemView.findViewById(R.id.btn_delete);
+            reviewFeature = itemView.findViewById(R.id.review_feature);
         }
     }
 }
