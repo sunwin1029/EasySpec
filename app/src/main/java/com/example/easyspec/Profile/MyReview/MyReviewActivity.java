@@ -53,21 +53,21 @@ public class MyReviewActivity extends AppCompatActivity {
     private boolean isFetchingReviews = false; // 리뷰를 가져오는 중인지 여부를 추적하는 변수
 
     private void fetchUserReviews(String userId) {
-        if (isFetchingReviews) return; // 이미 데이터 요청 중이면 리턴
-        isFetchingReviews = true; // 데이터 요청 시작
-
-        // 사용자 ID에 해당하는 리뷰 가져오기
         reviewsRef.orderByChild("userId").equalTo(userId)
-                .addListenerForSingleValueEvent((new ValueEventListener() {
+                .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        reviewItemList.clear(); // 기존 데이터 삭제
+                        List<String> currentKeys = new ArrayList<>(); // 현재 스냅샷에서 키를 추적
                         for (DataSnapshot reviewSnapshot : dataSnapshot.getChildren()) {
-                            ReviewItem reviewItem = reviewSnapshot.getValue(ReviewItem.class); // 리뷰 항목 가져오기
-                            if (reviewItem != null) {
-                                reviewItem.setKey(reviewSnapshot.getKey()); // 리뷰 항목에 키 설정
+                            String key = reviewSnapshot.getKey();
+                            currentKeys.add(key); // 현재 데이터의 키 추가
 
-                                // ProductItems에서 제품 이름 가져오기
+                            // 기존 리스트에 없는 경우만 추가
+                            ReviewItem reviewItem = reviewSnapshot.getValue(ReviewItem.class);
+                            if (reviewItem != null && key != null && !containsReview(key)) {
+                                reviewItem.setKey(key);
+
+                                // 제품 이름 가져오기
                                 String productId = reviewItem.getProductId();
                                 DatabaseReference productRef = FirebaseDatabase.getInstance()
                                         .getReference("ProductItems").child(productId);
@@ -75,37 +75,59 @@ public class MyReviewActivity extends AppCompatActivity {
                                 productRef.child("name").addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot productSnapshot) {
-                                        String productName = productSnapshot.getValue(String.class); // 제품 이름 가져오기
-                                        reviewItem.setName(productName); // 리뷰 항목에 제품 이름 설정
+                                        String productName = productSnapshot.getValue(String.class);
+                                        reviewItem.setName(productName);
 
-                                        reviewItemList.add(reviewItem); // 리뷰 리스트에 추가
-                                        adapter.notifyDataSetChanged(); // 어댑터에 데이터 변경 알림
-
-
-                                        // 데이터가 있는 경우 emptyView 숨기기
-                                        toggleEmptyView();
+                                        reviewItemList.add(reviewItem); // 새로운 리뷰 추가
+                                        adapter.notifyItemInserted(reviewItemList.size() - 1);
+                                        toggleEmptyView(); // 빈 상태 업데이트
                                     }
 
                                     @Override
                                     public void onCancelled(@NonNull DatabaseError databaseError) {
-                                        Log.e("EasySpec", "Error fetching product name: " + databaseError.getMessage()); // Error fetching product name log
+                                        Log.e("EasySpec", "Error fetching product name: " + databaseError.getMessage());
                                     }
                                 });
                             }
                         }
 
-                        // 리뷰 데이터가 없는 경우 emptyView 표시
+                        // 삭제된 항목 처리
+                        removeDeletedReviews(currentKeys);
+
+                        // 빈 상태 업데이트
                         toggleEmptyView();
-                        isFetchingReviews = false; // 데이터 요청 완료
                     }
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
-                        Log.e("EasySpec", "Error fetching reviews: " + databaseError.getMessage()); // Error fetching reviews log
-                        isFetchingReviews = false; // 오류 발생 시에도 요청 완료 상태로 변경
+                        Log.e("EasySpec", "Error fetching reviews: " + databaseError.getMessage());
                     }
-                }));
+                });
     }
+
+    // 리뷰 리스트에서 특정 키가 존재하는지 확인
+    private boolean containsReview(String key) {
+        for (ReviewItem item : reviewItemList) {
+            if (item.getKey().equals(key)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // 현재 키에 없는 리뷰를 리스트에서 제거
+    private void removeDeletedReviews(List<String> currentKeys) {
+        List<ReviewItem> toRemove = new ArrayList<>();
+        for (ReviewItem item : reviewItemList) {
+            if (!currentKeys.contains(item.getKey())) {
+                int position = reviewItemList.indexOf(item);
+                toRemove.add(item);
+                adapter.notifyItemRemoved(position);
+            }
+        }
+        reviewItemList.removeAll(toRemove);
+    }
+
 
     public void reloadReviews() {
         String userId = firebaseAuth.getCurrentUser().getUid(); // 현재 로그인된 사용자 ID 가져오기
