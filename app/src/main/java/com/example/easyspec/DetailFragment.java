@@ -23,6 +23,14 @@ public class DetailFragment extends DialogFragment {
     }
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        // 다이얼로그가 설명 닫기 버튼을 통해서만 닫히도록 설정
+        setCancelable(false);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // ViewBinding 초기화
@@ -72,5 +80,4 @@ public class DetailFragment extends DialogFragment {
             window.setAttributes(params);  // 적용
         }
     }
-
 }
