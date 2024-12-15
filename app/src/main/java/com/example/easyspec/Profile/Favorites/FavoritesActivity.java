@@ -3,6 +3,8 @@ package com.example.easyspec.Profile.Favorites;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -30,6 +32,7 @@ public class FavoritesActivity extends AppCompatActivity implements FavoritesAda
 
     private RecyclerView favoritesRecyclerView;
     private DatabaseReference usersRef;
+    private TextView emptyTextView;
     private String userId; // 현재 로그인한 사용자 ID
     private List<ProductItem> favoriteProducts = new ArrayList<>(); // 즐겨찾기 제품 목록
 
@@ -39,6 +42,7 @@ public class FavoritesActivity extends AppCompatActivity implements FavoritesAda
         setContentView(R.layout.activity_favorites);
 
         favoritesRecyclerView = findViewById(R.id.favoritesRecyclerView);
+        emptyTextView = findViewById(R.id.emptyTextView);
         favoritesRecyclerView.setLayoutManager(new LinearLayoutManager(this)); // 수직 레이아웃 설정
 
         // Firebase Authentication을 통해 현재 사용자 ID 가져오기
@@ -60,38 +64,24 @@ public class FavoritesActivity extends AppCompatActivity implements FavoritesAda
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (!snapshot.exists()) {
-                    Toast.makeText(FavoritesActivity.this, "There are no favorite products.", Toast.LENGTH_SHORT).show();
-                    return; // 즐겨찾기 제품이 없는 경우
+                    showEmptyState(); // 즐겨찾기 제품이 없을 때 빈 상태 표시
+                    return;
                 }
 
-                // 즐겨찾기 제품 ID를 가져오기
+                List<String> productIds = new ArrayList<>(); // ID 리스트 수집
                 for (DataSnapshot productSnapshot : snapshot.getChildren()) {
                     String productId = productSnapshot.getKey();
                     if (productId != null) {
-                        // productId로 ProductItems에서 제품 정보를 가져오기
-                        DatabaseReference productRef = FirebaseDatabase.getInstance().getReference("ProductItems").child(productId);
-                        productRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot productSnapshot) {
-                                String productName = productSnapshot.child("name").getValue(String.class);
-                                Integer productPrice = productSnapshot.child("price").getValue(Integer.class); // 가격 정보 가져오기
-
-                                if (productName != null && productPrice != null) {
-                                    // 제품 정보 생성
-                                    ProductItem productItem = new ProductItem(productName, productPrice, null, 0, "", "", 0, 0, false, null, 0, 0, 0, 0, 0, 0);
-                                    productItem.setId(productId); // 제품 ID 설정
-                                    favoriteProducts.add(productItem); // 즐겨찾기 목록에 추가
-                                    setupRecyclerView(); // RecyclerView 업데이트
-                                }
-                            }
-
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError error) {
-                                Log.e(TAG, "Failed to load product data: " + error.getMessage());
-                            }
-                        });
+                        productIds.add(productId);
                     }
                 }
+
+                if (productIds.isEmpty()) {
+                    showEmptyState(); // ID가 없는 경우 빈 상태 표시
+                    return;
+                }
+
+                loadProductDetails(productIds); // ID 목록으로 제품 정보 로드
             }
 
             @Override
@@ -100,6 +90,37 @@ public class FavoritesActivity extends AppCompatActivity implements FavoritesAda
             }
         });
     }
+
+    private void loadProductDetails(List<String> productIds) {
+        for (String productId : productIds) {
+            DatabaseReference productRef = FirebaseDatabase.getInstance().getReference("ProductItems").child(productId);
+            productRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot productSnapshot) {
+                    String productName = productSnapshot.child("name").getValue(String.class);
+                    Integer productPrice = productSnapshot.child("price").getValue(Integer.class); // 가격 정보 가져오기
+
+                    if (productName != null && productPrice != null) {
+                        ProductItem productItem = new ProductItem(productName, productPrice, null, 0, "", "", 0, 0, false, null, 0, 0, 0, 0, 0, 0);
+                        productItem.setId(productId);
+                        favoriteProducts.add(productItem);
+                    }
+
+                    // 모든 데이터가 로드된 후 RecyclerView를 한 번만 설정
+                    if (favoriteProducts.size() == productIds.size()) {
+                        setupRecyclerView();
+                        showRecyclerView(); // RecyclerView 표시
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Log.e(TAG, "Failed to load product data: " + error.getMessage());
+                }
+            });
+        }
+    }
+
 
     private void setupRecyclerView() {
         FavoritesAdapter adapter = new FavoritesAdapter(favoriteProducts, this, this);
@@ -117,4 +138,15 @@ public class FavoritesActivity extends AppCompatActivity implements FavoritesAda
         intent.putExtra("userId", userId); // 사용자 ID도 전달
         startActivity(intent); // 상세 페이지 시작
     }
+
+    private void showEmptyState() {
+        emptyTextView.setVisibility(View.VISIBLE); // 빈 상태 텍스트 표시
+        favoritesRecyclerView.setVisibility(View.GONE); // RecyclerView 숨기기
+    }
+
+    private void showRecyclerView() {
+        emptyTextView.setVisibility(View.GONE); // 빈 상태 텍스트 숨기기
+        favoritesRecyclerView.setVisibility(View.VISIBLE); // RecyclerView 표시
+    }
+
 }

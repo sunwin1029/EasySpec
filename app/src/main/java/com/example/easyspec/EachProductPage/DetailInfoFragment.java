@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment;
 
 import com.example.easyspec.R;
 import com.example.easyspec.RecyclerViewActivity;
+import com.example.easyspec.WordExplainFragment;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -79,10 +80,17 @@ public class DetailInfoFragment extends Fragment {
 
         // 쉽게 보기 버튼 클릭 시 RecyclerViewActivity 실행
         easyViewButton.setOnClickListener(v -> {
-            Intent intent = new Intent(requireContext(), RecyclerViewActivity.class);
-            intent.putExtra("productId", productId); // 필요하면 데이터 전달
-            startActivity(intent);
+            // WordExplainFragment 생성
+            WordExplainFragment wordExplainFragment = new WordExplainFragment();
+
+            // 전체 화면으로 FragmentTransaction 실행
+            requireActivity().getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(android.R.id.content, wordExplainFragment) // 전체 화면으로 교체
+                    .addToBackStack(null) // 뒤로가기 지원
+                    .commit();
         });
+
 
         return view;
     }
