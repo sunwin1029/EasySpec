@@ -271,6 +271,7 @@ public class InventoryProductPage extends AppCompatActivity {
             holder.binding.productPrice.setText(String.format("₩%,d", productItem.getPrice()));
             holder.binding.ratingText.setText(String.format("%.1f", productItem.getAverageRating()));
 
+            // ReviewCount 설정
             if (userUniversity != null && !userUniversity.isEmpty()) {
                 switch (userUniversity) {
                     case "IT":
@@ -292,52 +293,44 @@ public class InventoryProductPage extends AppCompatActivity {
                         holder.binding.reviewCount.setText(String.format("%d명", productItem.getSocialScience()));
                         break;
                     default:
-                        Toast.makeText(InventoryProductPage.this, "check1", Toast.LENGTH_SHORT).show();
                         holder.binding.reviewCount.setText("0명"); // 예외 처리
                 }
             } else {
-                Toast.makeText(InventoryProductPage.this, "check2", Toast.LENGTH_SHORT).show();
                 holder.binding.reviewCount.setText("0명"); // 대학 정보가 없을 경우
             }
+
+            // 총 사용자 수 합계 계산
+            int totalUsers = productItem.getIT() + productItem.getEnglish() +
+                    productItem.getNaturalScience() + productItem.getEconomicsAndTrade() +
+                    productItem.getLaw() + productItem.getSocialScience();
+
+            holder.binding.reviewCountOfAll.setText(String.format("%d명", totalUsers));
+
+            // 즐겨찾기 버튼 및 기타 로직은 유지
             DatabaseReference userFavoritesRef = FirebaseDatabase.getInstance()
                     .getReference("Users")
                     .child(userId)
                     .child("favorites");
 
-            // Firebase에서 즐겨찾기 상태 확인
             userFavoritesRef.child(productId).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    boolean[] isFavorite = {snapshot.exists()}; // 즐겨찾기 상태 초기화
-                    updateFavoriteIcon(holder, isFavorite[0]); // 아이콘 상태 설정
+                    boolean[] isFavorite = {snapshot.exists()};
+                    updateFavoriteIcon(holder, isFavorite[0]);
 
-                    // 즐겨찾기 버튼 클릭 리스너
                     holder.binding.heartIcon.setOnClickListener(view -> {
                         if (isFavorite[0]) {
-                            // 즐겨찾기 해제
                             userFavoritesRef.child(productId).removeValue()
                                     .addOnSuccessListener(aVoid -> {
-                                        isFavorite[0] = false; // 상태 업데이트
-                                        updateFavoriteIcon(holder, false); // UI 업데이트
-                                        /*Toast.makeText(holder.itemView.getContext(),
-                                                productName + " removed from favorites.",
-                                                Toast.LENGTH_SHORT).show();
-
-                                         */
+                                        isFavorite[0] = false;
+                                        updateFavoriteIcon(holder, false);
                                     })
                                     .addOnFailureListener(e -> Log.e("Favorites", "Failed to remove favorite", e));
                         } else {
-                            // 즐겨찾기 등록
                             userFavoritesRef.child(productId).setValue(productName)
                                     .addOnSuccessListener(aVoid -> {
-                                        isFavorite[0] = true; // 상태 업데이트
-                                        updateFavoriteIcon(holder, true); // UI 업데이트
-                                        /*
-                                        Toast.makeText(holder.itemView.getContext(),
-                                                productName + " added to favorites.",
-                                                Toast.LENGTH_SHORT).show();
-
-                                         */
+                                        isFavorite[0] = true;
+                                        updateFavoriteIcon(holder, true);
                                     })
                                     .addOnFailureListener(e -> Log.e("Favorites", "Failed to add favorite", e));
                         }
@@ -358,6 +351,7 @@ public class InventoryProductPage extends AppCompatActivity {
                 holder.itemView.getContext().startActivity(intent);
             });
         }
+
 
         private void updateFavoriteIcon(InventoryViewHolder holder, boolean isFavorite) {
             holder.binding.heartIcon.setImageResource(

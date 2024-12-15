@@ -70,7 +70,7 @@
         android:id="@+id/reviewCount"
         android:layout_width="wrap_content"
         android:layout_height="30dp"
-        android:textSize="25sp"
+        android:textSize="22sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         android:layout_marginBottom="12dp"
@@ -81,10 +81,33 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@id/reviewCountOfAll"
+        app:layout_constraintEnd_toEndOf="@+id/reviewCount"
+        android:textSize="10sp"
+        android:layout_marginBottom="2dp"
+        android:layout_marginTop="3dp"
+        android:text="전체 사용자" />
+
+    <TextView
+        android:id="@+id/reviewCountOfAll"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:textSize="15sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/myUniv"
+        android:layout_marginBottom="3dp"
+        android:layout_marginEnd="10dp"
+        android:gravity="center"
+        android:text="OO명"/>
+
+    <TextView
+        android:id="@+id/myUniv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         app:layout_constraintBottom_toTopOf="@id/reviewCount"
         app:layout_constraintEnd_toEndOf="@+id/reviewCount"
         android:layout_marginTop="3dp"
-        android:text="단과대에" />
+        android:text="내단과대에" />
 
     <ImageView
         android:id="@+id/heartIcon"
@@ -95,5 +118,7 @@
         android:layout_marginTop="10dp"
         android:layout_marginEnd="10dp"
         android:src="@drawable/heart"/>
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
