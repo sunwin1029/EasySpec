@@ -96,7 +96,7 @@ public class ProfileActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                Toast.makeText(ProfileActivity.this, "데이터 불러오기 실패", Toast.LENGTH_SHORT).show();
+                Toast.makeText(ProfileActivity.this, "Data load fail", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -120,11 +120,11 @@ public class ProfileActivity extends AppCompatActivity {
                 if (!currentUniversity.equals(university)) {
                     updateUserNum(userId, currentUniversity, university);
                 }
-                Toast.makeText(ProfileActivity.this, "회원정보가 성공적으로 수정되었습니다.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(ProfileActivity.this, "success", Toast.LENGTH_SHORT).show();
                 startActivity(new Intent(ProfileActivity.this, MainActivity.class));
                 finish();
             } else {
-                Toast.makeText(ProfileActivity.this, "회원정보 수정 실패: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                Toast.makeText(ProfileActivity.this, "fail " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -149,7 +149,7 @@ public class ProfileActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                Toast.makeText(ProfileActivity.this, "사용자 기기 정보 업데이트 실패", Toast.LENGTH_SHORT).show();
+                Toast.makeText(ProfileActivity.this, "fail", Toast.LENGTH_SHORT).show();
             }
         });
     }

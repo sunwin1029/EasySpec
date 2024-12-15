@@ -48,7 +48,7 @@ public class ChangePasswordFragment extends DialogFragment {
 
         // 비밀번호 유효성 검사
         if (TextUtils.isEmpty(newPassword) || newPassword.length() < 6) {
-            Toast.makeText(getContext(), "비밀번호는 6자 이상이어야 합니다.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "at least 6", Toast.LENGTH_SHORT).show();
             Log.d("EasySpec", "Password validation failed: " + newPassword); // 유효성 검사 실패 로그
             return; // 비밀번호가 유효하지 않으면 메서드 종료
         }
@@ -58,12 +58,12 @@ public class ChangePasswordFragment extends DialogFragment {
             // 비밀번호 업데이트 요청
             user.updatePassword(newPassword).addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
-                    Toast.makeText(getContext(), "비밀번호가 성공적으로 변경되었습니다.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "success", Toast.LENGTH_SHORT).show();
                     dismiss(); // 다이얼로그 종료
                     Log.d("EasySpec", "Password change successful"); // 비밀번호 변경 성공 로그
                 } else {
                     // 비밀번호 변경 실패 시 에러 메시지 출력
-                    Toast.makeText(getContext(), "비밀번호 변경 실패: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(), "fail " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
                     Log.e("EasySpec", "Password change failed: " + task.getException()); // 비밀번호 변경 실패 로그
                 }
             });
