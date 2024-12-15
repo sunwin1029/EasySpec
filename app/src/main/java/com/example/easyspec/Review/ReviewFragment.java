@@ -1,5 +1,6 @@
 package com.example.easyspec.Review;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -246,12 +247,15 @@ public class ReviewFragment extends Fragment {
 
     private void restartEachProductPage() {
         if (isAdded()) {
-            requireActivity().finish();
+            Intent intent = requireActivity().getIntent();
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            requireActivity().finish(); // 현재 액티비티 종료
             requireActivity().overridePendingTransition(0, 0); // 종료 애니메이션 제거
-            requireActivity().startActivity(requireActivity().getIntent());
+            requireActivity().startActivity(intent); // 새로운 액티비티 시작
             requireActivity().overridePendingTransition(0, 0); // 시작 애니메이션 제거
         }
     }
+
 
 
 
